@@ -1,0 +1,237 @@
+# 管理员请求日志端点
+
+/api/v1/admin/requests:
+  get:
+    operationId: adminRequestLogList
+    tags:
+      - requestlog
+    summary: 获取请求日志列表
+    security:
+      - adminBearerAuth: []
+    parameters:
+      - name: query
+        in: query
+        schema:
+          type: string
+          description: "搜索 trace_id / request_id / request_log_id"
+      - name: user_id
+        in: query
+        schema:
+          type: string
+      - name: model_name
+        in: query
+        schema:
+          type: string
+      - name: provider_id
+        in: query
+        schema:
+          type: string
+      - name: protocol
+        in: query
+        schema:
+          $ref: '../schemas/common.yaml#/ProtocolEnum'
+      - name: billing_plan
+        in: query
+        schema:
+          type: string
+      - name: status
+        in: query
+        schema:
+          type: string
+          description: "请求状态过滤（success / failed）"
+      - name: from
+        in: query
+        schema:
+          type: string
+          format: date-time
+          description: "开始时间"
+      - name: to
+        in: query
+        schema:
+          type: string
+          format: date-time
+          description: "结束时间"
+      - name: page
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          default: 1
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+    responses:
+      '200':
+        description: 成功
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '../schemas/envelope.yaml#/ApiResponse'
+                - type: object
+                  properties:
+                    data:
+                      type: object
+                      required:
+                        - items
+                        - page
+                        - limit
+                        - total
+                      properties:
+                        items:
+                          type: array
+                          items:
+                            $ref: '../schemas/requestlog.yaml#/RequestLogResponse'
+                        page:
+                          type: integer
+                        limit:
+                          type: integer
+                        total:
+                          type: integer
+      '401':
+        description: 未授权
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
+      '403':
+        description: 无权限
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
+
+/api/v1/admin/requests/detail:
+  get:
+    operationId: adminRequestLogDetail
+    tags:
+      - requestlog
+    summary: 获取请求日志详情
+    security:
+      - adminBearerAuth: []
+    parameters:
+      - name: id
+        in: query
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        description: 成功
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '../schemas/envelope.yaml#/ApiResponse'
+                - type: object
+                  properties:
+                    data:
+                      $ref: '../schemas/requestlog.yaml#/RequestLogResponse'
+      '401':
+        description: 未授权
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
+      '403':
+        description: 无权限
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
+      '404':
+        description: 请求日志不存在
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
+
+/api/v1/admin/requests/attempts:
+  get:
+    operationId: adminRequestLogAttempts
+    tags:
+      - requestlog
+    summary: 获取请求日志尝试记录
+    security:
+      - adminBearerAuth: []
+    parameters:
+      - name: request_log_id
+        in: query
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        description: 成功
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '../schemas/envelope.yaml#/ApiResponse'
+                - type: object
+                  properties:
+                    data:
+                      type: array
+                      items:
+                        $ref: '../schemas/requestlog.yaml#/RequestAttemptResponse'
+      '401':
+        description: 未授权
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
+      '403':
+        description: 无权限
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
+      '404':
+        description: 请求日志不存在
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
+
+/api/v1/admin/requests/trace:
+  get:
+    operationId: adminRequestLogTrace
+    tags:
+      - requestlog
+    summary: 获取请求追踪详情
+    security:
+      - adminBearerAuth: []
+    parameters:
+      - name: query
+        in: query
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        description: 成功
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '../schemas/envelope.yaml#/ApiResponse'
+                - type: object
+                  properties:
+                    data:
+                      $ref: '../schemas/requestlog.yaml#/RequestTraceResponse'
+      '401':
+        description: 未授权
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
+      '403':
+        description: 无权限
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'

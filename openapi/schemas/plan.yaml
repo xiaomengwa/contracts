@@ -1,0 +1,166 @@
+# 套餐类型
+
+Plan:
+  type: object
+  required:
+    - id
+    - name
+    - plan_type
+    - hourly_5h_limit
+    - weekly_limit
+    - monthly_limit
+    - token_limit
+    - price
+    - status
+    - created_at
+    - updated_at
+  properties:
+    id:
+      type: string
+    name:
+      type: string
+    plan_type:
+      $ref: './common.yaml#/PlanTypeEnum'
+    hourly_5h_limit:
+      type: integer
+    weekly_limit:
+      type: integer
+    monthly_limit:
+      type: integer
+    token_limit:
+      type: integer
+      format: int64
+    price:
+      type: number
+      format: double
+    status:
+      $ref: './common.yaml#/StatusEnum'
+    created_at:
+      $ref: './common.yaml#/Timestamp'
+    updated_at:
+      $ref: './common.yaml#/Timestamp'
+
+UserPlan:
+  type: object
+  required:
+    - id
+    - user_id
+    - plan_id
+    - plan_type
+    - status
+    - activated_at
+    - created_at
+  properties:
+    id:
+      type: string
+    user_id:
+      type: string
+    plan_id:
+      type: string
+    plan_type:
+      $ref: './common.yaml#/PlanTypeEnum'
+    status:
+      $ref: './common.yaml#/StatusEnum'
+    activated_at:
+      $ref: './common.yaml#/Timestamp'
+    expires_at:
+      type: string
+    created_at:
+      $ref: './common.yaml#/Timestamp'
+
+# 请求体类型
+
+CreatePlanRequest:
+  type: object
+  required:
+    - name
+    - plan_type
+    - price
+  properties:
+    name:
+      type: string
+    plan_type:
+      $ref: './common.yaml#/PlanTypeEnum'
+    hourly_5h_limit:
+      type: integer
+    weekly_limit:
+      type: integer
+    monthly_limit:
+      type: integer
+    token_limit:
+      type: integer
+      format: int64
+    price:
+      type: number
+      format: double
+
+UpdatePlanRequest:
+  type: object
+  required:
+    - id
+  properties:
+    id:
+      type: string
+    name:
+      type: string
+    hourly_5h_limit:
+      type: integer
+    weekly_limit:
+      type: integer
+    monthly_limit:
+      type: integer
+    token_limit:
+      type: integer
+      format: int64
+    price:
+      type: number
+      format: double
+
+DeletePlanRequest:
+  type: object
+  required:
+    - id
+  properties:
+    id:
+      type: string
+
+TogglePlanRequest:
+  type: object
+  required:
+    - id
+  properties:
+    id:
+      type: string
+
+SetCodingPlanRequest:
+  type: object
+  required:
+    - user_id
+    - plan_id
+  properties:
+    user_id:
+      type: string
+    plan_id:
+      type: string
+
+SetTokenPlanRequest:
+  type: object
+  required:
+    - user_id
+    - plan_id
+  properties:
+    user_id:
+      type: string
+    plan_id:
+      type: string
+
+SetImagePlanRequest:
+  type: object
+  required:
+    - user_id
+    - plan_id
+  properties:
+    user_id:
+      type: string
+    plan_id:
+      type: string

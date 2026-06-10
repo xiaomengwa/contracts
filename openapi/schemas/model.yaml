@@ -1,0 +1,71 @@
+# 模型类型
+
+CatalogModel:
+  allOf:
+    - $ref: './common.yaml#/CatalogStats'
+    - type: object
+      required:
+        - id
+        - name
+        - status
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        display_name:
+          type: string
+        description:
+          type: string
+        status:
+          $ref: './common.yaml#/StatusEnum'
+        created_at:
+          $ref: './common.yaml#/Timestamp'
+        updated_at:
+          $ref: './common.yaml#/Timestamp'
+
+# 请求体类型
+
+CreateModelRequest:
+  type: object
+  required:
+    - name
+  properties:
+    name:
+      type: string
+    display_name:
+      type: string
+    description:
+      type: string
+
+UpdateModelRequest:
+  type: object
+  required:
+    - id
+  properties:
+    id:
+      type: string
+    name:
+      type: string
+    display_name:
+      type: string
+    description:
+      type: string
+
+DeleteModelRequest:
+  type: object
+  required:
+    - id
+  properties:
+    id:
+      type: string
+
+ToggleModelRequest:
+  type: object
+  required:
+    - id
+  properties:
+    id:
+      type: string

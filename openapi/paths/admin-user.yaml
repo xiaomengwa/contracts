@@ -1,0 +1,609 @@
+# 管理员用户管理端点
+
+/api/v1/admin/users:
+  get:
+    operationId: adminUserList
+    tags:
+      - admin
+    summary: 获取用户列表
+    security:
+      - adminBearerAuth: []
+    parameters:
+      - name: query
+        in: query
+        schema:
+          type: string
+          description: "搜索邮箱 / ID"
+      - name: role
+        in: query
+        schema:
+          $ref: '../schemas/common.yaml#/RoleEnum'
+      - name: status
+        in: query
+        schema:
+          $ref: '../schemas/common.yaml#/StatusEnum'
+      - name: coding_plan_id
+        in: query
+        schema:
+          type: string
+      - name: token_plan_id
+        in: query
+        schema:
+          type: string
+      - name: image_plan_id
+        in: query
+        schema:
+          type: string
+      - name: preferred_billing
+        in: query
+        schema:
+          $ref: '../schemas/common.yaml#/BillingPreferenceEnum'
+      - name: page
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          default: 1
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+    responses:
+      '200':
+        description: 成功
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '../schemas/envelope.yaml#/ApiResponse'
+                - type: object
+                  properties:
+                    data:
+                      type: object
+                      required:
+                        - items
+                        - page
+                        - limit
+                        - total
+                      properties:
+                        items:
+                          type: array
+                          items:
+                            $ref: '../schemas/user.yaml#/UserResponse'
+                        page:
+                          type: integer
+                        limit:
+                          type: integer
+                        total:
+                          type: integer
+      '401':
+        description: 未授权
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
+      '403':
+        description: 无权限
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
+
+/api/v1/admin/user/detail:
+  get:
+    operationId: adminUserDetail
+    tags:
+      - admin
+    summary: 获取用户详情
+    security:
+      - adminBearerAuth: []
+    parameters:
+      - name: id
+        in: query
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        description: 成功
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '../schemas/envelope.yaml#/ApiResponse'
+                - type: object
+                  properties:
+                    data:
+                      type: object
+                      properties:
+                        user:
+                          $ref: '../schemas/user.yaml#/UserResponse'
+      '401':
+        description: 未授权
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
+      '403':
+        description: 无权限
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
+      '404':
+        description: 用户不存在
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
+
+/api/v1/admin/user/update:
+  post:
+    operationId: adminUserUpdate
+    tags:
+      - admin
+    summary: 更新用户信息
+    security:
+      - adminBearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/sysconfig.yaml#/UpdateUserRequest'
+    responses:
+      '200':
+        description: 更新成功
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '../schemas/envelope.yaml#/ApiResponse'
+                - type: object
+                  properties:
+                    data:
+                      type: object
+                      properties:
+                        user:
+                          $ref: '../schemas/user.yaml#/UserResponse'
+      '400':
+        description: 参数无效
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
+      '401':
+        description: 未授权
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
+      '403':
+        description: 无权限
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
+      '404':
+        description: 用户不存在
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
+
+/api/v1/admin/user/toggle:
+  post:
+    operationId: adminUserToggle
+    tags:
+      - admin
+    summary: 切换用户启用/禁用
+    security:
+      - adminBearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/sysconfig.yaml#/ToggleUserRequest'
+    responses:
+      '200':
+        description: 切换成功
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '../schemas/envelope.yaml#/ApiResponse'
+                - type: object
+                  properties:
+                    data:
+                      type: object
+                      properties:
+                        user:
+                          $ref: '../schemas/user.yaml#/UserResponse'
+      '401':
+        description: 未授权
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
+      '403':
+        description: 无权限
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
+      '404':
+        description: 用户不存在
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
+
+/api/v1/admin/user/usage:
+  get:
+    operationId: adminUserUsage
+    tags:
+      - admin
+    summary: 获取用户用量账本
+    security:
+      - adminBearerAuth: []
+    parameters:
+      - name: user_id
+        in: query
+        required: true
+        schema:
+          type: string
+      - name: page
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          default: 1
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+    responses:
+      '200':
+        description: 成功
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '../schemas/envelope.yaml#/ApiResponse'
+                - type: object
+                  properties:
+                    data:
+                      type: object
+                      required:
+                        - items
+                        - page
+                        - limit
+                        - total
+                      properties:
+                        items:
+                          type: array
+                          items:
+                            $ref: '../schemas/usage.yaml#/UsageLedgerResponse'
+                        page:
+                          type: integer
+                        limit:
+                          type: integer
+                        total:
+                          type: integer
+      '401':
+        description: 未授权
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
+      '403':
+        description: 无权限
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
+      '404':
+        description: 用户不存在
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
+
+/api/v1/admin/user/requests:
+  get:
+    operationId: adminUserRequestLogList
+    tags:
+      - admin
+    summary: 获取用户请求日志列表
+    security:
+      - adminBearerAuth: []
+    parameters:
+      - name: user_id
+        in: query
+        required: true
+        schema:
+          type: string
+      - name: query
+        in: query
+        schema:
+          type: string
+          description: "搜索 trace_id / request_id / request_log_id"
+      - name: page
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          default: 1
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+    responses:
+      '200':
+        description: 成功
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '../schemas/envelope.yaml#/ApiResponse'
+                - type: object
+                  properties:
+                    data:
+                      type: object
+                      required:
+                        - items
+                        - page
+                        - limit
+                        - total
+                      properties:
+                        items:
+                          type: array
+                          items:
+                            $ref: '../schemas/requestlog.yaml#/RequestLogResponse'
+                        page:
+                          type: integer
+                        limit:
+                          type: integer
+                        total:
+                          type: integer
+      '401':
+        description: 未授权
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
+      '403':
+        description: 无权限
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
+      '404':
+        description: 用户不存在
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
+
+/api/v1/admin/user/plans/coding/set:
+  post:
+    operationId: adminUserCodingPlanSet
+    tags:
+      - plan
+    summary: 设置用户编码套餐
+    security:
+      - adminBearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/plan.yaml#/SetCodingPlanRequest'
+    responses:
+      '200':
+        description: 设置成功
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '../schemas/envelope.yaml#/ApiResponse'
+                - type: object
+                  properties:
+                    data:
+                      type: object
+                      properties:
+                        user:
+                          $ref: '../schemas/user.yaml#/UserResponse'
+      '400':
+        description: 参数无效
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
+      '401':
+        description: 未授权
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
+      '403':
+        description: 无权限
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
+      '404':
+        description: 用户或套餐不存在
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
+
+/api/v1/admin/user/plans/token/set:
+  post:
+    operationId: adminUserTokenPlanSet
+    tags:
+      - plan
+    summary: 设置用户 Token 套餐
+    security:
+      - adminBearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/plan.yaml#/SetTokenPlanRequest'
+    responses:
+      '200':
+        description: 设置成功
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '../schemas/envelope.yaml#/ApiResponse'
+                - type: object
+                  properties:
+                    data:
+                      type: object
+                      properties:
+                        user:
+                          $ref: '../schemas/user.yaml#/UserResponse'
+      '400':
+        description: 参数无效
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
+      '401':
+        description: 未授权
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
+      '403':
+        description: 无权限
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
+      '404':
+        description: 用户或套餐不存在
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
+
+/api/v1/admin/user/plans/image/set:
+  post:
+    operationId: adminUserImagePlanSet
+    tags:
+      - plan
+    summary: 设置用户图片套餐
+    security:
+      - adminBearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/plan.yaml#/SetImagePlanRequest'
+    responses:
+      '200':
+        description: 设置成功
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '../schemas/envelope.yaml#/ApiResponse'
+                - type: object
+                  properties:
+                    data:
+                      type: object
+                      properties:
+                        user:
+                          $ref: '../schemas/user.yaml#/UserResponse'
+      '400':
+        description: 参数无效
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
+      '401':
+        description: 未授权
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
+      '403':
+        description: 无权限
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
+      '404':
+        description: 用户或套餐不存在
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
+
+/api/v1/admin/user/token/recharge/create:
+  post:
+    operationId: adminUserTokenRechargeCreate
+    tags:
+      - usage
+    summary: 管理员为用户充值 Token
+    security:
+      - adminBearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/usage.yaml#/CreateAdminTokenRechargeRequest'
+    responses:
+      '200':
+        description: 充值成功
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '../schemas/envelope.yaml#/ApiResponse'
+                - type: object
+                  properties:
+                    data:
+                      $ref: '../schemas/usage.yaml#/UsageLedgerResponse'
+      '400':
+        description: 参数无效
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
+      '401':
+        description: 未授权
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
+      '403':
+        description: 无权限
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
+      '404':
+        description: 用户不存在
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'

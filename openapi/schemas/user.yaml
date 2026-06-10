@@ -1,0 +1,244 @@
+# 用户和认证相关类型
+
+UserResponse:
+  type: object
+  required:
+    - id
+    - email
+    - role
+    - status
+    - preferred_billing
+    - fallback_enabled
+    - created_at
+    - updated_at
+  properties:
+    id:
+      type: string
+    email:
+      type: string
+      format: email
+    role:
+      $ref: './common.yaml#/RoleEnum'
+    status:
+      $ref: './common.yaml#/StatusEnum'
+    preferred_billing:
+      $ref: './common.yaml#/BillingPreferenceEnum'
+    fallback_enabled:
+      type: boolean
+    coding_tier_id:
+      type: string
+    token_tier_id:
+      type: string
+    image_tier_id:
+      type: string
+    coding_plan_id:
+      type: string
+    token_plan_id:
+      type: string
+    image_plan_id:
+      type: string
+    created_at:
+      $ref: './common.yaml#/Timestamp'
+    updated_at:
+      $ref: './common.yaml#/Timestamp'
+
+UserDashboard:
+  type: object
+  required:
+    - user
+    - api_key_count
+    - today_requests
+    - total_tokens
+  properties:
+    user:
+      $ref: '#/UserResponse'
+    api_key_count:
+      type: integer
+    today_requests:
+      type: integer
+    total_tokens:
+      type: integer
+    today_input_tokens:
+      type: integer
+    today_output_tokens:
+      type: integer
+    total_input_tokens:
+      type: integer
+    total_output_tokens:
+      type: integer
+    today_images:
+      type: integer
+    total_images:
+      type: integer
+
+APIKeyResponse:
+  type: object
+  required:
+    - id
+    - name
+    - display_key
+    - is_active
+    - created_at
+    - request_count
+  properties:
+    id:
+      type: string
+    name:
+      type: string
+    key:
+      type: string
+      description: 明文密钥（仅创建时返回）
+    display_key:
+      type: string
+      description: 脱敏显示密钥
+    is_active:
+      type: boolean
+    created_at:
+      $ref: './common.yaml#/Timestamp'
+    last_used_at:
+      type: string
+    request_count:
+      type: integer
+
+AuthResponse:
+  type: object
+  required:
+    - user
+    - token
+    - refresh_token
+  properties:
+    user:
+      $ref: '#/UserResponse'
+    token:
+      type: string
+      description: JWT access token
+    refresh_token:
+      type: string
+      description: JWT refresh token
+
+# 请求体类型
+
+RegisterRequest:
+  type: object
+  required:
+    - email
+    - password
+  properties:
+    email:
+      type: string
+      format: email
+    password:
+      type: string
+      minLength: 8
+    email_code:
+      type: string
+      description: 邮箱验证码
+
+LoginRequest:
+  type: object
+  required:
+    - email
+    - password
+  properties:
+    email:
+      type: string
+      format: email
+    password:
+      type: string
+
+RefreshRequest:
+  type: object
+  required:
+    - refresh_token
+  properties:
+    refresh_token:
+      type: string
+
+ChangePasswordRequest:
+  type: object
+  required:
+    - old_password
+    - new_password
+  properties:
+    old_password:
+      type: string
+    new_password:
+      type: string
+      minLength: 8
+
+ForgotPasswordSendCodeRequest:
+  type: object
+  required:
+    - email
+  properties:
+    email:
+      type: string
+      format: email
+
+ForgotPasswordResetRequest:
+  type: object
+  required:
+    - email
+    - code
+    - new_password
+  properties:
+    email:
+      type: string
+      format: email
+    code:
+      type: string
+    new_password:
+      type: string
+      minLength: 8
+
+CreateAPIKeyRequest:
+  type: object
+  required:
+    - name
+  properties:
+    name:
+      type: string
+
+UpdateAPIKeyRequest:
+  type: object
+  required:
+    - id
+  properties:
+    id:
+      type: string
+    name:
+      type: string
+
+DeleteAPIKeyRequest:
+  type: object
+  required:
+    - id
+  properties:
+    id:
+      type: string
+
+ToggleAPIKeyRequest:
+  type: object
+  required:
+    - id
+  properties:
+    id:
+      type: string
+
+UpdateBillingPreferenceRequest:
+  type: object
+  required:
+    - preferred_billing
+  properties:
+    preferred_billing:
+      $ref: './common.yaml#/BillingPreferenceEnum'
+
+CaptchaConfig:
+  type: object
+  properties:
+    enabled:
+      type: boolean
+    scene:
+      type: string
+    captcha_type:
+      type: string

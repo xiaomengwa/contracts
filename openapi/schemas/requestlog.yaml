@@ -1,0 +1,140 @@
+# 请求日志和追踪类型
+
+RequestLogResponse:
+  type: object
+  required:
+    - id
+    - stream
+    - is_stream
+    - success
+    - is_success
+    - price_multiplier
+    - created_at
+  properties:
+    id:
+      type: string
+    request_id:
+      type: string
+    trace_id:
+      type: string
+    user_id:
+      type: string
+    user_name:
+      type: string
+    user_api_key_id:
+      type: string
+    provider_name:
+      type: string
+    model_name:
+      type: string
+    protocol:
+      type: string
+    stream:
+      type: boolean
+    is_stream:
+      type: boolean
+    billing_plan:
+      type: string
+    final_status_code:
+      type: integer
+    success:
+      type: boolean
+    is_success:
+      type: boolean
+    input_tokens:
+      type: integer
+    output_tokens:
+      type: integer
+    total_tokens:
+      type: integer
+    latency_ms:
+      type: integer
+    final_latency_ms:
+      type: integer
+    total_duration_ms:
+      type: integer
+    ttft_ms:
+      type: integer
+    kind:
+      type: string
+    price_multiplier:
+      type: number
+      format: double
+    price_multiplier_rule_id:
+      type: string
+    effective_input_tokens:
+      type: integer
+    effective_output_tokens:
+      type: integer
+    effective_total_tokens:
+      type: integer
+    tokens_per_second:
+      type: number
+      format: double
+    error_code:
+      type: string
+    error_message:
+      type: string
+    usage_status:
+      type: string
+    request_body:
+      type: string
+    created_at:
+      $ref: './common.yaml#/Timestamp'
+    completed_at:
+      $ref: './common.yaml#/Timestamp'
+
+RequestAttemptResponse:
+  type: object
+  required:
+    - id
+    - request_log_id
+    - attempt_index
+    - created_at
+  properties:
+    id:
+      type: string
+    request_log_id:
+      type: string
+    request_id:
+      type: string
+    trace_id:
+      type: string
+    upstream_key_id:
+      type: string
+    provider_id:
+      type: string
+    upstream_url:
+      type: string
+    status_code:
+      type: integer
+    latency_ms:
+      type: integer
+    error_code:
+      type: string
+    error_message:
+      type: string
+    attempt_index:
+      type: integer
+    response_body:
+      type: string
+    created_at:
+      $ref: './common.yaml#/Timestamp'
+
+RequestTraceResponse:
+  type: object
+  required:
+    - query
+    - logs
+    - attempts
+  properties:
+    query:
+      type: string
+    logs:
+      type: array
+      items:
+        $ref: '#/RequestLogResponse'
+    attempts:
+      type: array
+      items:
+        $ref: '#/RequestAttemptResponse'

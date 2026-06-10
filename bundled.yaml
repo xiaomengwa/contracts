@@ -1,0 +1,6399 @@
+openapi: 3.1.0
+info:
+  title: TokenMP Management API
+  description: |
+    TokenMP AI 模型 API 网关的管理接口。所有 Management API 响应使用 envelope 包裹：
+    `{"code": 200, "data": {...}, "message": "ok", "error_code": ""}`
+
+    路径风格：`/api/v1/{scope}/{category}/{type}/{action}`（分类优先，非 RESTful）。
+    能扩展出多个类型的资源使用 `分类/类型` 结构（如 `rules/rate`、`codes/redeem`、`keys/upstream`）。
+    只有一种形态的资源保持扁平（如 `providers`、`models`、`users`）。
+    所有管理端写操作统一使用 POST。
+  version: 2.0.0
+  contact:
+    name: TokenMP Team
+servers:
+  - url: http://localhost:8080
+    description: 本地开发环境
+security: []
+tags:
+  - name: public
+    description: 公开端点（无需认证）
+  - name: auth
+    description: 认证相关（注册、登录、登出、刷新）
+  - name: user
+    description: 用户端点（需 JWT）
+  - name: admin
+    description: 管理员端点（需 JWT + admin 角色）
+  - name: catalog
+    description: 供应商、模型、上游密钥等目录管理
+  - name: plan
+    description: 套餐管理
+  - name: redeem
+    description: 兑换码管理
+  - name: ratrule
+    description: 倍率规则管理
+  - name: config
+    description: 系统配置与路由权重
+  - name: requestlog
+    description: 请求日志与追踪
+  - name: usage
+    description: 用量与配额
+paths:
+  /api/v1/admin/configs:
+    get:
+      operationId: adminConfigList
+      tags:
+        - config
+      summary: 获取系统配置列表
+      security:
+        - adminBearerAuth: []
+      responses:
+        "200":
+          description: 成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/SystemConfig"
+        "401":
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "403":
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+  /api/v1/admin/config/detail:
+    get:
+      operationId: adminConfigDetail
+      tags:
+        - config
+      summary: 获取系统配置详情
+      security:
+        - adminBearerAuth: []
+      parameters:
+        - name: key
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: 成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/SystemConfig"
+        "401":
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "403":
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "404":
+          description: 配置项不存在
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+  /api/v1/admin/config/update:
+    post:
+      operationId: adminConfigUpdate
+      tags:
+        - config
+      summary: 更新系统配置
+      security:
+        - adminBearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateSystemConfigRequest"
+      responses:
+        "200":
+          description: 更新成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/SystemConfig"
+        "400":
+          description: 参数无效
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "401":
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "403":
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "404":
+          description: 配置项不存在
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+  /api/v1/admin/config/reload:
+    post:
+      operationId: adminConfigReload
+      tags:
+        - config
+      summary: 重载系统配置
+      security:
+        - adminBearerAuth: []
+      responses:
+        "200":
+          description: 重载成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        required:
+                          - routing_reloaded
+                          - executor_reloaded
+                          - executor_cache_version
+                        properties:
+                          routing_reloaded:
+                            type: boolean
+                          executor_reloaded:
+                            type: boolean
+                          executor_cache_version:
+                            type: string
+        "401":
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "403":
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+  /api/v1/admin/routing/config:
+    get:
+      operationId: adminRoutingConfig
+      tags:
+        - config
+      summary: 获取路由配置
+      security:
+        - adminBearerAuth: []
+      responses:
+        "200":
+          description: 成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/RoutingPolicy"
+        "401":
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "403":
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+  /api/v1/admin/routing/config/update:
+    post:
+      operationId: adminRoutingConfigUpdate
+      tags:
+        - config
+      summary: 更新路由配置
+      security:
+        - adminBearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateRoutingConfigRequest"
+      responses:
+        "200":
+          description: 更新成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/RoutingPolicy"
+        "400":
+          description: 参数无效
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "401":
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "403":
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+  /api/v1/admin/routing/reload:
+    post:
+      operationId: adminRoutingReload
+      tags:
+        - config
+      summary: 重载路由配置
+      security:
+        - adminBearerAuth: []
+      responses:
+        "200":
+          description: 重载成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        required:
+                          - routing_reloaded
+                          - executor_reloaded
+                          - executor_cache_version
+                        properties:
+                          routing_reloaded:
+                            type: boolean
+                          executor_reloaded:
+                            type: boolean
+                          executor_cache_version:
+                            type: string
+        "401":
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "403":
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+  /api/v1/admin/dashboard:
+    get:
+      operationId: adminDashboard
+      tags:
+        - admin
+      summary: 获取管理员仪表盘数据
+      security:
+        - adminBearerAuth: []
+      responses:
+        "200":
+          description: 成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/AdminDashboard"
+  /api/v1/admin/models:
+    get:
+      operationId: adminModelList
+      tags:
+        - catalog
+      summary: 获取模型列表
+      security:
+        - adminBearerAuth: []
+      parameters:
+        - name: query
+          in: query
+          schema:
+            type: string
+            description: 搜索名称 / ID
+        - name: status
+          in: query
+          schema:
+            $ref: "#/components/schemas/StatusEnum"
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        "200":
+          description: 成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        required:
+                          - items
+                          - page
+                          - limit
+                          - total
+                        properties:
+                          items:
+                            type: array
+                            items:
+                              $ref: "#/components/schemas/CatalogModel"
+                          page:
+                            type: integer
+                          limit:
+                            type: integer
+                          total:
+                            type: integer
+        "401":
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "403":
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+  /api/v1/admin/model/detail:
+    get:
+      operationId: adminModelDetail
+      tags:
+        - catalog
+      summary: 获取模型详情
+      security:
+        - adminBearerAuth: []
+      parameters:
+        - name: id
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: 成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/CatalogModel"
+        "401":
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "403":
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "404":
+          description: 模型不存在
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+  /api/v1/admin/model/create:
+    post:
+      operationId: adminModelCreate
+      tags:
+        - catalog
+      summary: 创建模型
+      security:
+        - adminBearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateModelRequest"
+      responses:
+        "201":
+          description: 创建成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/CatalogModel"
+        "400":
+          description: 参数无效
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "401":
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "403":
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+  /api/v1/admin/model/update:
+    post:
+      operationId: adminModelUpdate
+      tags:
+        - catalog
+      summary: 更新模型
+      security:
+        - adminBearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateModelRequest"
+      responses:
+        "200":
+          description: 更新成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/CatalogModel"
+        "400":
+          description: 参数无效
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "401":
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "403":
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "404":
+          description: 模型不存在
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+  /api/v1/admin/model/delete:
+    post:
+      operationId: adminModelDelete
+      tags:
+        - catalog
+      summary: 删除模型
+      security:
+        - adminBearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DeleteModelRequest"
+      responses:
+        "200":
+          description: 删除成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+        "401":
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "403":
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "404":
+          description: 模型不存在
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+  /api/v1/admin/model/toggle:
+    post:
+      operationId: adminModelToggle
+      tags:
+        - catalog
+      summary: 切换模型启用/禁用
+      security:
+        - adminBearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ToggleModelRequest"
+      responses:
+        "200":
+          description: 切换成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/CatalogModel"
+        "401":
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "403":
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "404":
+          description: 模型不存在
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+  /api/v1/admin/plans:
+    get:
+      operationId: adminPlanList
+      tags:
+        - plan
+      summary: 获取套餐列表
+      security:
+        - adminBearerAuth: []
+      parameters:
+        - name: plan_type
+          in: query
+          schema:
+            $ref: "#/components/schemas/PlanTypeEnum"
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        "200":
+          description: 成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        required:
+                          - items
+                          - page
+                          - limit
+                          - total
+                        properties:
+                          items:
+                            type: array
+                            items:
+                              $ref: "#/components/schemas/Plan"
+                          page:
+                            type: integer
+                          limit:
+                            type: integer
+                          total:
+                            type: integer
+        "401":
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "403":
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+  /api/v1/admin/plan/detail:
+    get:
+      operationId: adminPlanDetail
+      tags:
+        - plan
+      summary: 获取套餐详情
+      security:
+        - adminBearerAuth: []
+      parameters:
+        - name: id
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: 成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/Plan"
+        "401":
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "403":
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "404":
+          description: 套餐不存在
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+  /api/v1/admin/plan/create:
+    post:
+      operationId: adminPlanCreate
+      tags:
+        - plan
+      summary: 创建套餐
+      security:
+        - adminBearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreatePlanRequest"
+      responses:
+        "201":
+          description: 创建成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/Plan"
+        "400":
+          description: 参数无效
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "401":
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "403":
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+  /api/v1/admin/plan/update:
+    post:
+      operationId: adminPlanUpdate
+      tags:
+        - plan
+      summary: 更新套餐
+      security:
+        - adminBearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdatePlanRequest"
+      responses:
+        "200":
+          description: 更新成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/Plan"
+        "400":
+          description: 参数无效
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "401":
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "403":
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "404":
+          description: 套餐不存在
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+  /api/v1/admin/plan/delete:
+    post:
+      operationId: adminPlanDelete
+      tags:
+        - plan
+      summary: 删除套餐
+      security:
+        - adminBearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DeletePlanRequest"
+      responses:
+        "200":
+          description: 删除成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+        "401":
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "403":
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "404":
+          description: 套餐不存在
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+  /api/v1/admin/plan/toggle:
+    post:
+      operationId: adminPlanToggle
+      tags:
+        - plan
+      summary: 切换套餐启用/禁用
+      security:
+        - adminBearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TogglePlanRequest"
+      responses:
+        "200":
+          description: 切换成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/Plan"
+        "401":
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "403":
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "404":
+          description: 套餐不存在
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+  /api/v1/admin/providers:
+    get:
+      operationId: adminProviderList
+      tags:
+        - admin
+      summary: 获取供应商列表
+      security:
+        - adminBearerAuth: []
+      parameters:
+        - name: query
+          in: query
+          schema:
+            type: string
+            description: 搜索名称 / ID
+        - name: status
+          in: query
+          schema:
+            $ref: "#/components/schemas/StatusEnum"
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        "200":
+          description: 成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        required:
+                          - items
+                          - page
+                          - limit
+                          - total
+                        properties:
+                          items:
+                            type: array
+                            items:
+                              $ref: "#/components/schemas/Provider"
+                          page:
+                            type: integer
+                          limit:
+                            type: integer
+                          total:
+                            type: integer
+        "401":
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "403":
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+  /api/v1/admin/provider/detail:
+    get:
+      operationId: adminProviderDetail
+      tags:
+        - admin
+      summary: 获取供应商详情
+      security:
+        - adminBearerAuth: []
+      parameters:
+        - name: id
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: 成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/Provider"
+        "401":
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "403":
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "404":
+          description: 供应商不存在
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+  /api/v1/admin/provider/create:
+    post:
+      operationId: adminProviderCreate
+      tags:
+        - admin
+      summary: 创建供应商
+      security:
+        - adminBearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateProviderRequest"
+      responses:
+        "201":
+          description: 创建成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/Provider"
+        "400":
+          description: 参数无效
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "401":
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "403":
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+  /api/v1/admin/provider/update:
+    post:
+      operationId: adminProviderUpdate
+      tags:
+        - admin
+      summary: 更新供应商
+      security:
+        - adminBearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateProviderRequest"
+      responses:
+        "200":
+          description: 更新成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/Provider"
+        "400":
+          description: 参数无效
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "401":
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "403":
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "404":
+          description: 供应商不存在
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+  /api/v1/admin/provider/delete:
+    post:
+      operationId: adminProviderDelete
+      tags:
+        - admin
+      summary: 删除供应商
+      security:
+        - adminBearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DeleteProviderRequest"
+      responses:
+        "200":
+          description: 删除成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+        "401":
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "403":
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "404":
+          description: 供应商不存在
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+  /api/v1/admin/provider/toggle:
+    post:
+      operationId: adminProviderToggle
+      tags:
+        - admin
+      summary: 切换供应商启用/禁用
+      security:
+        - adminBearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ToggleProviderRequest"
+      responses:
+        "200":
+          description: 切换成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/Provider"
+        "401":
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "403":
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "404":
+          description: 供应商不存在
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+  /api/v1/admin/endpoints:
+    get:
+      operationId: adminProviderEndpointList
+      tags:
+        - admin
+      summary: 获取供应商端点列表
+      security:
+        - adminBearerAuth: []
+      parameters:
+        - name: provider_id
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        "200":
+          description: 成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        required:
+                          - items
+                          - page
+                          - limit
+                          - total
+                        properties:
+                          items:
+                            type: array
+                            items:
+                              $ref: "#/components/schemas/ProviderEndpoint"
+                          page:
+                            type: integer
+                          limit:
+                            type: integer
+                          total:
+                            type: integer
+        "401":
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "403":
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+  /api/v1/admin/endpoints/create:
+    post:
+      operationId: adminProviderEndpointCreate
+      tags:
+        - admin
+      summary: 创建供应商端点
+      security:
+        - adminBearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateProviderEndpointRequest"
+      responses:
+        "201":
+          description: 创建成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/ProviderEndpoint"
+        "400":
+          description: 参数无效
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "401":
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "403":
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+  /api/v1/admin/endpoints/update:
+    post:
+      operationId: adminProviderEndpointUpdate
+      tags:
+        - admin
+      summary: 更新供应商端点
+      security:
+        - adminBearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateProviderEndpointRequest"
+      responses:
+        "200":
+          description: 更新成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/ProviderEndpoint"
+        "400":
+          description: 参数无效
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "401":
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "403":
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "404":
+          description: 端点不存在
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+  /api/v1/admin/endpoints/delete:
+    post:
+      operationId: adminProviderEndpointDelete
+      tags:
+        - admin
+      summary: 删除供应商端点
+      security:
+        - adminBearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DeleteProviderEndpointRequest"
+      responses:
+        "200":
+          description: 删除成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+        "401":
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "403":
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "404":
+          description: 端点不存在
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+  /api/v1/admin/endpoints/toggle:
+    post:
+      operationId: adminProviderEndpointToggle
+      tags:
+        - admin
+      summary: 切换供应商端点启用/禁用
+      security:
+        - adminBearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ToggleProviderEndpointRequest"
+      responses:
+        "200":
+          description: 切换成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/ProviderEndpoint"
+        "401":
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "403":
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "404":
+          description: 端点不存在
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+  /api/v1/admin/rules/rate:
+    get:
+      operationId: adminRateRuleList
+      tags:
+        - ratrule
+      summary: 获取倍率规则列表
+      security:
+        - adminBearerAuth: []
+      parameters:
+        - name: provider_id
+          in: query
+          schema:
+            type: string
+        - name: key_id
+          in: query
+          schema:
+            type: string
+        - name: model_id
+          in: query
+          schema:
+            type: string
+        - name: protocol
+          in: query
+          schema:
+            type: string
+        - name: status
+          in: query
+          schema:
+            $ref: "#/components/schemas/StatusEnum"
+        - name: scope
+          in: query
+          schema:
+            type: string
+            description: 规则作用范围过滤
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        "200":
+          description: 成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        required:
+                          - items
+                          - page
+                          - limit
+                          - total
+                        properties:
+                          items:
+                            type: array
+                            items:
+                              $ref: "#/components/schemas/PriceMultiplierRule"
+                          page:
+                            type: integer
+                          limit:
+                            type: integer
+                          total:
+                            type: integer
+        "401":
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "403":
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+  /api/v1/admin/rules/rate/create:
+    post:
+      operationId: adminRateRuleCreate
+      tags:
+        - ratrule
+      summary: 创建倍率规则
+      security:
+        - adminBearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateRateRuleRequest"
+      responses:
+        "201":
+          description: 创建成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/PriceMultiplierRule"
+        "400":
+          description: 参数无效
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "401":
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "403":
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+  /api/v1/admin/rules/rate/toggle:
+    post:
+      operationId: adminRateRuleToggle
+      tags:
+        - ratrule
+      summary: 切换倍率规则启用/禁用
+      security:
+        - adminBearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ToggleRateRuleRequest"
+      responses:
+        "200":
+          description: 切换成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/PriceMultiplierRule"
+        "401":
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "403":
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "404":
+          description: 倍率规则不存在
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+  /api/v1/admin/rules/rate/delete:
+    post:
+      operationId: adminRateRuleDelete
+      tags:
+        - ratrule
+      summary: 删除倍率规则
+      security:
+        - adminBearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DeleteRateRuleRequest"
+      responses:
+        "200":
+          description: 删除成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+        "401":
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "403":
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "404":
+          description: 倍率规则不存在
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+  /api/v1/admin/codes/redeem:
+    get:
+      operationId: adminRedeemCodeList
+      tags:
+        - redeem
+      summary: 获取兑换码列表
+      security:
+        - adminBearerAuth: []
+      parameters:
+        - name: query
+          in: query
+          schema:
+            type: string
+            description: 搜索名称 / ID
+        - name: code_type
+          in: query
+          schema:
+            type: string
+            description: 兑换码类型过滤
+        - name: status
+          in: query
+          schema:
+            $ref: "#/components/schemas/StatusEnum"
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        "200":
+          description: 成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        required:
+                          - items
+                          - page
+                          - limit
+                          - total
+                        properties:
+                          items:
+                            type: array
+                            items:
+                              $ref: "#/components/schemas/RedeemCode"
+                          page:
+                            type: integer
+                          limit:
+                            type: integer
+                          total:
+                            type: integer
+        "401":
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "403":
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+  /api/v1/admin/codes/redeem/create:
+    post:
+      operationId: adminRedeemCodeCreate
+      tags:
+        - redeem
+      summary: 创建兑换码
+      security:
+        - adminBearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateRedeemCodeRequest"
+      responses:
+        "201":
+          description: 创建成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/RedeemCodeCreateResponse"
+        "400":
+          description: 参数无效
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "401":
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "403":
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+  /api/v1/admin/codes/redeem/toggle:
+    post:
+      operationId: adminRedeemCodeToggle
+      tags:
+        - redeem
+      summary: 切换兑换码启用/禁用
+      security:
+        - adminBearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ToggleRedeemCodeRequest"
+      responses:
+        "200":
+          description: 切换成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/RedeemCode"
+        "401":
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "403":
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "404":
+          description: 兑换码不存在
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+  /api/v1/admin/codes/redeem/delete:
+    post:
+      operationId: adminRedeemCodeDelete
+      tags:
+        - redeem
+      summary: 删除兑换码
+      security:
+        - adminBearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DeleteRedeemCodeRequest"
+      responses:
+        "200":
+          description: 删除成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+        "401":
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "403":
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "404":
+          description: 兑换码不存在
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+  /api/v1/admin/codes/redeem/redemptions:
+    get:
+      operationId: adminRedeemCodeRedemptionList
+      tags:
+        - redeem
+      summary: 获取兑换记录列表
+      security:
+        - adminBearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        "200":
+          description: 成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        required:
+                          - items
+                          - page
+                          - limit
+                          - total
+                        properties:
+                          items:
+                            type: array
+                            items:
+                              $ref: "#/components/schemas/RedeemCodeRedemption"
+                          page:
+                            type: integer
+                          limit:
+                            type: integer
+                          total:
+                            type: integer
+        "401":
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "403":
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+  /api/v1/admin/requests:
+    get:
+      operationId: adminRequestLogList
+      tags:
+        - requestlog
+      summary: 获取请求日志列表
+      security:
+        - adminBearerAuth: []
+      parameters:
+        - name: query
+          in: query
+          schema:
+            type: string
+            description: 搜索 trace_id / request_id / request_log_id
+        - name: user_id
+          in: query
+          schema:
+            type: string
+        - name: model_name
+          in: query
+          schema:
+            type: string
+        - name: provider_id
+          in: query
+          schema:
+            type: string
+        - name: protocol
+          in: query
+          schema:
+            $ref: "#/components/schemas/ProtocolEnum"
+        - name: billing_plan
+          in: query
+          schema:
+            type: string
+        - name: status
+          in: query
+          schema:
+            type: string
+            description: 请求状态过滤（success / failed）
+        - name: from
+          in: query
+          schema:
+            type: string
+            format: date-time
+            description: 开始时间
+        - name: to
+          in: query
+          schema:
+            type: string
+            format: date-time
+            description: 结束时间
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        "200":
+          description: 成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        required:
+                          - items
+                          - page
+                          - limit
+                          - total
+                        properties:
+                          items:
+                            type: array
+                            items:
+                              $ref: "#/components/schemas/RequestLogResponse"
+                          page:
+                            type: integer
+                          limit:
+                            type: integer
+                          total:
+                            type: integer
+        "401":
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "403":
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+  /api/v1/admin/requests/detail:
+    get:
+      operationId: adminRequestLogDetail
+      tags:
+        - requestlog
+      summary: 获取请求日志详情
+      security:
+        - adminBearerAuth: []
+      parameters:
+        - name: id
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: 成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/RequestLogResponse"
+        "401":
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "403":
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "404":
+          description: 请求日志不存在
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+  /api/v1/admin/requests/attempts:
+    get:
+      operationId: adminRequestLogAttempts
+      tags:
+        - requestlog
+      summary: 获取请求日志尝试记录
+      security:
+        - adminBearerAuth: []
+      parameters:
+        - name: request_log_id
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: 成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/RequestAttemptResponse"
+        "401":
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "403":
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "404":
+          description: 请求日志不存在
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+  /api/v1/admin/requests/trace:
+    get:
+      operationId: adminRequestLogTrace
+      tags:
+        - requestlog
+      summary: 获取请求追踪详情
+      security:
+        - adminBearerAuth: []
+      parameters:
+        - name: query
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: 成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/RequestTraceResponse"
+        "401":
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "403":
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+  /api/v1/admin/keys/upstream:
+    get:
+      operationId: adminUpstreamKeyList
+      tags:
+        - admin
+      summary: 获取上游密钥列表
+      security:
+        - adminBearerAuth: []
+      parameters:
+        - name: query
+          in: query
+          schema:
+            type: string
+            description: 搜索名称 / ID
+        - name: provider_id
+          in: query
+          schema:
+            type: string
+        - name: status
+          in: query
+          schema:
+            $ref: "#/components/schemas/StatusEnum"
+        - name: quota_type
+          in: query
+          schema:
+            $ref: "#/components/schemas/QuotaTypeEnum"
+        - name: expiring
+          in: query
+          schema:
+            type: boolean
+            description: 是否即将过期
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        "200":
+          description: 成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        required:
+                          - items
+                          - page
+                          - limit
+                          - total
+                        properties:
+                          items:
+                            type: array
+                            items:
+                              $ref: "#/components/schemas/UpstreamKey"
+                          page:
+                            type: integer
+                          limit:
+                            type: integer
+                          total:
+                            type: integer
+        "401":
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "403":
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+  /api/v1/admin/keys/upstream/detail:
+    get:
+      operationId: adminUpstreamKeyDetail
+      tags:
+        - admin
+      summary: 获取上游密钥详情
+      security:
+        - adminBearerAuth: []
+      parameters:
+        - name: id
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: 成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/UpstreamKey"
+        "401":
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "403":
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "404":
+          description: 上游密钥不存在
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+  /api/v1/admin/keys/upstream/usage:
+    get:
+      operationId: adminUpstreamKeyUsage
+      tags:
+        - admin
+      summary: 获取上游密钥用量统计
+      security:
+        - adminBearerAuth: []
+      parameters:
+        - name: id
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: 成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/UpstreamKeyUsage"
+        "401":
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "403":
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "404":
+          description: 上游密钥不存在
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+  /api/v1/admin/keys/upstream/create:
+    post:
+      operationId: adminUpstreamKeyCreate
+      tags:
+        - admin
+      summary: 创建上游密钥
+      security:
+        - adminBearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateUpstreamKeyRequest"
+      responses:
+        "201":
+          description: 创建成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/UpstreamKey"
+        "400":
+          description: 参数无效
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "401":
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "403":
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+  /api/v1/admin/keys/upstream/update:
+    post:
+      operationId: adminUpstreamKeyUpdate
+      tags:
+        - admin
+      summary: 更新上游密钥
+      security:
+        - adminBearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateUpstreamKeyRequest"
+      responses:
+        "200":
+          description: 更新成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/UpstreamKey"
+        "400":
+          description: 参数无效
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "401":
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "403":
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "404":
+          description: 上游密钥不存在
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+  /api/v1/admin/keys/upstream/delete:
+    post:
+      operationId: adminUpstreamKeyDelete
+      tags:
+        - admin
+      summary: 删除上游密钥
+      security:
+        - adminBearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DeleteUpstreamKeyRequest"
+      responses:
+        "200":
+          description: 删除成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+        "401":
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "403":
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "404":
+          description: 上游密钥不存在
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+  /api/v1/admin/keys/upstream/toggle:
+    post:
+      operationId: adminUpstreamKeyToggle
+      tags:
+        - admin
+      summary: 切换上游密钥启用/禁用
+      security:
+        - adminBearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ToggleUpstreamKeyRequest"
+      responses:
+        "200":
+          description: 切换成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/UpstreamKey"
+        "401":
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "403":
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "404":
+          description: 上游密钥不存在
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+  /api/v1/admin/keys/upstream/models:
+    get:
+      operationId: adminUpstreamKeyModelList
+      tags:
+        - admin
+      summary: 获取上游密钥模型映射列表
+      security:
+        - adminBearerAuth: []
+      parameters:
+        - name: upstream_key_id
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        "200":
+          description: 成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        required:
+                          - items
+                          - page
+                          - limit
+                          - total
+                        properties:
+                          items:
+                            type: array
+                            items:
+                              $ref: "#/components/schemas/UpstreamModelMapping"
+                          page:
+                            type: integer
+                          limit:
+                            type: integer
+                          total:
+                            type: integer
+        "401":
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "403":
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+  /api/v1/admin/keys/upstream/models/create:
+    post:
+      operationId: adminUpstreamKeyModelCreate
+      tags:
+        - admin
+      summary: 创建上游密钥模型映射
+      security:
+        - adminBearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateUpstreamModelMappingRequest"
+      responses:
+        "201":
+          description: 创建成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/UpstreamModelMapping"
+        "400":
+          description: 参数无效
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "401":
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "403":
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "409":
+          description: 映射已存在
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiErrorResponse"
+                  - type: object
+                    properties:
+                      error_code:
+                        type: string
+                        enum:
+                          - CONFLICT
+  /api/v1/admin/keys/upstream/models/update:
+    post:
+      operationId: adminUpstreamKeyModelUpdate
+      tags:
+        - admin
+      summary: 更新上游密钥模型映射
+      security:
+        - adminBearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateUpstreamModelMappingRequest"
+      responses:
+        "200":
+          description: 更新成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/UpstreamModelMapping"
+        "400":
+          description: 参数无效
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "401":
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "403":
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "404":
+          description: 映射不存在
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+  /api/v1/admin/keys/upstream/models/delete:
+    post:
+      operationId: adminUpstreamKeyModelDelete
+      tags:
+        - admin
+      summary: 删除上游密钥模型映射
+      security:
+        - adminBearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DeleteUpstreamModelMappingRequest"
+      responses:
+        "200":
+          description: 删除成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+        "401":
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "403":
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "404":
+          description: 映射不存在
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+  /api/v1/admin/keys/upstream/models/toggle:
+    post:
+      operationId: adminUpstreamKeyModelToggle
+      tags:
+        - admin
+      summary: 切换上游密钥模型映射启用/禁用
+      security:
+        - adminBearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ToggleUpstreamModelMappingRequest"
+      responses:
+        "200":
+          description: 切换成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/UpstreamModelMapping"
+        "401":
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "403":
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "404":
+          description: 映射不存在
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+  /api/v1/admin/usage/overview:
+    get:
+      operationId: adminUsageOverview
+      tags:
+        - usage
+      summary: 获取管理员用量概览
+      security:
+        - adminBearerAuth: []
+      parameters:
+        - name: from
+          in: query
+          schema:
+            type: string
+            format: date-time
+            description: 开始时间
+        - name: to
+          in: query
+          schema:
+            type: string
+            format: date-time
+            description: 结束时间
+      responses:
+        "200":
+          description: 成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/AdminUsageOverview"
+        "401":
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "403":
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+  /api/v1/admin/users:
+    get:
+      operationId: adminUserList
+      tags:
+        - admin
+      summary: 获取用户列表
+      security:
+        - adminBearerAuth: []
+      parameters:
+        - name: query
+          in: query
+          schema:
+            type: string
+            description: 搜索邮箱 / ID
+        - name: role
+          in: query
+          schema:
+            $ref: "#/components/schemas/RoleEnum"
+        - name: status
+          in: query
+          schema:
+            $ref: "#/components/schemas/StatusEnum"
+        - name: coding_plan_id
+          in: query
+          schema:
+            type: string
+        - name: token_plan_id
+          in: query
+          schema:
+            type: string
+        - name: image_plan_id
+          in: query
+          schema:
+            type: string
+        - name: preferred_billing
+          in: query
+          schema:
+            $ref: "#/components/schemas/BillingPreferenceEnum"
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        "200":
+          description: 成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        required:
+                          - items
+                          - page
+                          - limit
+                          - total
+                        properties:
+                          items:
+                            type: array
+                            items:
+                              $ref: "#/components/schemas/UserResponse"
+                          page:
+                            type: integer
+                          limit:
+                            type: integer
+                          total:
+                            type: integer
+        "401":
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "403":
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+  /api/v1/admin/user/detail:
+    get:
+      operationId: adminUserDetail
+      tags:
+        - admin
+      summary: 获取用户详情
+      security:
+        - adminBearerAuth: []
+      parameters:
+        - name: id
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: 成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          user:
+                            $ref: "#/components/schemas/UserResponse"
+        "401":
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "403":
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "404":
+          description: 用户不存在
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+  /api/v1/admin/user/update:
+    post:
+      operationId: adminUserUpdate
+      tags:
+        - admin
+      summary: 更新用户信息
+      security:
+        - adminBearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateUserRequest"
+      responses:
+        "200":
+          description: 更新成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          user:
+                            $ref: "#/components/schemas/UserResponse"
+        "400":
+          description: 参数无效
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "401":
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "403":
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "404":
+          description: 用户不存在
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+  /api/v1/admin/user/toggle:
+    post:
+      operationId: adminUserToggle
+      tags:
+        - admin
+      summary: 切换用户启用/禁用
+      security:
+        - adminBearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ToggleUserRequest"
+      responses:
+        "200":
+          description: 切换成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          user:
+                            $ref: "#/components/schemas/UserResponse"
+        "401":
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "403":
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "404":
+          description: 用户不存在
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+  /api/v1/admin/user/usage:
+    get:
+      operationId: adminUserUsage
+      tags:
+        - admin
+      summary: 获取用户用量账本
+      security:
+        - adminBearerAuth: []
+      parameters:
+        - name: user_id
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        "200":
+          description: 成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        required:
+                          - items
+                          - page
+                          - limit
+                          - total
+                        properties:
+                          items:
+                            type: array
+                            items:
+                              $ref: "#/components/schemas/UsageLedgerResponse"
+                          page:
+                            type: integer
+                          limit:
+                            type: integer
+                          total:
+                            type: integer
+        "401":
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "403":
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "404":
+          description: 用户不存在
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+  /api/v1/admin/user/requests:
+    get:
+      operationId: adminUserRequestLogList
+      tags:
+        - admin
+      summary: 获取用户请求日志列表
+      security:
+        - adminBearerAuth: []
+      parameters:
+        - name: user_id
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: query
+          in: query
+          schema:
+            type: string
+            description: 搜索 trace_id / request_id / request_log_id
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        "200":
+          description: 成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        required:
+                          - items
+                          - page
+                          - limit
+                          - total
+                        properties:
+                          items:
+                            type: array
+                            items:
+                              $ref: "#/components/schemas/RequestLogResponse"
+                          page:
+                            type: integer
+                          limit:
+                            type: integer
+                          total:
+                            type: integer
+        "401":
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "403":
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "404":
+          description: 用户不存在
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+  /api/v1/admin/user/plans/coding/set:
+    post:
+      operationId: adminUserCodingPlanSet
+      tags:
+        - plan
+      summary: 设置用户编码套餐
+      security:
+        - adminBearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SetCodingPlanRequest"
+      responses:
+        "200":
+          description: 设置成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          user:
+                            $ref: "#/components/schemas/UserResponse"
+        "400":
+          description: 参数无效
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "401":
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "403":
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "404":
+          description: 用户或套餐不存在
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+  /api/v1/admin/user/plans/token/set:
+    post:
+      operationId: adminUserTokenPlanSet
+      tags:
+        - plan
+      summary: 设置用户 Token 套餐
+      security:
+        - adminBearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SetTokenPlanRequest"
+      responses:
+        "200":
+          description: 设置成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          user:
+                            $ref: "#/components/schemas/UserResponse"
+        "400":
+          description: 参数无效
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "401":
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "403":
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "404":
+          description: 用户或套餐不存在
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+  /api/v1/admin/user/plans/image/set:
+    post:
+      operationId: adminUserImagePlanSet
+      tags:
+        - plan
+      summary: 设置用户图片套餐
+      security:
+        - adminBearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SetImagePlanRequest"
+      responses:
+        "200":
+          description: 设置成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          user:
+                            $ref: "#/components/schemas/UserResponse"
+        "400":
+          description: 参数无效
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "401":
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "403":
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "404":
+          description: 用户或套餐不存在
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+  /api/v1/admin/user/token/recharge/create:
+    post:
+      operationId: adminUserTokenRechargeCreate
+      tags:
+        - usage
+      summary: 管理员为用户充值 Token
+      security:
+        - adminBearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateAdminTokenRechargeRequest"
+      responses:
+        "200":
+          description: 充值成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/UsageLedgerResponse"
+        "400":
+          description: 参数无效
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "401":
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "403":
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "404":
+          description: 用户不存在
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+  /api/v1/user/register:
+    post:
+      operationId: userRegister
+      tags:
+        - auth
+      summary: 注册新用户
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterRequest"
+      responses:
+        "201":
+          description: 注册成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/AuthResponse"
+        "400":
+          description: 参数无效
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "409":
+          description: 账号已存在
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiErrorResponse"
+                  - type: object
+                    properties:
+                      error_code:
+                        type: string
+                        enum:
+                          - CONFLICT
+  /api/v1/user/register/check:
+    post:
+      operationId: userRegisterCheck
+      tags:
+        - auth
+      summary: 检查注册可用性
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+      responses:
+        "200":
+          description: 检查结果
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+  /api/v1/user/register/send-code:
+    post:
+      operationId: userRegisterSendCode
+      tags:
+        - auth
+      summary: 发送注册验证码
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+              properties:
+                email:
+                  type: string
+                  format: email
+      responses:
+        "200":
+          description: 验证码已发送
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+        "429":
+          description: 发送太频繁
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+  /api/v1/user/login:
+    post:
+      operationId: userLogin
+      tags:
+        - auth
+      summary: 用户登录
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+      responses:
+        "200":
+          description: 登录成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/AuthResponse"
+        "401":
+          description: 凭据无效
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiErrorResponse"
+                  - type: object
+                    properties:
+                      error_code:
+                        type: string
+                        enum:
+                          - UNAUTHORIZED
+  /api/v1/user/logout:
+    post:
+      operationId: userLogout
+      tags:
+        - auth
+      summary: 用户登出
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: 登出成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+  /api/v1/user/refresh:
+    post:
+      operationId: userRefresh
+      tags:
+        - auth
+      summary: 刷新 token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RefreshRequest"
+      responses:
+        "200":
+          description: 刷新成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/AuthResponse"
+        "401":
+          description: Refresh token 无效
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+  /api/v1/user/password/change:
+    post:
+      operationId: userPasswordChange
+      tags:
+        - auth
+      summary: 修改密码
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ChangePasswordRequest"
+      responses:
+        "200":
+          description: 修改成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+        "401":
+          description: 旧密码错误
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+  /api/v1/user/password/forgot/send-code:
+    post:
+      operationId: userForgotPasswordSendCode
+      tags:
+        - auth
+      summary: 发送找回密码验证码
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ForgotPasswordSendCodeRequest"
+      responses:
+        "200":
+          description: 验证码已发送
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+  /api/v1/user/password/forgot/reset:
+    post:
+      operationId: userForgotPasswordReset
+      tags:
+        - auth
+      summary: 重置密码
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ForgotPasswordResetRequest"
+      responses:
+        "200":
+          description: 重置成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+  /api/v1/user/captcha/config:
+    get:
+      operationId: userCaptchaConfig
+      tags:
+        - auth
+      summary: 获取验证码配置
+      responses:
+        "200":
+          description: 成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/CaptchaConfig"
+  /api/v1/user/test-code:
+    get:
+      operationId: userTestCode
+      tags:
+        - auth
+      summary: 获取测试验证码（仅开发环境）
+      responses:
+        "200":
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+  /api/v1/public/plans:
+    get:
+      operationId: publicPlanList
+      tags:
+        - public
+      summary: 获取公开套餐列表
+      description: 返回所有状态为 active 的套餐，无需认证
+      parameters:
+        - name: plan_type
+          in: query
+          schema:
+            $ref: "#/components/schemas/PlanTypeEnum"
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        "200":
+          description: 成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/PaginatedData"
+  /api/v1/user/me:
+    get:
+      operationId: userMe
+      tags:
+        - user
+      summary: 获取当前用户信息
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: 成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          user:
+                            $ref: "#/components/schemas/UserResponse"
+  /api/v1/user/dashboard:
+    get:
+      operationId: userDashboard
+      tags:
+        - user
+      summary: 获取用户仪表盘数据
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: 成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/UserDashboard"
+  /api/v1/user/keys:
+    get:
+      operationId: userApiKeyList
+      tags:
+        - user
+      summary: 获取用户 API 密钥列表
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: 成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        required:
+                          - items
+                          - page
+                          - limit
+                          - total
+                        properties:
+                          items:
+                            type: array
+                            items:
+                              $ref: "#/components/schemas/APIKeyResponse"
+                          page:
+                            type: integer
+                          limit:
+                            type: integer
+                          total:
+                            type: integer
+  /api/v1/user/keys/create:
+    post:
+      operationId: userApiKeyCreate
+      tags:
+        - user
+      summary: 创建 API 密钥
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateAPIKeyRequest"
+      responses:
+        "201":
+          description: 创建成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/APIKeyResponse"
+  /api/v1/user/keys/update:
+    post:
+      operationId: userApiKeyUpdate
+      tags:
+        - user
+      summary: 更新 API 密钥
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateAPIKeyRequest"
+      responses:
+        "200":
+          description: 更新成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/APIKeyResponse"
+  /api/v1/user/keys/delete:
+    post:
+      operationId: userApiKeyDelete
+      tags:
+        - user
+      summary: 删除 API 密钥
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DeleteAPIKeyRequest"
+      responses:
+        "200":
+          description: 删除成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+  /api/v1/user/keys/toggle:
+    post:
+      operationId: userApiKeyToggle
+      tags:
+        - user
+      summary: 切换 API 密钥启用/禁用
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ToggleAPIKeyRequest"
+      responses:
+        "200":
+          description: 切换成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/APIKeyResponse"
+  /api/v1/user/quota:
+    get:
+      operationId: userQuota
+      tags:
+        - user
+      summary: 获取用户配额
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: 成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/UserQuota"
+  /api/v1/user/usage:
+    get:
+      operationId: userUsage
+      tags:
+        - user
+      summary: 获取用户用量账本
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: ledger_type
+          in: query
+          schema:
+            type: string
+            description: 逗号分隔的账本类型过滤，如 charge,recharge
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        "200":
+          description: 成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        required:
+                          - items
+                          - page
+                          - limit
+                          - total
+                        properties:
+                          items:
+                            type: array
+                            items:
+                              $ref: "#/components/schemas/UsageLedgerResponse"
+                          page:
+                            type: integer
+                          limit:
+                            type: integer
+                          total:
+                            type: integer
+  /api/v1/user/plans:
+    get:
+      operationId: userPlanList
+      tags:
+        - user
+      summary: 获取用户可用套餐列表
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: plan_type
+          in: query
+          schema:
+            $ref: "#/components/schemas/PlanTypeEnum"
+      responses:
+        "200":
+          description: 成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        required:
+                          - items
+                          - page
+                          - limit
+                          - total
+                        properties:
+                          items:
+                            type: array
+                            items:
+                              $ref: "#/components/schemas/Plan"
+                          page:
+                            type: integer
+                          limit:
+                            type: integer
+                          total:
+                            type: integer
+  /api/v1/user/models:
+    get:
+      operationId: userModelList
+      tags:
+        - user
+      summary: 获取用户可用模型列表
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: 成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        required:
+                          - items
+                          - page
+                          - limit
+                          - total
+                        properties:
+                          items:
+                            type: array
+                            items:
+                              $ref: "#/components/schemas/CatalogModel"
+                          page:
+                            type: integer
+                          limit:
+                            type: integer
+                          total:
+                            type: integer
+  /api/v1/user/requests:
+    get:
+      operationId: userRequestLogList
+      tags:
+        - user
+      summary: 获取用户请求日志列表
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: query
+          in: query
+          schema:
+            type: string
+            description: 搜索 trace_id / request_id / request_log_id
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        "200":
+          description: 成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        required:
+                          - items
+                          - page
+                          - limit
+                          - total
+                        properties:
+                          items:
+                            type: array
+                            items:
+                              $ref: "#/components/schemas/RequestLogResponse"
+                          page:
+                            type: integer
+                          limit:
+                            type: integer
+                          total:
+                            type: integer
+  /api/v1/user/requests/trace:
+    get:
+      operationId: userRequestLogTrace
+      tags:
+        - user
+      summary: 获取用户请求追踪详情
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: query
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: 成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/RequestTraceResponse"
+  /api/v1/user/billing/preference/update:
+    post:
+      operationId: userBillingPreferenceUpdate
+      tags:
+        - user
+      summary: 更新计费偏好
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateBillingPreferenceRequest"
+      responses:
+        "200":
+          description: 更新成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/UserResponse"
+  /api/v1/user/codes/redeem/redeem:
+    post:
+      operationId: userRedeemCodeRedeem
+      tags:
+        - user
+      summary: 兑换码兑换
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RedeemCodeRequest"
+      responses:
+        "200":
+          description: 兑换成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/RedeemCodeRedemptionResponse"
+        "400":
+          description: 兑换码无效
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiErrorResponse"
+                  - type: object
+                    properties:
+                      error_code:
+                        type: string
+                        enum:
+                          - REDEEM_CODE_INACTIVE
+                          - REDEEM_CODE_EXPIRED
+                          - REDEEM_CODE_EXHAUSTED
+                          - REDEEM_CODE_ALREADY_REDEEMED
+                          - REDEEM_CODE_PLAN_DOWNGRADE
+  /api/v1/user/codes/redeem/redemptions:
+    get:
+      operationId: userRedeemCodeRedemptionList
+      tags:
+        - user
+      summary: 获取用户兑换记录
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        "200":
+          description: 成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        required:
+                          - items
+                          - page
+                          - limit
+                          - total
+                        properties:
+                          items:
+                            type: array
+                            items:
+                              $ref: "#/components/schemas/RedeemCodeRedemption"
+                          page:
+                            type: integer
+                          limit:
+                            type: integer
+                          total:
+                            type: integer
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 用户 JWT token
+    adminBearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 管理员 JWT token（需 admin 角色）
+  schemas:
+    StatusEnum:
+      type: string
+      enum:
+        - active
+        - disabled
+        - deleted
+      description: 通用状态枚举
+    PlanTypeEnum:
+      type: string
+      enum:
+        - coding
+        - token
+        - image
+      description: 套餐类型
+    QuotaTypeEnum:
+      type: string
+      enum:
+        - token_plan
+        - coding_plan
+        - image_plan
+      description: 配额类型
+    ProtocolEnum:
+      type: string
+      enum:
+        - openai
+        - anthropic
+        - openai_chat
+        - openai_responses
+        - anthropic_messages
+        - tokenmp_gateway
+        - custom
+      description: 协议类型
+    KindEnum:
+      type: string
+      enum:
+        - llm.chat
+        - llm.response
+        - llm.message
+        - image.generate
+      description: 端点类型
+    AuthTypeEnum:
+      type: string
+      enum:
+        - bearer
+        - api_key
+        - none
+      description: 认证类型
+    RequestModeEnum:
+      type: string
+      enum:
+        - stream
+        - sync
+      description: 请求模式
+    RoleEnum:
+      type: string
+      enum:
+        - user
+        - admin
+      description: 用户角色
+    BillingPreferenceEnum:
+      type: string
+      enum:
+        - coding
+        - token
+      description: 计费偏好
+    LedgerTypeEnum:
+      type: string
+      enum:
+        - charge
+        - recharge
+        - refund
+        - grant
+      description: 账本条目类型
+    ErrorCode:
+      type: string
+      description: 平台错误码
+      enum:
+        - INVALID_PARAM
+        - UNAUTHORIZED
+        - FORBIDDEN
+        - NOT_FOUND
+        - CONFLICT
+        - RATE_LIMITED
+        - QUOTA_EXCEEDED
+        - CLIENT_CANCELED
+        - SERVICE_RESTARTING
+        - MODEL_NOT_FOUND
+        - ROUTE_GROUP_NOT_FOUND
+        - PROVIDER_NOT_FOUND
+        - MODEL_IMAGE_INPUT_UNSUPPORTED
+        - NO_AVAILABLE_UPSTREAM
+        - NO_LEASE_CAPACITY
+        - UPSTREAM_ERROR
+        - UPSTREAM_HTTP_ERROR
+        - UPSTREAM_STREAM_ERROR
+        - INTERNAL_ERROR
+        - UNSUPPORTED_STREAM_CONVERSION
+        - REDEEM_CODE_INACTIVE
+        - REDEEM_CODE_EXPIRED
+        - REDEEM_CODE_EXHAUSTED
+        - REDEEM_CODE_ALREADY_REDEEMED
+        - REDEEM_CODE_PLAN_DOWNGRADE
+        - UPSTREAM_AUTH_INVALID
+        - UPSTREAM_PERMISSION_DENIED
+        - UPSTREAM_MODEL_NOT_FOUND
+        - UPSTREAM_MODEL_NOT_SUPPORTED
+        - UPSTREAM_INVALID_REQUEST
+        - UPSTREAM_IMAGE_FORMAT_INVALID
+        - UPSTREAM_REASONING_STATE_REQUIRED
+        - UPSTREAM_CONTEXT_LENGTH_EXCEEDED
+        - UPSTREAM_CONTENT_BLOCKED
+        - UPSTREAM_RATE_LIMITED
+        - UPSTREAM_QUOTA_EXCEEDED
+        - UPSTREAM_BILLING_REQUIRED
+        - UPSTREAM_PLAN_EXPIRED
+        - UPSTREAM_PLAN_MODEL_DENIED
+        - UPSTREAM_DUPLICATE_REQUEST
+        - UPSTREAM_OVERLOADED
+        - UPSTREAM_TIMEOUT
+        - UPSTREAM_INTERNAL_ERROR
+      x-enum-descriptions:
+        INVALID_PARAM: 请求参数不正确，请检查后重试。
+        UNAUTHORIZED: 认证失败，请检查凭证后重试。
+        FORBIDDEN: 当前账号无权执行该操作。
+        NOT_FOUND: 请求的资源不存在或已不可用。
+        CONFLICT: 请求与当前数据状态冲突，请刷新后重试。
+        RATE_LIMITED: 请求过于频繁，请稍后重试。
+        QUOTA_EXCEEDED: 当前套餐或余额不足，请充值或兑换资源包后再试。
+        CLIENT_CANCELED: 客户端已取消请求，通常是客户端断开连接、超时或主动中止导致。
+        SERVICE_RESTARTING: 服务正在重启，请稍后重试。
+        MODEL_NOT_FOUND: 请求模型不存在或暂不可用，请检查模型名称。
+        ROUTE_GROUP_NOT_FOUND: 请求的路由组不存在或暂不可用，请检查模型选择器。
+        PROVIDER_NOT_FOUND: 请求的供应商选择器不存在或暂不可用，请检查模型选择器。
+        MODEL_IMAGE_INPUT_UNSUPPORTED: 当前模型不支持图片输入，请选择支持视觉能力的模型或移除图片输入。
+        NO_AVAILABLE_UPSTREAM: 模型服务暂时不可用，请稍后重试。
+        NO_LEASE_CAPACITY: 模型服务暂时不可用，请稍后重试。
+        UPSTREAM_ERROR: 模型服务暂时不可用，请稍后重试。
+        UPSTREAM_HTTP_ERROR: 模型服务暂时不可用，请稍后重试。
+        UPSTREAM_STREAM_ERROR: 模型服务暂时不可用，请稍后重试。
+        INTERNAL_ERROR: 服务暂时不可用，请稍后重试。
+        UNSUPPORTED_STREAM_CONVERSION: 当前请求暂不支持该流式模式。
+        REDEEM_CODE_INACTIVE: 兑换码暂不可用，请联系管理员确认状态。
+        REDEEM_CODE_EXPIRED: 兑换码已过期，请联系管理员确认是否有新的兑换码。
+        REDEEM_CODE_EXHAUSTED: 兑换码已被兑完，无法继续使用。
+        REDEEM_CODE_ALREADY_REDEEMED: 你已兑换过该兑换码，不能重复使用。
+        REDEEM_CODE_PLAN_DOWNGRADE: 当前 Coding Plan 等级更高，不能兑换低等级套餐。
+        UPSTREAM_AUTH_INVALID: 当前请求通道配置异常，请联系管理员处理。
+        UPSTREAM_PERMISSION_DENIED: 当前请求通道权限不足，请联系管理员处理。
+        UPSTREAM_MODEL_NOT_FOUND: 当前模型暂不可用，请联系管理员。
+        UPSTREAM_MODEL_NOT_SUPPORTED: 当前模型暂不可用，请切换模型或联系管理员。
+        UPSTREAM_INVALID_REQUEST: 请求参数不符合模型要求，请检查后重试。
+        UPSTREAM_IMAGE_FORMAT_INVALID: 图片格式不正确或无法解码，请使用 jpg/jpeg/png/webp/gif 图片，并确认 data URL 或 base64 内容有效。
+        UPSTREAM_REASONING_STATE_REQUIRED: 模型需要上一轮思考状态。
+        UPSTREAM_CONTEXT_LENGTH_EXCEEDED: 输入内容或最大输出长度超过模型上下文限制，请减少输入内容或降低 max_tokens 后重试。
+        UPSTREAM_CONTENT_BLOCKED: 请求内容触发安全限制，请调整后重试。
+        UPSTREAM_RATE_LIMITED: 当前请求通道请求过于频繁，请稍后重试。
+        UPSTREAM_QUOTA_EXCEEDED: 当前请求通道额度不足，请联系管理员处理。
+        UPSTREAM_BILLING_REQUIRED: 当前请求通道计费未开通，请联系管理员处理。
+        UPSTREAM_PLAN_EXPIRED: 当前请求通道套餐已过期，请联系管理员处理。
+        UPSTREAM_PLAN_MODEL_DENIED: 当前请求通道不支持该模型，请联系管理员处理。
+        UPSTREAM_DUPLICATE_REQUEST: 检测到重复请求，请稍后重试。
+        UPSTREAM_OVERLOADED: 模型服务暂时繁忙，请稍后重试。
+        UPSTREAM_TIMEOUT: 模型服务响应超时，请稍后重试。
+        UPSTREAM_INTERNAL_ERROR: 模型服务暂时不可用，请稍后重试。
+      x-enum-categories:
+        INVALID_PARAM: request
+        UNAUTHORIZED: request
+        FORBIDDEN: request
+        NOT_FOUND: request
+        CONFLICT: request
+        RATE_LIMITED: rate_limit
+        QUOTA_EXCEEDED: quota
+        CLIENT_CANCELED: canceled
+        SERVICE_RESTARTING: internal
+        MODEL_NOT_FOUND: request
+        ROUTE_GROUP_NOT_FOUND: request
+        PROVIDER_NOT_FOUND: request
+        MODEL_IMAGE_INPUT_UNSUPPORTED: request
+        NO_AVAILABLE_UPSTREAM: capacity
+        NO_LEASE_CAPACITY: capacity
+        UPSTREAM_ERROR: upstream_server
+        UPSTREAM_HTTP_ERROR: upstream_server
+        UPSTREAM_STREAM_ERROR: upstream_server
+        INTERNAL_ERROR: internal
+        UNSUPPORTED_STREAM_CONVERSION: request
+        REDEEM_CODE_INACTIVE: request
+        REDEEM_CODE_EXPIRED: request
+        REDEEM_CODE_EXHAUSTED: request
+        REDEEM_CODE_ALREADY_REDEEMED: request
+        REDEEM_CODE_PLAN_DOWNGRADE: request
+        UPSTREAM_AUTH_INVALID: upstream_config
+        UPSTREAM_PERMISSION_DENIED: upstream_config
+        UPSTREAM_MODEL_NOT_FOUND: upstream_request
+        UPSTREAM_MODEL_NOT_SUPPORTED: upstream_request
+        UPSTREAM_INVALID_REQUEST: upstream_request
+        UPSTREAM_IMAGE_FORMAT_INVALID: upstream_request
+        UPSTREAM_REASONING_STATE_REQUIRED: upstream_request
+        UPSTREAM_CONTEXT_LENGTH_EXCEEDED: upstream_request
+        UPSTREAM_CONTENT_BLOCKED: upstream_request
+        UPSTREAM_RATE_LIMITED: upstream_rate_limit
+        UPSTREAM_QUOTA_EXCEEDED: upstream_config
+        UPSTREAM_BILLING_REQUIRED: upstream_config
+        UPSTREAM_PLAN_EXPIRED: upstream_config
+        UPSTREAM_PLAN_MODEL_DENIED: upstream_config
+        UPSTREAM_DUPLICATE_REQUEST: upstream_request
+        UPSTREAM_OVERLOADED: upstream_server
+        UPSTREAM_TIMEOUT: upstream_server
+        UPSTREAM_INTERNAL_ERROR: upstream_server
+      x-enum-actions:
+        INVALID_PARAM: fix_request
+        UNAUTHORIZED: fix_request
+        FORBIDDEN: fix_request
+        NOT_FOUND: fix_request
+        CONFLICT: fix_request
+        RATE_LIMITED: rate_limited
+        QUOTA_EXCEEDED: add_quota
+        CLIENT_CANCELED: canceled
+        SERVICE_RESTARTING: retry_later
+        MODEL_NOT_FOUND: fix_request
+        ROUTE_GROUP_NOT_FOUND: fix_request
+        PROVIDER_NOT_FOUND: fix_request
+        MODEL_IMAGE_INPUT_UNSUPPORTED: fix_request
+        NO_AVAILABLE_UPSTREAM: no_capacity
+        NO_LEASE_CAPACITY: no_capacity
+        UPSTREAM_ERROR: retry_later
+        UPSTREAM_HTTP_ERROR: retry_later
+        UPSTREAM_STREAM_ERROR: retry_later
+        INTERNAL_ERROR: server_error
+        UNSUPPORTED_STREAM_CONVERSION: fix_request
+        REDEEM_CODE_INACTIVE: fix_request
+        REDEEM_CODE_EXPIRED: fix_request
+        REDEEM_CODE_EXHAUSTED: fix_request
+        REDEEM_CODE_ALREADY_REDEEMED: fix_request
+        REDEEM_CODE_PLAN_DOWNGRADE: fix_request
+        UPSTREAM_AUTH_INVALID: contact_admin
+        UPSTREAM_PERMISSION_DENIED: contact_admin
+        UPSTREAM_MODEL_NOT_FOUND: fix_request
+        UPSTREAM_MODEL_NOT_SUPPORTED: fix_request
+        UPSTREAM_INVALID_REQUEST: fix_request
+        UPSTREAM_IMAGE_FORMAT_INVALID: fix_request
+        UPSTREAM_REASONING_STATE_REQUIRED: fix_request
+        UPSTREAM_CONTEXT_LENGTH_EXCEEDED: fix_request
+        UPSTREAM_CONTENT_BLOCKED: fix_request
+        UPSTREAM_RATE_LIMITED: retry_later
+        UPSTREAM_QUOTA_EXCEEDED: contact_admin
+        UPSTREAM_BILLING_REQUIRED: contact_admin
+        UPSTREAM_PLAN_EXPIRED: contact_admin
+        UPSTREAM_PLAN_MODEL_DENIED: contact_admin
+        UPSTREAM_DUPLICATE_REQUEST: fix_request
+        UPSTREAM_OVERLOADED: retry_later
+        UPSTREAM_TIMEOUT: retry_later
+        UPSTREAM_INTERNAL_ERROR: retry_later
+    ErrorCategory:
+      type: string
+      description: 错误分类，用于展示层优先级排序和报告聚合
+      enum:
+        - request
+        - quota
+        - rate_limit
+        - upstream_rate_limit
+        - upstream_config
+        - upstream_request
+        - upstream_server
+        - capacity
+        - canceled
+        - internal
+      x-enum-descriptions:
+        request: 客户端请求错误
+        quota: 用户配额或余额不足
+        rate_limit: 平台侧限流
+        upstream_rate_limit: 上游供应商限流
+        upstream_config: 上游通道配置异常（认证/权限/套餐）
+        upstream_request: 上游判定请求参数非法
+        upstream_server: 上游服务端异常
+        capacity: 无可用上游或并发容量
+        canceled: 客户端主动取消
+        internal: 平台内部错误
+    ErrorAction:
+      type: string
+      description: 建议调用方在遇到错误后应采取的下一步操作
+      enum:
+        - fix_request
+        - retry_later
+        - add_quota
+        - contact_admin
+        - server_error
+        - canceled
+        - rate_limited
+        - no_capacity
+      x-enum-descriptions:
+        fix_request: 修正请求参数后重试
+        retry_later: 稍后重试
+        add_quota: 充值或兑换资源包
+        contact_admin: 联系管理员处理
+        server_error: 服务端错误，无需重试
+        canceled: 请求已取消
+        rate_limited: 被限流，降低请求频率
+        no_capacity: 无可用容量，稍后重试
+    ErrorCodeDetail:
+      type: object
+      description: 错误码的完整元数据
+      required:
+        - code
+        - public_message
+        - admin_message
+        - action
+        - category
+        - retryable
+        - rate_limited
+        - admin_required
+        - quota_related
+        - billing_related
+      properties:
+        code:
+          $ref: "#/components/schemas/ErrorCode"
+        public_message:
+          type: string
+          description: 面向终端用户的错误提示（中文），避免暴露内部实现细节
+        admin_message:
+          type: string
+          description: 面向管理员的错误提示，包含更多技术细节便于排查
+        action:
+          $ref: "#/components/schemas/ErrorAction"
+        category:
+          $ref: "#/components/schemas/ErrorCategory"
+        retryable:
+          type: boolean
+          description: 是否可重试
+        rate_limited:
+          type: boolean
+          description: 是否为限流触发
+        admin_required:
+          type: boolean
+          description: 是否需要管理员介入
+        quota_related:
+          type: boolean
+          description: 是否与配额相关
+        billing_related:
+          type: boolean
+          description: 是否与计费相关
+    CatalogStats:
+      type: object
+      properties:
+        request_count:
+          type: integer
+          description: 请求总数
+        attempt_count:
+          type: integer
+          description: 尝试总数
+        success_count:
+          type: integer
+          description: 成功数
+        failed_count:
+          type: integer
+          description: 失败数
+        success_rate:
+          type: number
+          format: double
+          description: 成功率（0-1）
+        avg_latency_ms:
+          type: integer
+          description: 平均延迟（毫秒）
+        total_tokens:
+          type: integer
+          format: int64
+          description: 总 token 数
+        last_attempt_at:
+          type: string
+          format: date-time
+          description: 最后尝试时间
+    Timestamp:
+      type: string
+      format: date-time
+      description: ISO 8601 时间戳
+    ApiResponse:
+      type: object
+      required:
+        - code
+        - data
+        - message
+      properties:
+        code:
+          type: integer
+          description: HTTP 状态码
+        data:
+          description: 业务数据载荷，具体结构因端点而异
+        message:
+          type: string
+          description: 状态消息
+        error_code:
+          type: string
+          description: 错误码（仅错误响应）
+    ApiErrorResponse:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+          description: HTTP 状态码（>= 400）
+        data:
+          description: 错误时通常为 null
+        message:
+          type: string
+          description: 错误描述
+        error_code:
+          type: string
+          description: 错误码
+    PaginatedData:
+      type: object
+      required:
+        - items
+        - page
+        - limit
+        - total
+      properties:
+        items:
+          type: array
+          items: {}
+          description: 数据列表
+        page:
+          type: integer
+          minimum: 1
+          description: 当前页码
+        limit:
+          type: integer
+          minimum: 1
+          maximum: 100
+          description: 每页条数
+        total:
+          type: integer
+          description: 总条数
+        has_more:
+          type: boolean
+          description: 是否有更多数据
+        total_estimated:
+          type: boolean
+          description: total 是否为估算值
+    PaginationParams:
+      type: object
+      properties:
+        page:
+          type: integer
+          minimum: 1
+          default: 1
+          description: 页码
+        limit:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+          description: 每页条数
+    CatalogModel:
+      allOf:
+        - $ref: "#/components/schemas/CatalogStats"
+        - type: object
+          required:
+            - id
+            - name
+            - status
+            - created_at
+            - updated_at
+          properties:
+            id:
+              type: string
+            name:
+              type: string
+            display_name:
+              type: string
+            description:
+              type: string
+            status:
+              $ref: "#/components/schemas/StatusEnum"
+            created_at:
+              $ref: "#/components/schemas/Timestamp"
+            updated_at:
+              $ref: "#/components/schemas/Timestamp"
+    CreateModelRequest:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+        display_name:
+          type: string
+        description:
+          type: string
+    UpdateModelRequest:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        display_name:
+          type: string
+        description:
+          type: string
+    DeleteModelRequest:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: string
+    ToggleModelRequest:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: string
+    Plan:
+      type: object
+      required:
+        - id
+        - name
+        - plan_type
+        - hourly_5h_limit
+        - weekly_limit
+        - monthly_limit
+        - token_limit
+        - price
+        - status
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        plan_type:
+          $ref: "#/components/schemas/PlanTypeEnum"
+        hourly_5h_limit:
+          type: integer
+        weekly_limit:
+          type: integer
+        monthly_limit:
+          type: integer
+        token_limit:
+          type: integer
+          format: int64
+        price:
+          type: number
+          format: double
+        status:
+          $ref: "#/components/schemas/StatusEnum"
+        created_at:
+          $ref: "#/components/schemas/Timestamp"
+        updated_at:
+          $ref: "#/components/schemas/Timestamp"
+    UserPlan:
+      type: object
+      required:
+        - id
+        - user_id
+        - plan_id
+        - plan_type
+        - status
+        - activated_at
+        - created_at
+      properties:
+        id:
+          type: string
+        user_id:
+          type: string
+        plan_id:
+          type: string
+        plan_type:
+          $ref: "#/components/schemas/PlanTypeEnum"
+        status:
+          $ref: "#/components/schemas/StatusEnum"
+        activated_at:
+          $ref: "#/components/schemas/Timestamp"
+        expires_at:
+          type: string
+        created_at:
+          $ref: "#/components/schemas/Timestamp"
+    CreatePlanRequest:
+      type: object
+      required:
+        - name
+        - plan_type
+        - price
+      properties:
+        name:
+          type: string
+        plan_type:
+          $ref: "#/components/schemas/PlanTypeEnum"
+        hourly_5h_limit:
+          type: integer
+        weekly_limit:
+          type: integer
+        monthly_limit:
+          type: integer
+        token_limit:
+          type: integer
+          format: int64
+        price:
+          type: number
+          format: double
+    UpdatePlanRequest:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        hourly_5h_limit:
+          type: integer
+        weekly_limit:
+          type: integer
+        monthly_limit:
+          type: integer
+        token_limit:
+          type: integer
+          format: int64
+        price:
+          type: number
+          format: double
+    DeletePlanRequest:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: string
+    TogglePlanRequest:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: string
+    SetCodingPlanRequest:
+      type: object
+      required:
+        - user_id
+        - plan_id
+      properties:
+        user_id:
+          type: string
+        plan_id:
+          type: string
+    SetTokenPlanRequest:
+      type: object
+      required:
+        - user_id
+        - plan_id
+      properties:
+        user_id:
+          type: string
+        plan_id:
+          type: string
+    SetImagePlanRequest:
+      type: object
+      required:
+        - user_id
+        - plan_id
+      properties:
+        user_id:
+          type: string
+        plan_id:
+          type: string
+    Provider:
+      allOf:
+        - $ref: "#/components/schemas/CatalogStats"
+        - type: object
+          required:
+            - id
+            - name
+            - base_url
+            - status
+            - created_at
+            - updated_at
+          properties:
+            id:
+              type: string
+            name:
+              type: string
+            display_name:
+              type: string
+            base_url:
+              type: string
+            status:
+              $ref: "#/components/schemas/StatusEnum"
+            created_at:
+              $ref: "#/components/schemas/Timestamp"
+            updated_at:
+              $ref: "#/components/schemas/Timestamp"
+    ProviderEndpoint:
+      type: object
+      required:
+        - id
+        - provider_id
+        - protocol
+        - path
+        - status
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+        provider_id:
+          type: string
+        protocol:
+          $ref: "#/components/schemas/ProtocolEnum"
+        kind:
+          $ref: "#/components/schemas/KindEnum"
+        adapter:
+          type: string
+        path:
+          type: string
+        method:
+          type: string
+        auth_type:
+          $ref: "#/components/schemas/AuthTypeEnum"
+        headers:
+          description: 自定义请求头（JSON 对象，可能为字符串或 null）
+          type: object
+          additionalProperties:
+            type: string
+          x-go-type: json.RawMessage
+        request_mode:
+          $ref: "#/components/schemas/RequestModeEnum"
+        status:
+          $ref: "#/components/schemas/StatusEnum"
+        created_at:
+          $ref: "#/components/schemas/Timestamp"
+        updated_at:
+          $ref: "#/components/schemas/Timestamp"
+    CreateProviderRequest:
+      type: object
+      required:
+        - name
+        - base_url
+      properties:
+        name:
+          type: string
+        display_name:
+          type: string
+        base_url:
+          type: string
+    UpdateProviderRequest:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        display_name:
+          type: string
+        base_url:
+          type: string
+    DeleteProviderRequest:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: string
+    ToggleProviderRequest:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: string
+    CreateProviderEndpointRequest:
+      type: object
+      required:
+        - provider_id
+        - protocol
+        - path
+      properties:
+        provider_id:
+          type: string
+        protocol:
+          $ref: "#/components/schemas/ProtocolEnum"
+        kind:
+          $ref: "#/components/schemas/KindEnum"
+        adapter:
+          type: string
+        path:
+          type: string
+        method:
+          type: string
+        auth_type:
+          $ref: "#/components/schemas/AuthTypeEnum"
+        headers:
+          type: object
+          additionalProperties:
+            type: string
+        request_mode:
+          $ref: "#/components/schemas/RequestModeEnum"
+    UpdateProviderEndpointRequest:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: string
+        protocol:
+          $ref: "#/components/schemas/ProtocolEnum"
+        kind:
+          $ref: "#/components/schemas/KindEnum"
+        adapter:
+          type: string
+        path:
+          type: string
+        method:
+          type: string
+        auth_type:
+          $ref: "#/components/schemas/AuthTypeEnum"
+        headers:
+          type: object
+          additionalProperties:
+            type: string
+        request_mode:
+          $ref: "#/components/schemas/RequestModeEnum"
+    DeleteProviderEndpointRequest:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: string
+    ToggleProviderEndpointRequest:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: string
+    PriceMultiplierRule:
+      type: object
+      required:
+        - id
+        - timezone
+        - days_of_week
+        - start_time
+        - end_time
+        - multiplier
+        - priority
+        - status
+        - is_active
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+        provider_id:
+          type: string
+        key_id:
+          type: string
+        upstream_key_id:
+          type: string
+        model_id:
+          type: string
+        protocol:
+          type: string
+        timezone:
+          type: string
+        days_of_week:
+          type: array
+          items:
+            type: integer
+            minimum: 1
+            maximum: 7
+        start_time:
+          type: string
+        end_time:
+          type: string
+        multiplier:
+          type: number
+          format: double
+        priority:
+          type: integer
+        status:
+          $ref: "#/components/schemas/StatusEnum"
+        is_active:
+          type: boolean
+        created_at:
+          $ref: "#/components/schemas/Timestamp"
+        updated_at:
+          $ref: "#/components/schemas/Timestamp"
+    CreateRateRuleRequest:
+      type: object
+      required:
+        - timezone
+        - days_of_week
+        - start_time
+        - end_time
+        - multiplier
+      properties:
+        provider_id:
+          type: string
+        key_id:
+          type: string
+        upstream_key_id:
+          type: string
+        model_id:
+          type: string
+        protocol:
+          type: string
+        timezone:
+          type: string
+        days_of_week:
+          type: array
+          items:
+            type: integer
+            minimum: 1
+            maximum: 7
+        start_time:
+          type: string
+        end_time:
+          type: string
+        multiplier:
+          type: number
+          format: double
+        priority:
+          type: integer
+    ToggleRateRuleRequest:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: string
+    DeleteRateRuleRequest:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: string
+    RedeemCode:
+      type: object
+      required:
+        - id
+        - name
+        - token_amount
+        - max_redemptions
+        - redeemed_count
+        - status
+        - override_mode
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        code_prefix:
+          type: string
+        code_suffix:
+          type: string
+        token_amount:
+          type: integer
+        coding_plan_id:
+          type: string
+        token_plan_id:
+          type: string
+        image_plan_id:
+          type: string
+        rewards:
+          $ref: "#/components/schemas/RedeemCodeRewards"
+        max_redemptions:
+          type: integer
+        redeemed_count:
+          type: integer
+        status:
+          $ref: "#/components/schemas/StatusEnum"
+        starts_at:
+          type: string
+        expires_at:
+          type: string
+        override_mode:
+          type: string
+          enum:
+            - replace
+            - upgrade_only
+        created_by:
+          type: string
+        created_at:
+          $ref: "#/components/schemas/Timestamp"
+        updated_at:
+          $ref: "#/components/schemas/Timestamp"
+    RedeemCodeRewards:
+      type: object
+      properties:
+        coding_tier_id:
+          type: string
+        coding_tier_name:
+          type: string
+        coding_expires_at:
+          type: string
+        token_tier_id:
+          type: string
+        token_tier_name:
+          type: string
+        image_tier_id:
+          type: string
+        image_tier_name:
+          type: string
+        token_recharge:
+          type: integer
+    RedeemCodeCreateResponse:
+      allOf:
+        - $ref: "#/components/schemas/RedeemCode"
+        - type: object
+          required:
+            - code
+          properties:
+            code:
+              type: string
+              description: 明文兑换码（仅创建时返回）
+    RedeemCodeRedemption:
+      type: object
+      required:
+        - id
+        - redeem_code_id
+        - user_id
+        - token_amount
+        - created_at
+      properties:
+        id:
+          type: string
+        redeem_code_id:
+          type: string
+        user_id:
+          type: string
+        token_amount:
+          type: integer
+        coding_plan_id:
+          type: string
+        token_plan_id:
+          type: string
+        image_plan_id:
+          type: string
+        coding_user_plan_id:
+          type: string
+        token_user_plan_id:
+          type: string
+        image_user_plan_id:
+          type: string
+        ledger_id:
+          type: string
+        created_at:
+          $ref: "#/components/schemas/Timestamp"
+    RedeemCodeRedemptionResponse:
+      type: object
+      required:
+        - redeem_code_id
+        - redeem_code_name
+        - token_amount
+        - rewards
+        - redeemed_at
+      properties:
+        redeem_code_id:
+          type: string
+        redeem_code_name:
+          type: string
+        token_amount:
+          type: integer
+        rewards:
+          $ref: "#/components/schemas/RedeemCodeRewards"
+        ledger:
+          $ref: "#/components/schemas/UsageLedgerResponse"
+        redeemed_at:
+          $ref: "#/components/schemas/Timestamp"
+    CreateRedeemCodeRequest:
+      type: object
+      required:
+        - name
+        - token_amount
+        - max_redemptions
+      properties:
+        name:
+          type: string
+        token_amount:
+          type: integer
+        coding_plan_id:
+          type: string
+        token_plan_id:
+          type: string
+        image_plan_id:
+          type: string
+        max_redemptions:
+          type: integer
+        override_mode:
+          type: string
+          enum:
+            - replace
+            - upgrade_only
+        starts_at:
+          type: string
+        expires_at:
+          type: string
+    ToggleRedeemCodeRequest:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: string
+    DeleteRedeemCodeRequest:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: string
+    RedeemCodeRequest:
+      type: object
+      required:
+        - code
+      properties:
+        code:
+          type: string
+    RequestLogResponse:
+      type: object
+      required:
+        - id
+        - stream
+        - is_stream
+        - success
+        - is_success
+        - price_multiplier
+        - created_at
+      properties:
+        id:
+          type: string
+        request_id:
+          type: string
+        trace_id:
+          type: string
+        user_id:
+          type: string
+        user_name:
+          type: string
+        user_api_key_id:
+          type: string
+        provider_name:
+          type: string
+        model_name:
+          type: string
+        protocol:
+          type: string
+        stream:
+          type: boolean
+        is_stream:
+          type: boolean
+        billing_plan:
+          type: string
+        final_status_code:
+          type: integer
+        success:
+          type: boolean
+        is_success:
+          type: boolean
+        input_tokens:
+          type: integer
+        output_tokens:
+          type: integer
+        total_tokens:
+          type: integer
+        latency_ms:
+          type: integer
+        final_latency_ms:
+          type: integer
+        total_duration_ms:
+          type: integer
+        ttft_ms:
+          type: integer
+        kind:
+          type: string
+        price_multiplier:
+          type: number
+          format: double
+        price_multiplier_rule_id:
+          type: string
+        effective_input_tokens:
+          type: integer
+        effective_output_tokens:
+          type: integer
+        effective_total_tokens:
+          type: integer
+        tokens_per_second:
+          type: number
+          format: double
+        error_code:
+          type: string
+        error_message:
+          type: string
+        usage_status:
+          type: string
+        request_body:
+          type: string
+        created_at:
+          $ref: "#/components/schemas/Timestamp"
+        completed_at:
+          $ref: "#/components/schemas/Timestamp"
+    RequestAttemptResponse:
+      type: object
+      required:
+        - id
+        - request_log_id
+        - attempt_index
+        - created_at
+      properties:
+        id:
+          type: string
+        request_log_id:
+          type: string
+        request_id:
+          type: string
+        trace_id:
+          type: string
+        upstream_key_id:
+          type: string
+        provider_id:
+          type: string
+        upstream_url:
+          type: string
+        status_code:
+          type: integer
+        latency_ms:
+          type: integer
+        error_code:
+          type: string
+        error_message:
+          type: string
+        attempt_index:
+          type: integer
+        response_body:
+          type: string
+        created_at:
+          $ref: "#/components/schemas/Timestamp"
+    RequestTraceResponse:
+      type: object
+      required:
+        - query
+        - logs
+        - attempts
+      properties:
+        query:
+          type: string
+        logs:
+          type: array
+          items:
+            $ref: "#/components/schemas/RequestLogResponse"
+        attempts:
+          type: array
+          items:
+            $ref: "#/components/schemas/RequestAttemptResponse"
+    SystemConfig:
+      type: object
+      required:
+        - key
+        - value
+        - updated_at
+      properties:
+        key:
+          type: string
+        value:
+          description: 配置值（JSON）
+          type: object
+          x-go-type: json.RawMessage
+        updated_at:
+          $ref: "#/components/schemas/Timestamp"
+    RoutingPolicy:
+      type: object
+      required:
+        - id
+        - name
+        - price_weight
+        - speed_weight
+        - success_weight
+        - availability_weight
+        - concurrency_weight
+        - quota_weight
+        - temperature
+        - status
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        price_weight:
+          type: number
+          format: double
+        speed_weight:
+          type: number
+          format: double
+        success_weight:
+          type: number
+          format: double
+        availability_weight:
+          type: number
+          format: double
+        concurrency_weight:
+          type: number
+          format: double
+        quota_weight:
+          type: number
+          format: double
+        temperature:
+          type: number
+          format: double
+        status:
+          $ref: "#/components/schemas/StatusEnum"
+        created_at:
+          $ref: "#/components/schemas/Timestamp"
+        updated_at:
+          $ref: "#/components/schemas/Timestamp"
+    AdminDashboard:
+      type: object
+      required:
+        - user_count
+        - active_user_count
+        - provider_count
+        - provider_endpoint_count
+        - model_count
+        - upstream_key_count
+        - today_requests
+        - total_tokens
+      properties:
+        user_count:
+          type: integer
+        active_user_count:
+          type: integer
+        provider_count:
+          type: integer
+        provider_endpoint_count:
+          type: integer
+        model_count:
+          type: integer
+        upstream_key_count:
+          type: integer
+        today_requests:
+          type: integer
+        total_tokens:
+          type: integer
+        today_input_tokens:
+          type: integer
+        today_output_tokens:
+          type: integer
+        total_input_tokens:
+          type: integer
+        total_output_tokens:
+          type: integer
+        today_images:
+          type: integer
+        total_images:
+          type: integer
+    UpdateSystemConfigRequest:
+      type: object
+      required:
+        - key
+        - value
+      properties:
+        key:
+          type: string
+        value:
+          description: 配置值（JSON）
+          type: object
+          x-go-type: json.RawMessage
+    UpdateRoutingConfigRequest:
+      type: object
+      properties:
+        price_weight:
+          type: number
+          format: double
+        speed_weight:
+          type: number
+          format: double
+        success_weight:
+          type: number
+          format: double
+        availability_weight:
+          type: number
+          format: double
+        concurrency_weight:
+          type: number
+          format: double
+        quota_weight:
+          type: number
+          format: double
+        temperature:
+          type: number
+          format: double
+    UpdateUserRequest:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: string
+        role:
+          $ref: "#/components/schemas/RoleEnum"
+        status:
+          $ref: "#/components/schemas/StatusEnum"
+        preferred_billing:
+          $ref: "#/components/schemas/BillingPreferenceEnum"
+        fallback_enabled:
+          type: boolean
+    ToggleUserRequest:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: string
+    UpstreamKey:
+      allOf:
+        - $ref: "#/components/schemas/CatalogStats"
+        - type: object
+          required:
+            - id
+            - provider_id
+            - name
+            - encryption_version
+            - max_concurrency
+            - priority
+            - quota_used
+            - status
+            - created_at
+            - updated_at
+          properties:
+            id:
+              type: string
+            provider_id:
+              type: string
+            name:
+              type: string
+            key_prefix:
+              type: string
+            key_suffix:
+              type: string
+            encryption_version:
+              type: integer
+            max_concurrency:
+              type: integer
+            priority:
+              type: integer
+            quota_type:
+              $ref: "#/components/schemas/QuotaTypeEnum"
+            quota_total:
+              type: integer
+              format: int64
+            quota_used:
+              type: integer
+              format: int64
+            cost:
+              type: number
+              format: double
+            expires_at:
+              type: string
+            notes:
+              type: string
+            status:
+              $ref: "#/components/schemas/StatusEnum"
+            created_at:
+              $ref: "#/components/schemas/Timestamp"
+            updated_at:
+              $ref: "#/components/schemas/Timestamp"
+    UpstreamModelMapping:
+      type: object
+      required:
+        - id
+        - upstream_key_id
+        - model_id
+        - status
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+        upstream_key_id:
+          type: string
+        model_id:
+          type: string
+        provider_endpoint_id:
+          type: string
+        provider_protocol_id:
+          type: string
+        upstream_model_name:
+          type: string
+        input_price_per_token:
+          type: number
+          format: double
+        output_price_per_token:
+          type: number
+          format: double
+        max_tokens:
+          type: integer
+        status:
+          $ref: "#/components/schemas/StatusEnum"
+        created_at:
+          $ref: "#/components/schemas/Timestamp"
+        updated_at:
+          $ref: "#/components/schemas/Timestamp"
+    UpstreamKeyUsage:
+      type: object
+      required:
+        - upstream_key_id
+        - attempt_count
+        - success_count
+        - failed_count
+        - avg_latency_ms
+      properties:
+        upstream_key_id:
+          type: string
+        attempt_count:
+          type: integer
+        success_count:
+          type: integer
+        failed_count:
+          type: integer
+        avg_latency_ms:
+          type: integer
+        last_attempt_at:
+          $ref: "#/components/schemas/Timestamp"
+    CreateUpstreamKeyRequest:
+      type: object
+      required:
+        - provider_id
+        - name
+        - key
+        - max_concurrency
+      properties:
+        provider_id:
+          type: string
+        name:
+          type: string
+        key:
+          type: string
+          description: 上游密钥明文（仅创建时提交）
+        max_concurrency:
+          type: integer
+        priority:
+          type: integer
+        quota_type:
+          $ref: "#/components/schemas/QuotaTypeEnum"
+        quota_total:
+          type: integer
+          format: int64
+        cost:
+          type: number
+          format: double
+        expires_at:
+          type: string
+        notes:
+          type: string
+    UpdateUpstreamKeyRequest:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        key:
+          type: string
+          description: 更新密钥明文
+        max_concurrency:
+          type: integer
+        priority:
+          type: integer
+        quota_type:
+          $ref: "#/components/schemas/QuotaTypeEnum"
+        quota_total:
+          type: integer
+          format: int64
+        cost:
+          type: number
+          format: double
+        expires_at:
+          type: string
+        notes:
+          type: string
+    DeleteUpstreamKeyRequest:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: string
+    ToggleUpstreamKeyRequest:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: string
+    CreateUpstreamModelMappingRequest:
+      type: object
+      required:
+        - upstream_key_id
+        - model_id
+      properties:
+        upstream_key_id:
+          type: string
+        model_id:
+          type: string
+        provider_endpoint_id:
+          type: string
+        upstream_model_name:
+          type: string
+        input_price_per_token:
+          type: number
+          format: double
+        output_price_per_token:
+          type: number
+          format: double
+        max_tokens:
+          type: integer
+    UpdateUpstreamModelMappingRequest:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: string
+        upstream_model_name:
+          type: string
+        input_price_per_token:
+          type: number
+          format: double
+        output_price_per_token:
+          type: number
+          format: double
+        max_tokens:
+          type: integer
+    DeleteUpstreamModelMappingRequest:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: string
+    ToggleUpstreamModelMappingRequest:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: string
+    UserQuota:
+      type: object
+      required:
+        - user_id
+        - token_limit
+        - plan_tokens
+        - recharged_tokens
+        - used_tokens
+        - reserved_tokens
+        - remaining_tokens
+        - request_limit
+        - used_requests
+        - reserved_requests
+        - remaining_requests
+        - hourly_5h_limit
+        - weekly_limit
+        - monthly_limit
+        - hourly_5h_used
+        - weekly_used
+        - monthly_used
+        - hourly_5h_reserved
+        - weekly_reserved
+        - monthly_reserved
+        - hourly_5h_remaining
+        - weekly_remaining
+        - monthly_remaining
+        - image_limit
+        - image_used
+        - image_reserved
+        - image_remaining
+      properties:
+        user_id:
+          type: string
+        token_limit:
+          type: integer
+          format: int64
+        plan_tokens:
+          type: integer
+          format: int64
+        recharged_tokens:
+          type: integer
+          format: int64
+        token_plan_name:
+          type: string
+        token_plan_expires_at:
+          type: string
+        used_tokens:
+          type: integer
+        reserved_tokens:
+          type: integer
+          format: int64
+        remaining_tokens:
+          type: integer
+          format: int64
+        request_limit:
+          type: integer
+        used_requests:
+          type: integer
+        reserved_requests:
+          type: integer
+        remaining_requests:
+          type: integer
+        coding_plan_name:
+          type: string
+        coding_plan_expires_at:
+          type: string
+        hourly_5h_limit:
+          type: integer
+        weekly_limit:
+          type: integer
+        monthly_limit:
+          type: integer
+        hourly_5h_used:
+          type: integer
+        weekly_used:
+          type: integer
+        monthly_used:
+          type: integer
+        hourly_5h_reserved:
+          type: integer
+        weekly_reserved:
+          type: integer
+        monthly_reserved:
+          type: integer
+        hourly_5h_remaining:
+          type: integer
+        weekly_remaining:
+          type: integer
+        monthly_remaining:
+          type: integer
+        hourly_5h_window_end:
+          type: string
+        weekly_window_end:
+          type: string
+        monthly_window_end:
+          type: string
+        image_plan_name:
+          type: string
+        image_plan_expires_at:
+          type: string
+        image_limit:
+          type: integer
+          format: int64
+        image_used:
+          type: integer
+          format: int64
+        image_reserved:
+          type: integer
+          format: int64
+        image_remaining:
+          type: integer
+          format: int64
+    UsageLedgerResponse:
+      type: object
+      required:
+        - id
+        - ledger_type
+        - billing_plan
+        - token_delta
+        - request_delta
+        - created_at
+      properties:
+        id:
+          type: string
+        user_id:
+          type: string
+        request_log_id:
+          type: string
+        request_id:
+          type: string
+        trace_id:
+          type: string
+        request_model:
+          type: string
+        ledger_type:
+          $ref: "#/components/schemas/LedgerTypeEnum"
+        billing_plan:
+          type: string
+        token_delta:
+          type: integer
+        request_delta:
+          type: integer
+        reason:
+          type: string
+        created_at:
+          $ref: "#/components/schemas/Timestamp"
+    AdminUsageDailyItem:
+      type: object
+      required:
+        - date
+        - requests
+        - success_requests
+        - failed_requests
+        - input_tokens
+        - output_tokens
+        - total_tokens
+        - images
+      properties:
+        date:
+          type: string
+        requests:
+          type: integer
+        success_requests:
+          type: integer
+        failed_requests:
+          type: integer
+        input_tokens:
+          type: integer
+        output_tokens:
+          type: integer
+        total_tokens:
+          type: integer
+        images:
+          type: integer
+    AdminUsageOverview:
+      type: object
+      required:
+        - total_requests
+        - success_requests
+        - failed_requests
+        - requests_today
+        - total_tokens
+        - daily
+      properties:
+        total_requests:
+          type: integer
+        success_requests:
+          type: integer
+        failed_requests:
+          type: integer
+        requests_today:
+          type: integer
+        success_today:
+          type: integer
+        failed_today:
+          type: integer
+        total_tokens:
+          type: integer
+        total_input_tokens:
+          type: integer
+        total_output_tokens:
+          type: integer
+        input_tokens_today:
+          type: integer
+        output_tokens_today:
+          type: integer
+        tokens_today:
+          type: integer
+        charged_tokens:
+          type: integer
+        charged_tokens_today:
+          type: integer
+        charged_requests:
+          type: integer
+        charged_images:
+          type: integer
+        charged_images_today:
+          type: integer
+        daily:
+          type: array
+          items:
+            $ref: "#/components/schemas/AdminUsageDailyItem"
+    CreateAdminTokenRechargeRequest:
+      type: object
+      required:
+        - user_id
+        - amount
+      properties:
+        user_id:
+          type: string
+        amount:
+          type: integer
+    UserResponse:
+      type: object
+      required:
+        - id
+        - email
+        - role
+        - status
+        - preferred_billing
+        - fallback_enabled
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+          format: email
+        role:
+          $ref: "#/components/schemas/RoleEnum"
+        status:
+          $ref: "#/components/schemas/StatusEnum"
+        preferred_billing:
+          $ref: "#/components/schemas/BillingPreferenceEnum"
+        fallback_enabled:
+          type: boolean
+        coding_tier_id:
+          type: string
+        token_tier_id:
+          type: string
+        image_tier_id:
+          type: string
+        coding_plan_id:
+          type: string
+        token_plan_id:
+          type: string
+        image_plan_id:
+          type: string
+        created_at:
+          $ref: "#/components/schemas/Timestamp"
+        updated_at:
+          $ref: "#/components/schemas/Timestamp"
+    UserDashboard:
+      type: object
+      required:
+        - user
+        - api_key_count
+        - today_requests
+        - total_tokens
+      properties:
+        user:
+          $ref: "#/components/schemas/UserResponse"
+        api_key_count:
+          type: integer
+        today_requests:
+          type: integer
+        total_tokens:
+          type: integer
+        today_input_tokens:
+          type: integer
+        today_output_tokens:
+          type: integer
+        total_input_tokens:
+          type: integer
+        total_output_tokens:
+          type: integer
+        today_images:
+          type: integer
+        total_images:
+          type: integer
+    APIKeyResponse:
+      type: object
+      required:
+        - id
+        - name
+        - display_key
+        - is_active
+        - created_at
+        - request_count
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        key:
+          type: string
+          description: 明文密钥（仅创建时返回）
+        display_key:
+          type: string
+          description: 脱敏显示密钥
+        is_active:
+          type: boolean
+        created_at:
+          $ref: "#/components/schemas/Timestamp"
+        last_used_at:
+          type: string
+        request_count:
+          type: integer
+    AuthResponse:
+      type: object
+      required:
+        - user
+        - token
+        - refresh_token
+      properties:
+        user:
+          $ref: "#/components/schemas/UserResponse"
+        token:
+          type: string
+          description: JWT access token
+        refresh_token:
+          type: string
+          description: JWT refresh token
+    RegisterRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 8
+        email_code:
+          type: string
+          description: 邮箱验证码
+    LoginRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+    RefreshRequest:
+      type: object
+      required:
+        - refresh_token
+      properties:
+        refresh_token:
+          type: string
+    ChangePasswordRequest:
+      type: object
+      required:
+        - old_password
+        - new_password
+      properties:
+        old_password:
+          type: string
+        new_password:
+          type: string
+          minLength: 8
+    ForgotPasswordSendCodeRequest:
+      type: object
+      required:
+        - email
+      properties:
+        email:
+          type: string
+          format: email
+    ForgotPasswordResetRequest:
+      type: object
+      required:
+        - email
+        - code
+        - new_password
+      properties:
+        email:
+          type: string
+          format: email
+        code:
+          type: string
+        new_password:
+          type: string
+          minLength: 8
+    CreateAPIKeyRequest:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+    UpdateAPIKeyRequest:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+    DeleteAPIKeyRequest:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: string
+    ToggleAPIKeyRequest:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: string
+    UpdateBillingPreferenceRequest:
+      type: object
+      required:
+        - preferred_billing
+      properties:
+        preferred_billing:
+          $ref: "#/components/schemas/BillingPreferenceEnum"
+    CaptchaConfig:
+      type: object
+      properties:
+        enabled:
+          type: boolean
+        scene:
+          type: string
+        captcha_type:
+          type: string

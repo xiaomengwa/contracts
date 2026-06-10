@@ -1,0 +1,452 @@
+# 用户面板端点（需 JWT）
+
+/api/v1/user/me:
+  get:
+    operationId: userMe
+    tags:
+      - user
+    summary: 获取当前用户信息
+    security:
+      - bearerAuth: []
+    responses:
+      '200':
+        description: 成功
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '../schemas/envelope.yaml#/ApiResponse'
+                - type: object
+                  properties:
+                    data:
+                      type: object
+                      properties:
+                        user:
+                          $ref: '../schemas/user.yaml#/UserResponse'
+
+/api/v1/user/dashboard:
+  get:
+    operationId: userDashboard
+    tags:
+      - user
+    summary: 获取用户仪表盘数据
+    security:
+      - bearerAuth: []
+    responses:
+      '200':
+        description: 成功
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '../schemas/envelope.yaml#/ApiResponse'
+                - type: object
+                  properties:
+                    data:
+                      $ref: '../schemas/user.yaml#/UserDashboard'
+
+/api/v1/user/keys:
+  get:
+    operationId: userApiKeyList
+    tags:
+      - user
+    summary: 获取用户 API 密钥列表
+    security:
+      - bearerAuth: []
+    responses:
+      '200':
+        description: 成功
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '../schemas/envelope.yaml#/ApiResponse'
+                - type: object
+                  properties:
+                    data:
+                      type: object
+                      required:
+                        - items
+                        - page
+                        - limit
+                        - total
+                      properties:
+                        items:
+                          type: array
+                          items:
+                            $ref: '../schemas/user.yaml#/APIKeyResponse'
+                        page:
+                          type: integer
+                        limit:
+                          type: integer
+                        total:
+                          type: integer
+
+/api/v1/user/keys/create:
+  post:
+    operationId: userApiKeyCreate
+    tags:
+      - user
+    summary: 创建 API 密钥
+    security:
+      - bearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/user.yaml#/CreateAPIKeyRequest'
+    responses:
+      '201':
+        description: 创建成功
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '../schemas/envelope.yaml#/ApiResponse'
+                - type: object
+                  properties:
+                    data:
+                      $ref: '../schemas/user.yaml#/APIKeyResponse'
+
+/api/v1/user/keys/update:
+  post:
+    operationId: userApiKeyUpdate
+    tags:
+      - user
+    summary: 更新 API 密钥
+    security:
+      - bearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/user.yaml#/UpdateAPIKeyRequest'
+    responses:
+      '200':
+        description: 更新成功
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '../schemas/envelope.yaml#/ApiResponse'
+                - type: object
+                  properties:
+                    data:
+                      $ref: '../schemas/user.yaml#/APIKeyResponse'
+
+/api/v1/user/keys/delete:
+  post:
+    operationId: userApiKeyDelete
+    tags:
+      - user
+    summary: 删除 API 密钥
+    security:
+      - bearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/user.yaml#/DeleteAPIKeyRequest'
+    responses:
+      '200':
+        description: 删除成功
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/envelope.yaml#/ApiResponse'
+
+/api/v1/user/keys/toggle:
+  post:
+    operationId: userApiKeyToggle
+    tags:
+      - user
+    summary: 切换 API 密钥启用/禁用
+    security:
+      - bearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/user.yaml#/ToggleAPIKeyRequest'
+    responses:
+      '200':
+        description: 切换成功
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '../schemas/envelope.yaml#/ApiResponse'
+                - type: object
+                  properties:
+                    data:
+                      $ref: '../schemas/user.yaml#/APIKeyResponse'
+
+/api/v1/user/quota:
+  get:
+    operationId: userQuota
+    tags:
+      - user
+    summary: 获取用户配额
+    security:
+      - bearerAuth: []
+    responses:
+      '200':
+        description: 成功
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '../schemas/envelope.yaml#/ApiResponse'
+                - type: object
+                  properties:
+                    data:
+                      $ref: '../schemas/usage.yaml#/UserQuota'
+
+/api/v1/user/usage:
+  get:
+    operationId: userUsage
+    tags:
+      - user
+    summary: 获取用户用量账本
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: ledger_type
+        in: query
+        schema:
+          type: string
+          description: "逗号分隔的账本类型过滤，如 charge,recharge"
+      - name: page
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          default: 1
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+    responses:
+      '200':
+        description: 成功
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '../schemas/envelope.yaml#/ApiResponse'
+                - type: object
+                  properties:
+                    data:
+                      type: object
+                      required:
+                        - items
+                        - page
+                        - limit
+                        - total
+                      properties:
+                        items:
+                          type: array
+                          items:
+                            $ref: '../schemas/usage.yaml#/UsageLedgerResponse'
+                        page:
+                          type: integer
+                        limit:
+                          type: integer
+                        total:
+                          type: integer
+
+/api/v1/user/plans:
+  get:
+    operationId: userPlanList
+    tags:
+      - user
+    summary: 获取用户可用套餐列表
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: plan_type
+        in: query
+        schema:
+          $ref: '../schemas/common.yaml#/PlanTypeEnum'
+    responses:
+      '200':
+        description: 成功
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '../schemas/envelope.yaml#/ApiResponse'
+                - type: object
+                  properties:
+                    data:
+                      type: object
+                      required:
+                        - items
+                        - page
+                        - limit
+                        - total
+                      properties:
+                        items:
+                          type: array
+                          items:
+                            $ref: '../schemas/plan.yaml#/Plan'
+                        page:
+                          type: integer
+                        limit:
+                          type: integer
+                        total:
+                          type: integer
+
+/api/v1/user/models:
+  get:
+    operationId: userModelList
+    tags:
+      - user
+    summary: 获取用户可用模型列表
+    security:
+      - bearerAuth: []
+    responses:
+      '200':
+        description: 成功
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '../schemas/envelope.yaml#/ApiResponse'
+                - type: object
+                  properties:
+                    data:
+                      type: object
+                      required:
+                        - items
+                        - page
+                        - limit
+                        - total
+                      properties:
+                        items:
+                          type: array
+                          items:
+                            $ref: '../schemas/model.yaml#/CatalogModel'
+                        page:
+                          type: integer
+                        limit:
+                          type: integer
+                        total:
+                          type: integer
+
+/api/v1/user/requests:
+  get:
+    operationId: userRequestLogList
+    tags:
+      - user
+    summary: 获取用户请求日志列表
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: query
+        in: query
+        schema:
+          type: string
+          description: "搜索 trace_id / request_id / request_log_id"
+      - name: page
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          default: 1
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+    responses:
+      '200':
+        description: 成功
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '../schemas/envelope.yaml#/ApiResponse'
+                - type: object
+                  properties:
+                    data:
+                      type: object
+                      required:
+                        - items
+                        - page
+                        - limit
+                        - total
+                      properties:
+                        items:
+                          type: array
+                          items:
+                            $ref: '../schemas/requestlog.yaml#/RequestLogResponse'
+                        page:
+                          type: integer
+                        limit:
+                          type: integer
+                        total:
+                          type: integer
+
+/api/v1/user/requests/trace:
+  get:
+    operationId: userRequestLogTrace
+    tags:
+      - user
+    summary: 获取用户请求追踪详情
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: query
+        in: query
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        description: 成功
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '../schemas/envelope.yaml#/ApiResponse'
+                - type: object
+                  properties:
+                    data:
+                      $ref: '../schemas/requestlog.yaml#/RequestTraceResponse'
+
+/api/v1/user/billing/preference/update:
+  post:
+    operationId: userBillingPreferenceUpdate
+    tags:
+      - user
+    summary: 更新计费偏好
+    security:
+      - bearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/user.yaml#/UpdateBillingPreferenceRequest'
+    responses:
+      '200':
+        description: 更新成功
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '../schemas/envelope.yaml#/ApiResponse'
+                - type: object
+                  properties:
+                    data:
+                      $ref: '../schemas/user.yaml#/UserResponse'

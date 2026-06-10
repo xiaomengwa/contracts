@@ -1,0 +1,59 @@
+openapi: 3.1.0
+info:
+  title: TokenMP Management API
+  description: |
+    TokenMP AI 模型 API 网关的管理接口。所有 Management API 响应使用 envelope 包裹：
+    `{"code": 200, "data": {...}, "message": "ok", "error_code": ""}`
+
+    路径风格：`/api/v1/{scope}/{category}/{type}/{action}`（分类优先，非 RESTful）。
+    能扩展出多个类型的资源使用 `分类/类型` 结构（如 `rules/rate`、`codes/redeem`、`keys/upstream`）。
+    只有一种形态的资源保持扁平（如 `providers`、`models`、`users`）。
+    所有管理端写操作统一使用 POST。
+  version: 2.0.0
+  contact:
+    name: TokenMP Team
+
+servers:
+  - url: http://localhost:8080
+    description: 本地开发环境
+
+security: []
+
+tags:
+  - name: public
+    description: 公开端点（无需认证）
+  - name: auth
+    description: 认证相关（注册、登录、登出、刷新）
+  - name: user
+    description: 用户端点（需 JWT）
+  - name: admin
+    description: 管理员端点（需 JWT + admin 角色）
+  - name: catalog
+    description: 供应商、模型、上游密钥等目录管理
+  - name: plan
+    description: 套餐管理
+  - name: redeem
+    description: 兑换码管理
+  - name: ratrule
+    description: 倍率规则管理
+  - name: config
+    description: 系统配置与路由权重
+  - name: requestlog
+    description: 请求日志与追踪
+  - name: usage
+    description: 用量与配额
+
+paths: {}
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 用户 JWT token
+    adminBearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 管理员 JWT token（需 admin 角色）

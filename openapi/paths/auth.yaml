@@ -1,0 +1,285 @@
+# 认证相关端点
+
+/api/v1/user/register:
+  post:
+    operationId: userRegister
+    tags:
+      - auth
+    summary: 注册新用户
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/user.yaml#/RegisterRequest'
+    responses:
+      '201':
+        description: 注册成功
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '../schemas/envelope.yaml#/ApiResponse'
+                - type: object
+                  properties:
+                    data:
+                      $ref: '../schemas/user.yaml#/AuthResponse'
+      '400':
+        description: 参数无效
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
+      '409':
+        description: 账号已存在
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
+                - type: object
+                  properties:
+                    error_code:
+                      type: string
+                      enum: [CONFLICT]
+
+/api/v1/user/register/check:
+  post:
+    operationId: userRegisterCheck
+    tags:
+      - auth
+    summary: 检查注册可用性
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              email:
+                type: string
+                format: email
+    responses:
+      '200':
+        description: 检查结果
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/envelope.yaml#/ApiResponse'
+
+/api/v1/user/register/send-code:
+  post:
+    operationId: userRegisterSendCode
+    tags:
+      - auth
+    summary: 发送注册验证码
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - email
+            properties:
+              email:
+                type: string
+                format: email
+    responses:
+      '200':
+        description: 验证码已发送
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/envelope.yaml#/ApiResponse'
+      '429':
+        description: 发送太频繁
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
+
+/api/v1/user/login:
+  post:
+    operationId: userLogin
+    tags:
+      - auth
+    summary: 用户登录
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/user.yaml#/LoginRequest'
+    responses:
+      '200':
+        description: 登录成功
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '../schemas/envelope.yaml#/ApiResponse'
+                - type: object
+                  properties:
+                    data:
+                      $ref: '../schemas/user.yaml#/AuthResponse'
+      '401':
+        description: 凭据无效
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
+                - type: object
+                  properties:
+                    error_code:
+                      type: string
+                      enum: [UNAUTHORIZED]
+
+/api/v1/user/logout:
+  post:
+    operationId: userLogout
+    tags:
+      - auth
+    summary: 用户登出
+    security:
+      - bearerAuth: []
+    responses:
+      '200':
+        description: 登出成功
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/envelope.yaml#/ApiResponse'
+
+/api/v1/user/refresh:
+  post:
+    operationId: userRefresh
+    tags:
+      - auth
+    summary: 刷新 token
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/user.yaml#/RefreshRequest'
+    responses:
+      '200':
+        description: 刷新成功
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '../schemas/envelope.yaml#/ApiResponse'
+                - type: object
+                  properties:
+                    data:
+                      $ref: '../schemas/user.yaml#/AuthResponse'
+      '401':
+        description: Refresh token 无效
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
+
+/api/v1/user/password/change:
+  post:
+    operationId: userPasswordChange
+    tags:
+      - auth
+    summary: 修改密码
+    security:
+      - bearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/user.yaml#/ChangePasswordRequest'
+    responses:
+      '200':
+        description: 修改成功
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/envelope.yaml#/ApiResponse'
+      '401':
+        description: 旧密码错误
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
+
+/api/v1/user/password/forgot/send-code:
+  post:
+    operationId: userForgotPasswordSendCode
+    tags:
+      - auth
+    summary: 发送找回密码验证码
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/user.yaml#/ForgotPasswordSendCodeRequest'
+    responses:
+      '200':
+        description: 验证码已发送
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/envelope.yaml#/ApiResponse'
+
+/api/v1/user/password/forgot/reset:
+  post:
+    operationId: userForgotPasswordReset
+    tags:
+      - auth
+    summary: 重置密码
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/user.yaml#/ForgotPasswordResetRequest'
+    responses:
+      '200':
+        description: 重置成功
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/envelope.yaml#/ApiResponse'
+
+/api/v1/user/captcha/config:
+  get:
+    operationId: userCaptchaConfig
+    tags:
+      - auth
+    summary: 获取验证码配置
+    responses:
+      '200':
+        description: 成功
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '../schemas/envelope.yaml#/ApiResponse'
+                - type: object
+                  properties:
+                    data:
+                      $ref: '../schemas/user.yaml#/CaptchaConfig'
+
+/api/v1/user/test-code:
+  get:
+    operationId: userTestCode
+    tags:
+      - auth
+    summary: 获取测试验证码（仅开发环境）
+    responses:
+      '200':
+        description: 成功
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/envelope.yaml#/ApiResponse'

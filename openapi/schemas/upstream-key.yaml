@@ -1,0 +1,250 @@
+# 上游密钥和模型映射类型
+
+UpstreamKey:
+  allOf:
+    - $ref: './common.yaml#/CatalogStats'
+    - type: object
+      required:
+        - id
+        - provider_id
+        - name
+        - encryption_version
+        - max_concurrency
+        - priority
+        - quota_used
+        - status
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+        provider_id:
+          type: string
+        name:
+          type: string
+        key_prefix:
+          type: string
+        key_suffix:
+          type: string
+        encryption_version:
+          type: integer
+        max_concurrency:
+          type: integer
+        priority:
+          type: integer
+        quota_type:
+          $ref: './common.yaml#/QuotaTypeEnum'
+        quota_total:
+          type: integer
+          format: int64
+        quota_used:
+          type: integer
+          format: int64
+        cost:
+          type: number
+          format: double
+        expires_at:
+          type: string
+        notes:
+          type: string
+        status:
+          $ref: './common.yaml#/StatusEnum'
+        created_at:
+          $ref: './common.yaml#/Timestamp'
+        updated_at:
+          $ref: './common.yaml#/Timestamp'
+
+UpstreamModelMapping:
+  type: object
+  required:
+    - id
+    - upstream_key_id
+    - model_id
+    - status
+    - created_at
+    - updated_at
+  properties:
+    id:
+      type: string
+    upstream_key_id:
+      type: string
+    model_id:
+      type: string
+    provider_endpoint_id:
+      type: string
+    provider_protocol_id:
+      type: string
+    upstream_model_name:
+      type: string
+    input_price_per_token:
+      type: number
+      format: double
+    output_price_per_token:
+      type: number
+      format: double
+    max_tokens:
+      type: integer
+    status:
+      $ref: './common.yaml#/StatusEnum'
+    created_at:
+      $ref: './common.yaml#/Timestamp'
+    updated_at:
+      $ref: './common.yaml#/Timestamp'
+
+UpstreamKeyUsage:
+  type: object
+  required:
+    - upstream_key_id
+    - attempt_count
+    - success_count
+    - failed_count
+    - avg_latency_ms
+  properties:
+    upstream_key_id:
+      type: string
+    attempt_count:
+      type: integer
+    success_count:
+      type: integer
+    failed_count:
+      type: integer
+    avg_latency_ms:
+      type: integer
+    last_attempt_at:
+      $ref: './common.yaml#/Timestamp'
+
+# 请求体类型
+
+CreateUpstreamKeyRequest:
+  type: object
+  required:
+    - provider_id
+    - name
+    - key
+    - max_concurrency
+  properties:
+    provider_id:
+      type: string
+    name:
+      type: string
+    key:
+      type: string
+      description: 上游密钥明文（仅创建时提交）
+    max_concurrency:
+      type: integer
+    priority:
+      type: integer
+    quota_type:
+      $ref: './common.yaml#/QuotaTypeEnum'
+    quota_total:
+      type: integer
+      format: int64
+    cost:
+      type: number
+      format: double
+    expires_at:
+      type: string
+    notes:
+      type: string
+
+UpdateUpstreamKeyRequest:
+  type: object
+  required:
+    - id
+  properties:
+    id:
+      type: string
+    name:
+      type: string
+    key:
+      type: string
+      description: 更新密钥明文
+    max_concurrency:
+      type: integer
+    priority:
+      type: integer
+    quota_type:
+      $ref: './common.yaml#/QuotaTypeEnum'
+    quota_total:
+      type: integer
+      format: int64
+    cost:
+      type: number
+      format: double
+    expires_at:
+      type: string
+    notes:
+      type: string
+
+DeleteUpstreamKeyRequest:
+  type: object
+  required:
+    - id
+  properties:
+    id:
+      type: string
+
+ToggleUpstreamKeyRequest:
+  type: object
+  required:
+    - id
+  properties:
+    id:
+      type: string
+
+CreateUpstreamModelMappingRequest:
+  type: object
+  required:
+    - upstream_key_id
+    - model_id
+  properties:
+    upstream_key_id:
+      type: string
+    model_id:
+      type: string
+    provider_endpoint_id:
+      type: string
+    upstream_model_name:
+      type: string
+    input_price_per_token:
+      type: number
+      format: double
+    output_price_per_token:
+      type: number
+      format: double
+    max_tokens:
+      type: integer
+
+UpdateUpstreamModelMappingRequest:
+  type: object
+  required:
+    - id
+  properties:
+    id:
+      type: string
+    upstream_model_name:
+      type: string
+    input_price_per_token:
+      type: number
+      format: double
+    output_price_per_token:
+      type: number
+      format: double
+    max_tokens:
+      type: integer
+
+DeleteUpstreamModelMappingRequest:
+  type: object
+  required:
+    - id
+  properties:
+    id:
+      type: string
+
+ToggleUpstreamModelMappingRequest:
+  type: object
+  required:
+    - id
+  properties:
+    id:
+      type: string

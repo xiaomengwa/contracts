@@ -1,0 +1,397 @@
+# 通用枚举和基础类型
+
+StatusEnum:
+  type: string
+  enum:
+    - active
+    - disabled
+    - deleted
+  description: 通用状态枚举
+
+PlanTypeEnum:
+  type: string
+  enum:
+    - coding
+    - token
+    - image
+  description: 套餐类型
+
+QuotaTypeEnum:
+  type: string
+  enum:
+    - token_plan
+    - coding_plan
+    - image_plan
+  description: 配额类型
+
+ProtocolEnum:
+  type: string
+  enum:
+    - openai
+    - anthropic
+    - openai_chat
+    - openai_responses
+    - anthropic_messages
+    - tokenmp_gateway
+    - custom
+  description: 协议类型
+
+KindEnum:
+  type: string
+  enum:
+    - llm.chat
+    - llm.response
+    - llm.message
+    - image.generate
+  description: 端点类型
+
+AuthTypeEnum:
+  type: string
+  enum:
+    - bearer
+    - api_key
+    - none
+  description: 认证类型
+
+RequestModeEnum:
+  type: string
+  enum:
+    - stream
+    - sync
+  description: 请求模式
+
+RoleEnum:
+  type: string
+  enum:
+    - user
+    - admin
+  description: 用户角色
+
+BillingPreferenceEnum:
+  type: string
+  enum:
+    - coding
+    - token
+  description: 计费偏好
+
+LedgerTypeEnum:
+  type: string
+  enum:
+    - charge
+    - recharge
+    - refund
+    - grant
+  description: 账本条目类型
+
+ErrorCode:
+  type: string
+  description: 平台错误码
+  enum:
+    # ── 平台通用 ──
+    - INVALID_PARAM
+    - UNAUTHORIZED
+    - FORBIDDEN
+    - NOT_FOUND
+    - CONFLICT
+    - RATE_LIMITED
+    - QUOTA_EXCEEDED
+    - CLIENT_CANCELED
+    - SERVICE_RESTARTING
+    - MODEL_NOT_FOUND
+    - ROUTE_GROUP_NOT_FOUND
+    - PROVIDER_NOT_FOUND
+    - MODEL_IMAGE_INPUT_UNSUPPORTED
+    - NO_AVAILABLE_UPSTREAM
+    - NO_LEASE_CAPACITY
+    - UPSTREAM_ERROR
+    - UPSTREAM_HTTP_ERROR
+    - UPSTREAM_STREAM_ERROR
+    - INTERNAL_ERROR
+    - UNSUPPORTED_STREAM_CONVERSION
+    # ── 兑换码 ──
+    - REDEEM_CODE_INACTIVE
+    - REDEEM_CODE_EXPIRED
+    - REDEEM_CODE_EXHAUSTED
+    - REDEEM_CODE_ALREADY_REDEEMED
+    - REDEEM_CODE_PLAN_DOWNGRADE
+    # ── 上游供应商 ──
+    - UPSTREAM_AUTH_INVALID
+    - UPSTREAM_PERMISSION_DENIED
+    - UPSTREAM_MODEL_NOT_FOUND
+    - UPSTREAM_MODEL_NOT_SUPPORTED
+    - UPSTREAM_INVALID_REQUEST
+    - UPSTREAM_IMAGE_FORMAT_INVALID
+    - UPSTREAM_REASONING_STATE_REQUIRED
+    - UPSTREAM_CONTEXT_LENGTH_EXCEEDED
+    - UPSTREAM_CONTENT_BLOCKED
+    - UPSTREAM_RATE_LIMITED
+    - UPSTREAM_QUOTA_EXCEEDED
+    - UPSTREAM_BILLING_REQUIRED
+    - UPSTREAM_PLAN_EXPIRED
+    - UPSTREAM_PLAN_MODEL_DENIED
+    - UPSTREAM_DUPLICATE_REQUEST
+    - UPSTREAM_OVERLOADED
+    - UPSTREAM_TIMEOUT
+    - UPSTREAM_INTERNAL_ERROR
+  x-enum-descriptions:
+    # ── 平台通用 ──
+    INVALID_PARAM: 请求参数不正确，请检查后重试。
+    UNAUTHORIZED: 认证失败，请检查凭证后重试。
+    FORBIDDEN: 当前账号无权执行该操作。
+    NOT_FOUND: 请求的资源不存在或已不可用。
+    CONFLICT: 请求与当前数据状态冲突，请刷新后重试。
+    RATE_LIMITED: 请求过于频繁，请稍后重试。
+    QUOTA_EXCEEDED: 当前套餐或余额不足，请充值或兑换资源包后再试。
+    CLIENT_CANCELED: 客户端已取消请求，通常是客户端断开连接、超时或主动中止导致。
+    SERVICE_RESTARTING: 服务正在重启，请稍后重试。
+    MODEL_NOT_FOUND: 请求模型不存在或暂不可用，请检查模型名称。
+    ROUTE_GROUP_NOT_FOUND: 请求的路由组不存在或暂不可用，请检查模型选择器。
+    PROVIDER_NOT_FOUND: 请求的供应商选择器不存在或暂不可用，请检查模型选择器。
+    MODEL_IMAGE_INPUT_UNSUPPORTED: 当前模型不支持图片输入，请选择支持视觉能力的模型或移除图片输入。
+    NO_AVAILABLE_UPSTREAM: 模型服务暂时不可用，请稍后重试。
+    NO_LEASE_CAPACITY: 模型服务暂时不可用，请稍后重试。
+    UPSTREAM_ERROR: 模型服务暂时不可用，请稍后重试。
+    UPSTREAM_HTTP_ERROR: 模型服务暂时不可用，请稍后重试。
+    UPSTREAM_STREAM_ERROR: 模型服务暂时不可用，请稍后重试。
+    INTERNAL_ERROR: 服务暂时不可用，请稍后重试。
+    UNSUPPORTED_STREAM_CONVERSION: 当前请求暂不支持该流式模式。
+    # ── 兑换码 ──
+    REDEEM_CODE_INACTIVE: 兑换码暂不可用，请联系管理员确认状态。
+    REDEEM_CODE_EXPIRED: 兑换码已过期，请联系管理员确认是否有新的兑换码。
+    REDEEM_CODE_EXHAUSTED: 兑换码已被兑完，无法继续使用。
+    REDEEM_CODE_ALREADY_REDEEMED: 你已兑换过该兑换码，不能重复使用。
+    REDEEM_CODE_PLAN_DOWNGRADE: 当前 Coding Plan 等级更高，不能兑换低等级套餐。
+    # ── 上游供应商 ──
+    UPSTREAM_AUTH_INVALID: 当前请求通道配置异常，请联系管理员处理。
+    UPSTREAM_PERMISSION_DENIED: 当前请求通道权限不足，请联系管理员处理。
+    UPSTREAM_MODEL_NOT_FOUND: 当前模型暂不可用，请联系管理员。
+    UPSTREAM_MODEL_NOT_SUPPORTED: 当前模型暂不可用，请切换模型或联系管理员。
+    UPSTREAM_INVALID_REQUEST: 请求参数不符合模型要求，请检查后重试。
+    UPSTREAM_IMAGE_FORMAT_INVALID: 图片格式不正确或无法解码，请使用 jpg/jpeg/png/webp/gif 图片，并确认 data URL 或 base64 内容有效。
+    UPSTREAM_REASONING_STATE_REQUIRED: 模型需要上一轮思考状态。
+    UPSTREAM_CONTEXT_LENGTH_EXCEEDED: 输入内容或最大输出长度超过模型上下文限制，请减少输入内容或降低 max_tokens 后重试。
+    UPSTREAM_CONTENT_BLOCKED: 请求内容触发安全限制，请调整后重试。
+    UPSTREAM_RATE_LIMITED: 当前请求通道请求过于频繁，请稍后重试。
+    UPSTREAM_QUOTA_EXCEEDED: 当前请求通道额度不足，请联系管理员处理。
+    UPSTREAM_BILLING_REQUIRED: 当前请求通道计费未开通，请联系管理员处理。
+    UPSTREAM_PLAN_EXPIRED: 当前请求通道套餐已过期，请联系管理员处理。
+    UPSTREAM_PLAN_MODEL_DENIED: 当前请求通道不支持该模型，请联系管理员处理。
+    UPSTREAM_DUPLICATE_REQUEST: 检测到重复请求，请稍后重试。
+    UPSTREAM_OVERLOADED: 模型服务暂时繁忙，请稍后重试。
+    UPSTREAM_TIMEOUT: 模型服务响应超时，请稍后重试。
+    UPSTREAM_INTERNAL_ERROR: 模型服务暂时不可用，请稍后重试。
+  x-enum-categories:
+    INVALID_PARAM: request
+    UNAUTHORIZED: request
+    FORBIDDEN: request
+    NOT_FOUND: request
+    CONFLICT: request
+    RATE_LIMITED: rate_limit
+    QUOTA_EXCEEDED: quota
+    CLIENT_CANCELED: canceled
+    SERVICE_RESTARTING: internal
+    MODEL_NOT_FOUND: request
+    ROUTE_GROUP_NOT_FOUND: request
+    PROVIDER_NOT_FOUND: request
+    MODEL_IMAGE_INPUT_UNSUPPORTED: request
+    NO_AVAILABLE_UPSTREAM: capacity
+    NO_LEASE_CAPACITY: capacity
+    UPSTREAM_ERROR: upstream_server
+    UPSTREAM_HTTP_ERROR: upstream_server
+    UPSTREAM_STREAM_ERROR: upstream_server
+    INTERNAL_ERROR: internal
+    UNSUPPORTED_STREAM_CONVERSION: request
+    REDEEM_CODE_INACTIVE: request
+    REDEEM_CODE_EXPIRED: request
+    REDEEM_CODE_EXHAUSTED: request
+    REDEEM_CODE_ALREADY_REDEEMED: request
+    REDEEM_CODE_PLAN_DOWNGRADE: request
+    UPSTREAM_AUTH_INVALID: upstream_config
+    UPSTREAM_PERMISSION_DENIED: upstream_config
+    UPSTREAM_MODEL_NOT_FOUND: upstream_request
+    UPSTREAM_MODEL_NOT_SUPPORTED: upstream_request
+    UPSTREAM_INVALID_REQUEST: upstream_request
+    UPSTREAM_IMAGE_FORMAT_INVALID: upstream_request
+    UPSTREAM_REASONING_STATE_REQUIRED: upstream_request
+    UPSTREAM_CONTEXT_LENGTH_EXCEEDED: upstream_request
+    UPSTREAM_CONTENT_BLOCKED: upstream_request
+    UPSTREAM_RATE_LIMITED: upstream_rate_limit
+    UPSTREAM_QUOTA_EXCEEDED: upstream_config
+    UPSTREAM_BILLING_REQUIRED: upstream_config
+    UPSTREAM_PLAN_EXPIRED: upstream_config
+    UPSTREAM_PLAN_MODEL_DENIED: upstream_config
+    UPSTREAM_DUPLICATE_REQUEST: upstream_request
+    UPSTREAM_OVERLOADED: upstream_server
+    UPSTREAM_TIMEOUT: upstream_server
+    UPSTREAM_INTERNAL_ERROR: upstream_server
+  x-enum-actions:
+    INVALID_PARAM: fix_request
+    UNAUTHORIZED: fix_request
+    FORBIDDEN: fix_request
+    NOT_FOUND: fix_request
+    CONFLICT: fix_request
+    RATE_LIMITED: rate_limited
+    QUOTA_EXCEEDED: add_quota
+    CLIENT_CANCELED: canceled
+    SERVICE_RESTARTING: retry_later
+    MODEL_NOT_FOUND: fix_request
+    ROUTE_GROUP_NOT_FOUND: fix_request
+    PROVIDER_NOT_FOUND: fix_request
+    MODEL_IMAGE_INPUT_UNSUPPORTED: fix_request
+    NO_AVAILABLE_UPSTREAM: no_capacity
+    NO_LEASE_CAPACITY: no_capacity
+    UPSTREAM_ERROR: retry_later
+    UPSTREAM_HTTP_ERROR: retry_later
+    UPSTREAM_STREAM_ERROR: retry_later
+    INTERNAL_ERROR: server_error
+    UNSUPPORTED_STREAM_CONVERSION: fix_request
+    REDEEM_CODE_INACTIVE: fix_request
+    REDEEM_CODE_EXPIRED: fix_request
+    REDEEM_CODE_EXHAUSTED: fix_request
+    REDEEM_CODE_ALREADY_REDEEMED: fix_request
+    REDEEM_CODE_PLAN_DOWNGRADE: fix_request
+    UPSTREAM_AUTH_INVALID: contact_admin
+    UPSTREAM_PERMISSION_DENIED: contact_admin
+    UPSTREAM_MODEL_NOT_FOUND: fix_request
+    UPSTREAM_MODEL_NOT_SUPPORTED: fix_request
+    UPSTREAM_INVALID_REQUEST: fix_request
+    UPSTREAM_IMAGE_FORMAT_INVALID: fix_request
+    UPSTREAM_REASONING_STATE_REQUIRED: fix_request
+    UPSTREAM_CONTEXT_LENGTH_EXCEEDED: fix_request
+    UPSTREAM_CONTENT_BLOCKED: fix_request
+    UPSTREAM_RATE_LIMITED: retry_later
+    UPSTREAM_QUOTA_EXCEEDED: contact_admin
+    UPSTREAM_BILLING_REQUIRED: contact_admin
+    UPSTREAM_PLAN_EXPIRED: contact_admin
+    UPSTREAM_PLAN_MODEL_DENIED: contact_admin
+    UPSTREAM_DUPLICATE_REQUEST: fix_request
+    UPSTREAM_OVERLOADED: retry_later
+    UPSTREAM_TIMEOUT: retry_later
+    UPSTREAM_INTERNAL_ERROR: retry_later
+
+ErrorCategory:
+  type: string
+  description: 错误分类，用于展示层优先级排序和报告聚合
+  enum:
+    - request
+    - quota
+    - rate_limit
+    - upstream_rate_limit
+    - upstream_config
+    - upstream_request
+    - upstream_server
+    - capacity
+    - canceled
+    - internal
+  x-enum-descriptions:
+    request: 客户端请求错误
+    quota: 用户配额或余额不足
+    rate_limit: 平台侧限流
+    upstream_rate_limit: 上游供应商限流
+    upstream_config: 上游通道配置异常（认证/权限/套餐）
+    upstream_request: 上游判定请求参数非法
+    upstream_server: 上游服务端异常
+    capacity: 无可用上游或并发容量
+    canceled: 客户端主动取消
+    internal: 平台内部错误
+
+ErrorAction:
+  type: string
+  description: 建议调用方在遇到错误后应采取的下一步操作
+  enum:
+    - fix_request
+    - retry_later
+    - add_quota
+    - contact_admin
+    - server_error
+    - canceled
+    - rate_limited
+    - no_capacity
+  x-enum-descriptions:
+    fix_request: 修正请求参数后重试
+    retry_later: 稍后重试
+    add_quota: 充值或兑换资源包
+    contact_admin: 联系管理员处理
+    server_error: 服务端错误，无需重试
+    canceled: 请求已取消
+    rate_limited: 被限流，降低请求频率
+    no_capacity: 无可用容量，稍后重试
+
+ErrorCodeDetail:
+  type: object
+  description: 错误码的完整元数据
+  required:
+    - code
+    - public_message
+    - admin_message
+    - action
+    - category
+    - retryable
+    - rate_limited
+    - admin_required
+    - quota_related
+    - billing_related
+  properties:
+    code:
+      $ref: '#/ErrorCode'
+    public_message:
+      type: string
+      description: 面向终端用户的错误提示（中文），避免暴露内部实现细节
+    admin_message:
+      type: string
+      description: 面向管理员的错误提示，包含更多技术细节便于排查
+    action:
+      $ref: '#/ErrorAction'
+    category:
+      $ref: '#/ErrorCategory'
+    retryable:
+      type: boolean
+      description: 是否可重试
+    rate_limited:
+      type: boolean
+      description: 是否为限流触发
+    admin_required:
+      type: boolean
+      description: 是否需要管理员介入
+    quota_related:
+      type: boolean
+      description: 是否与配额相关
+    billing_related:
+      type: boolean
+      description: 是否与计费相关
+
+CatalogStats:
+  type: object
+  properties:
+    request_count:
+      type: integer
+      description: 请求总数
+    attempt_count:
+      type: integer
+      description: 尝试总数
+    success_count:
+      type: integer
+      description: 成功数
+    failed_count:
+      type: integer
+      description: 失败数
+    success_rate:
+      type: number
+      format: double
+      description: 成功率（0-1）
+    avg_latency_ms:
+      type: integer
+      description: 平均延迟（毫秒）
+    total_tokens:
+      type: integer
+      format: int64
+      description: 总 token 数
+    last_attempt_at:
+      type: string
+      format: date-time
+      description: 最后尝试时间
+
+Timestamp:
+  type: string
+  format: date-time
+  description: ISO 8601 时间戳

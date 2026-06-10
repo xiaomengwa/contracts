@@ -1,0 +1,172 @@
+# 系统配置和路由权重类型
+
+SystemConfig:
+  type: object
+  required:
+    - key
+    - value
+    - updated_at
+  properties:
+    key:
+      type: string
+    value:
+      description: 配置值（JSON）
+      type: object
+      x-go-type: json.RawMessage
+    updated_at:
+      $ref: './common.yaml#/Timestamp'
+
+RoutingPolicy:
+  type: object
+  required:
+    - id
+    - name
+    - price_weight
+    - speed_weight
+    - success_weight
+    - availability_weight
+    - concurrency_weight
+    - quota_weight
+    - temperature
+    - status
+    - created_at
+    - updated_at
+  properties:
+    id:
+      type: string
+    name:
+      type: string
+    price_weight:
+      type: number
+      format: double
+    speed_weight:
+      type: number
+      format: double
+    success_weight:
+      type: number
+      format: double
+    availability_weight:
+      type: number
+      format: double
+    concurrency_weight:
+      type: number
+      format: double
+    quota_weight:
+      type: number
+      format: double
+    temperature:
+      type: number
+      format: double
+    status:
+      $ref: './common.yaml#/StatusEnum'
+    created_at:
+      $ref: './common.yaml#/Timestamp'
+    updated_at:
+      $ref: './common.yaml#/Timestamp'
+
+AdminDashboard:
+  type: object
+  required:
+    - user_count
+    - active_user_count
+    - provider_count
+    - provider_endpoint_count
+    - model_count
+    - upstream_key_count
+    - today_requests
+    - total_tokens
+  properties:
+    user_count:
+      type: integer
+    active_user_count:
+      type: integer
+    provider_count:
+      type: integer
+    provider_endpoint_count:
+      type: integer
+    model_count:
+      type: integer
+    upstream_key_count:
+      type: integer
+    today_requests:
+      type: integer
+    total_tokens:
+      type: integer
+    today_input_tokens:
+      type: integer
+    today_output_tokens:
+      type: integer
+    total_input_tokens:
+      type: integer
+    total_output_tokens:
+      type: integer
+    today_images:
+      type: integer
+    total_images:
+      type: integer
+
+# 请求体类型
+
+UpdateSystemConfigRequest:
+  type: object
+  required:
+    - key
+    - value
+  properties:
+    key:
+      type: string
+    value:
+      description: 配置值（JSON）
+      type: object
+      x-go-type: json.RawMessage
+
+UpdateRoutingConfigRequest:
+  type: object
+  properties:
+    price_weight:
+      type: number
+      format: double
+    speed_weight:
+      type: number
+      format: double
+    success_weight:
+      type: number
+      format: double
+    availability_weight:
+      type: number
+      format: double
+    concurrency_weight:
+      type: number
+      format: double
+    quota_weight:
+      type: number
+      format: double
+    temperature:
+      type: number
+      format: double
+
+# 管理员用户操作请求
+
+UpdateUserRequest:
+  type: object
+  required:
+    - id
+  properties:
+    id:
+      type: string
+    role:
+      $ref: './common.yaml#/RoleEnum'
+    status:
+      $ref: './common.yaml#/StatusEnum'
+    preferred_billing:
+      $ref: './common.yaml#/BillingPreferenceEnum'
+    fallback_enabled:
+      type: boolean
+
+ToggleUserRequest:
+  type: object
+  required:
+    - id
+  properties:
+    id:
+      type: string

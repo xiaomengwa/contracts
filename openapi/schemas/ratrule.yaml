@@ -1,0 +1,109 @@
+# 倍率规则类型
+
+PriceMultiplierRule:
+  type: object
+  required:
+    - id
+    - timezone
+    - days_of_week
+    - start_time
+    - end_time
+    - multiplier
+    - priority
+    - status
+    - is_active
+    - created_at
+    - updated_at
+  properties:
+    id:
+      type: string
+    provider_id:
+      type: string
+    key_id:
+      type: string
+    upstream_key_id:
+      type: string
+    model_id:
+      type: string
+    protocol:
+      type: string
+    timezone:
+      type: string
+    days_of_week:
+      type: array
+      items:
+        type: integer
+        minimum: 1
+        maximum: 7
+    start_time:
+      type: string
+    end_time:
+      type: string
+    multiplier:
+      type: number
+      format: double
+    priority:
+      type: integer
+    status:
+      $ref: './common.yaml#/StatusEnum'
+    is_active:
+      type: boolean
+    created_at:
+      $ref: './common.yaml#/Timestamp'
+    updated_at:
+      $ref: './common.yaml#/Timestamp'
+
+# 请求体类型
+
+CreateRateRuleRequest:
+  type: object
+  required:
+    - timezone
+    - days_of_week
+    - start_time
+    - end_time
+    - multiplier
+  properties:
+    provider_id:
+      type: string
+    key_id:
+      type: string
+    upstream_key_id:
+      type: string
+    model_id:
+      type: string
+    protocol:
+      type: string
+    timezone:
+      type: string
+    days_of_week:
+      type: array
+      items:
+        type: integer
+        minimum: 1
+        maximum: 7
+    start_time:
+      type: string
+    end_time:
+      type: string
+    multiplier:
+      type: number
+      format: double
+    priority:
+      type: integer
+
+ToggleRateRuleRequest:
+  type: object
+  required:
+    - id
+  properties:
+    id:
+      type: string
+
+DeleteRateRuleRequest:
+  type: object
+  required:
+    - id
+  properties:
+    id:
+      type: string

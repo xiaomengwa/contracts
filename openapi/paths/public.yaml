@@ -1,0 +1,39 @@
+# 公开端点（无需认证）
+
+/api/v1/public/plans:
+  get:
+    operationId: publicPlanList
+    tags:
+      - public
+    summary: 获取公开套餐列表
+    description: 返回所有状态为 active 的套餐，无需认证
+    parameters:
+      - name: plan_type
+        in: query
+        schema:
+          $ref: '../schemas/common.yaml#/PlanTypeEnum'
+      - name: page
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          default: 1
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+    responses:
+      '200':
+        description: 成功
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '../schemas/envelope.yaml#/ApiResponse'
+                - type: object
+                  properties:
+                    data:
+                      $ref: '../schemas/envelope.yaml#/PaginatedData'

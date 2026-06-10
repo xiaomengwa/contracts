@@ -1,0 +1,196 @@
+# 兑换码类型
+
+RedeemCode:
+  type: object
+  required:
+    - id
+    - name
+    - token_amount
+    - max_redemptions
+    - redeemed_count
+    - status
+    - override_mode
+    - created_at
+    - updated_at
+  properties:
+    id:
+      type: string
+    name:
+      type: string
+    code_prefix:
+      type: string
+    code_suffix:
+      type: string
+    token_amount:
+      type: integer
+    coding_plan_id:
+      type: string
+    token_plan_id:
+      type: string
+    image_plan_id:
+      type: string
+    rewards:
+      $ref: '#/RedeemCodeRewards'
+    max_redemptions:
+      type: integer
+    redeemed_count:
+      type: integer
+    status:
+      $ref: './common.yaml#/StatusEnum'
+    starts_at:
+      type: string
+    expires_at:
+      type: string
+    override_mode:
+      type: string
+      enum:
+        - replace
+        - upgrade_only
+    created_by:
+      type: string
+    created_at:
+      $ref: './common.yaml#/Timestamp'
+    updated_at:
+      $ref: './common.yaml#/Timestamp'
+
+RedeemCodeRewards:
+  type: object
+  properties:
+    coding_tier_id:
+      type: string
+    coding_tier_name:
+      type: string
+    coding_expires_at:
+      type: string
+    token_tier_id:
+      type: string
+    token_tier_name:
+      type: string
+    image_tier_id:
+      type: string
+    image_tier_name:
+      type: string
+    token_recharge:
+      type: integer
+
+RedeemCodeCreateResponse:
+  allOf:
+    - $ref: '#/RedeemCode'
+    - type: object
+      required:
+        - code
+      properties:
+        code:
+          type: string
+          description: 明文兑换码（仅创建时返回）
+
+RedeemCodeRedemption:
+  type: object
+  required:
+    - id
+    - redeem_code_id
+    - user_id
+    - token_amount
+    - created_at
+  properties:
+    id:
+      type: string
+    redeem_code_id:
+      type: string
+    user_id:
+      type: string
+    token_amount:
+      type: integer
+    coding_plan_id:
+      type: string
+    token_plan_id:
+      type: string
+    image_plan_id:
+      type: string
+    coding_user_plan_id:
+      type: string
+    token_user_plan_id:
+      type: string
+    image_user_plan_id:
+      type: string
+    ledger_id:
+      type: string
+    created_at:
+      $ref: './common.yaml#/Timestamp'
+
+RedeemCodeRedemptionResponse:
+  type: object
+  required:
+    - redeem_code_id
+    - redeem_code_name
+    - token_amount
+    - rewards
+    - redeemed_at
+  properties:
+    redeem_code_id:
+      type: string
+    redeem_code_name:
+      type: string
+    token_amount:
+      type: integer
+    rewards:
+      $ref: '#/RedeemCodeRewards'
+    ledger:
+      $ref: './usage.yaml#/UsageLedgerResponse'
+    redeemed_at:
+      $ref: './common.yaml#/Timestamp'
+
+# 请求体类型
+
+CreateRedeemCodeRequest:
+  type: object
+  required:
+    - name
+    - token_amount
+    - max_redemptions
+  properties:
+    name:
+      type: string
+    token_amount:
+      type: integer
+    coding_plan_id:
+      type: string
+    token_plan_id:
+      type: string
+    image_plan_id:
+      type: string
+    max_redemptions:
+      type: integer
+    override_mode:
+      type: string
+      enum:
+        - replace
+        - upgrade_only
+    starts_at:
+      type: string
+    expires_at:
+      type: string
+
+ToggleRedeemCodeRequest:
+  type: object
+  required:
+    - id
+  properties:
+    id:
+      type: string
+
+DeleteRedeemCodeRequest:
+  type: object
+  required:
+    - id
+  properties:
+    id:
+      type: string
+
+RedeemCodeRequest:
+  type: object
+  required:
+    - code
+  properties:
+    code:
+      type: string

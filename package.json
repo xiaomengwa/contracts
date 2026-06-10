@@ -1,0 +1,19 @@
+{
+  "name": "tokenmp-contracts",
+  "private": true,
+  "description": "TokenMP Management API OpenAPI spec and code generation",
+  "scripts": {
+    "bundle": "node scripts/bundle.mjs",
+    "validate": "node scripts/bundle.mjs && npx @redocly/cli lint bundled.yaml",
+    "check-paths": "node scripts/check-paths.mjs",
+    "generate:ts": "npx openapi-typescript bundled.yaml --output ../web/src/types/generated.ts",
+    "generate:go": "echo 'Run oapi-codegen manually for manager and executor'",
+    "generate:error-codes": "node scripts/gen-error-codes.mjs",
+    "generate": "pnpm run bundle && pnpm run generate:ts && pnpm run generate:error-codes"
+  },
+  "devDependencies": {
+    "@redocly/cli": "^1.34.0",
+    "js-yaml": "^4.2.0",
+    "openapi-typescript": "^7.8.0"
+  }
+}

@@ -1,0 +1,22 @@
+# 管理员仪表盘
+
+/api/v1/admin/dashboard:
+  get:
+    operationId: adminDashboard
+    tags:
+      - admin
+    summary: 获取管理员仪表盘数据
+    security:
+      - adminBearerAuth: []
+    responses:
+      '200':
+        description: 成功
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '../schemas/envelope.yaml#/ApiResponse'
+                - type: object
+                  properties:
+                    data:
+                      $ref: '../schemas/sysconfig.yaml#/AdminDashboard'

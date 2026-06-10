@@ -1,0 +1,84 @@
+# 响应信封和分页结构
+
+ApiResponse:
+  type: object
+  required:
+    - code
+    - data
+    - message
+  properties:
+    code:
+      type: integer
+      description: HTTP 状态码
+    data:
+      description: 业务数据载荷，具体结构因端点而异
+    message:
+      type: string
+      description: 状态消息
+    error_code:
+      type: string
+      description: 错误码（仅错误响应）
+
+ApiErrorResponse:
+  type: object
+  required:
+    - code
+    - message
+  properties:
+    code:
+      type: integer
+      description: HTTP 状态码（>= 400）
+    data:
+      description: 错误时通常为 null
+    message:
+      type: string
+      description: 错误描述
+    error_code:
+      type: string
+      description: 错误码
+
+PaginatedData:
+  type: object
+  required:
+    - items
+    - page
+    - limit
+    - total
+  properties:
+    items:
+      type: array
+      items: {}
+      description: 数据列表
+    page:
+      type: integer
+      minimum: 1
+      description: 当前页码
+    limit:
+      type: integer
+      minimum: 1
+      maximum: 100
+      description: 每页条数
+    total:
+      type: integer
+      description: 总条数
+    has_more:
+      type: boolean
+      description: 是否有更多数据
+    total_estimated:
+      type: boolean
+      description: total 是否为估算值
+
+PaginationParams:
+  type: object
+  properties:
+    page:
+      type: integer
+      minimum: 1
+      default: 1
+      description: 页码
+    limit:
+      type: integer
+      minimum: 1
+      maximum: 100
+      default: 20
+      description: 每页条数
