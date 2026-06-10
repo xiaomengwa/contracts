@@ -1,6 +1,4 @@
-# 管理员倍率规则管理端点
-
-/api/v1/admin/rules/rate:
+/api/v1/admin/rules/rate/list:
   get:
     operationId: adminRateRuleList
     tags:
@@ -28,12 +26,12 @@
       - name: status
         in: query
         schema:
-          $ref: '../schemas/common.yaml#/StatusEnum'
+          $ref: ../schemas/common.yaml#/StatusEnum
       - name: scope
         in: query
         schema:
           type: string
-          description: "规则作用范围过滤"
+          description: 规则作用范围过滤
       - name: page
         in: query
         schema:
@@ -48,13 +46,13 @@
           maximum: 100
           default: 20
     responses:
-      '200':
+      "200":
         description: 成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: '../schemas/envelope.yaml#/ApiResponse'
+                - $ref: ../schemas/envelope.yaml#/ApiResponse
                 - type: object
                   properties:
                     data:
@@ -68,26 +66,25 @@
                         items:
                           type: array
                           items:
-                            $ref: '../schemas/ratrule.yaml#/PriceMultiplierRule'
+                            $ref: ../schemas/ratrule.yaml#/PriceMultiplierRule
                         page:
                           type: integer
                         limit:
                           type: integer
                         total:
                           type: integer
-      '401':
+      "401":
         description: 未授权
         content:
           application/json:
             schema:
-              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
-      '403':
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+      "403":
         description: 无权限
         content:
           application/json:
             schema:
-              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
-
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
 /api/v1/admin/rules/rate/create:
   post:
     operationId: adminRateRuleCreate
@@ -101,38 +98,37 @@
       content:
         application/json:
           schema:
-            $ref: '../schemas/ratrule.yaml#/CreateRateRuleRequest'
+            $ref: ../schemas/ratrule.yaml#/CreateRateRuleRequest
     responses:
-      '201':
+      "201":
         description: 创建成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: '../schemas/envelope.yaml#/ApiResponse'
+                - $ref: ../schemas/envelope.yaml#/ApiResponse
                 - type: object
                   properties:
                     data:
-                      $ref: '../schemas/ratrule.yaml#/PriceMultiplierRule'
-      '400':
+                      $ref: ../schemas/ratrule.yaml#/PriceMultiplierRule
+      "400":
         description: 参数无效
         content:
           application/json:
             schema:
-              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
-      '401':
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+      "401":
         description: 未授权
         content:
           application/json:
             schema:
-              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
-      '403':
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+      "403":
         description: 无权限
         content:
           application/json:
             schema:
-              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
-
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
 /api/v1/admin/rules/rate/toggle:
   post:
     operationId: adminRateRuleToggle
@@ -146,38 +142,37 @@
       content:
         application/json:
           schema:
-            $ref: '../schemas/ratrule.yaml#/ToggleRateRuleRequest'
+            $ref: ../schemas/ratrule.yaml#/ToggleRateRuleRequest
     responses:
-      '200':
+      "200":
         description: 切换成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: '../schemas/envelope.yaml#/ApiResponse'
+                - $ref: ../schemas/envelope.yaml#/ApiResponse
                 - type: object
                   properties:
                     data:
-                      $ref: '../schemas/ratrule.yaml#/PriceMultiplierRule'
-      '401':
+                      $ref: ../schemas/ratrule.yaml#/PriceMultiplierRule
+      "401":
         description: 未授权
         content:
           application/json:
             schema:
-              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
-      '403':
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+      "403":
         description: 无权限
         content:
           application/json:
             schema:
-              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
-      '404':
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+      "404":
         description: 倍率规则不存在
         content:
           application/json:
             schema:
-              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
-
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
 /api/v1/admin/rules/rate/delete:
   post:
     operationId: adminRateRuleDelete
@@ -191,29 +186,73 @@
       content:
         application/json:
           schema:
-            $ref: '../schemas/ratrule.yaml#/DeleteRateRuleRequest'
+            $ref: ../schemas/ratrule.yaml#/DeleteRateRuleRequest
     responses:
-      '200':
+      "200":
         description: 删除成功
         content:
           application/json:
             schema:
-              $ref: '../schemas/envelope.yaml#/ApiResponse'
-      '401':
+              $ref: ../schemas/envelope.yaml#/ApiResponse
+      "401":
         description: 未授权
         content:
           application/json:
             schema:
-              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
-      '403':
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+      "403":
         description: 无权限
         content:
           application/json:
             schema:
-              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
-      '404':
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+      "404":
         description: 倍率规则不存在
         content:
           application/json:
             schema:
-              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+/api/v1/admin/rules/rate/update:
+  post:
+    operationId: adminRateRuleUpdate
+    tags:
+      - ratrule
+    summary: 更新倍率规则
+    security:
+      - bearerAuth: []
+    responses:
+      "200":
+        description: 成功
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: ../schemas/envelope.yaml#/ApiResponse
+                - type: object
+                  properties:
+                    data:
+                      $ref: ../schemas/ratrule.yaml#/PriceMultiplierRule
+      "400":
+        description: 参数无效
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+      "401":
+        description: 未授权
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+      "403":
+        description: 无权限
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../schemas/ratrule.yaml#/CreateRateRuleRequest

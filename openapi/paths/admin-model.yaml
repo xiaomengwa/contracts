@@ -1,6 +1,4 @@
-# 管理员模型管理端点
-
-/api/v1/admin/models:
+/api/v1/admin/models/list:
   get:
     operationId: adminModelList
     tags:
@@ -13,11 +11,11 @@
         in: query
         schema:
           type: string
-          description: "搜索名称 / ID"
+          description: 搜索名称 / ID
       - name: status
         in: query
         schema:
-          $ref: '../schemas/common.yaml#/StatusEnum'
+          $ref: ../schemas/common.yaml#/StatusEnum
       - name: page
         in: query
         schema:
@@ -32,13 +30,13 @@
           maximum: 100
           default: 20
     responses:
-      '200':
+      "200":
         description: 成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: '../schemas/envelope.yaml#/ApiResponse'
+                - $ref: ../schemas/envelope.yaml#/ApiResponse
                 - type: object
                   properties:
                     data:
@@ -52,27 +50,26 @@
                         items:
                           type: array
                           items:
-                            $ref: '../schemas/model.yaml#/CatalogModel'
+                            $ref: ../schemas/model.yaml#/CatalogModel
                         page:
                           type: integer
                         limit:
                           type: integer
                         total:
                           type: integer
-      '401':
+      "401":
         description: 未授权
         content:
           application/json:
             schema:
-              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
-      '403':
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+      "403":
         description: 无权限
         content:
           application/json:
             schema:
-              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
-
-/api/v1/admin/model/detail:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+/api/v1/admin/models/detail:
   get:
     operationId: adminModelDetail
     tags:
@@ -87,37 +84,36 @@
         schema:
           type: string
     responses:
-      '200':
+      "200":
         description: 成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: '../schemas/envelope.yaml#/ApiResponse'
+                - $ref: ../schemas/envelope.yaml#/ApiResponse
                 - type: object
                   properties:
                     data:
-                      $ref: '../schemas/model.yaml#/CatalogModel'
-      '401':
+                      $ref: ../schemas/model.yaml#/CatalogModel
+      "401":
         description: 未授权
         content:
           application/json:
             schema:
-              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
-      '403':
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+      "403":
         description: 无权限
         content:
           application/json:
             schema:
-              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
-      '404':
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+      "404":
         description: 模型不存在
         content:
           application/json:
             schema:
-              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
-
-/api/v1/admin/model/create:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+/api/v1/admin/models/create:
   post:
     operationId: adminModelCreate
     tags:
@@ -130,39 +126,38 @@
       content:
         application/json:
           schema:
-            $ref: '../schemas/model.yaml#/CreateModelRequest'
+            $ref: ../schemas/model.yaml#/CreateModelRequest
     responses:
-      '201':
+      "201":
         description: 创建成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: '../schemas/envelope.yaml#/ApiResponse'
+                - $ref: ../schemas/envelope.yaml#/ApiResponse
                 - type: object
                   properties:
                     data:
-                      $ref: '../schemas/model.yaml#/CatalogModel'
-      '400':
+                      $ref: ../schemas/model.yaml#/CatalogModel
+      "400":
         description: 参数无效
         content:
           application/json:
             schema:
-              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
-      '401':
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+      "401":
         description: 未授权
         content:
           application/json:
             schema:
-              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
-      '403':
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+      "403":
         description: 无权限
         content:
           application/json:
             schema:
-              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
-
-/api/v1/admin/model/update:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+/api/v1/admin/models/update:
   post:
     operationId: adminModelUpdate
     tags:
@@ -175,45 +170,44 @@
       content:
         application/json:
           schema:
-            $ref: '../schemas/model.yaml#/UpdateModelRequest'
+            $ref: ../schemas/model.yaml#/UpdateModelRequest
     responses:
-      '200':
+      "200":
         description: 更新成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: '../schemas/envelope.yaml#/ApiResponse'
+                - $ref: ../schemas/envelope.yaml#/ApiResponse
                 - type: object
                   properties:
                     data:
-                      $ref: '../schemas/model.yaml#/CatalogModel'
-      '400':
+                      $ref: ../schemas/model.yaml#/CatalogModel
+      "400":
         description: 参数无效
         content:
           application/json:
             schema:
-              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
-      '401':
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+      "401":
         description: 未授权
         content:
           application/json:
             schema:
-              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
-      '403':
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+      "403":
         description: 无权限
         content:
           application/json:
             schema:
-              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
-      '404':
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+      "404":
         description: 模型不存在
         content:
           application/json:
             schema:
-              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
-
-/api/v1/admin/model/delete:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+/api/v1/admin/models/delete:
   post:
     operationId: adminModelDelete
     tags:
@@ -226,34 +220,33 @@
       content:
         application/json:
           schema:
-            $ref: '../schemas/model.yaml#/DeleteModelRequest'
+            $ref: ../schemas/model.yaml#/DeleteModelRequest
     responses:
-      '200':
+      "200":
         description: 删除成功
         content:
           application/json:
             schema:
-              $ref: '../schemas/envelope.yaml#/ApiResponse'
-      '401':
+              $ref: ../schemas/envelope.yaml#/ApiResponse
+      "401":
         description: 未授权
         content:
           application/json:
             schema:
-              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
-      '403':
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+      "403":
         description: 无权限
         content:
           application/json:
             schema:
-              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
-      '404':
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+      "404":
         description: 模型不存在
         content:
           application/json:
             schema:
-              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
-
-/api/v1/admin/model/toggle:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+/api/v1/admin/models/toggle:
   post:
     operationId: adminModelToggle
     tags:
@@ -266,34 +259,82 @@
       content:
         application/json:
           schema:
-            $ref: '../schemas/model.yaml#/ToggleModelRequest'
+            $ref: ../schemas/model.yaml#/ToggleModelRequest
     responses:
-      '200':
+      "200":
         description: 切换成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: '../schemas/envelope.yaml#/ApiResponse'
+                - $ref: ../schemas/envelope.yaml#/ApiResponse
                 - type: object
                   properties:
                     data:
-                      $ref: '../schemas/model.yaml#/CatalogModel'
-      '401':
+                      $ref: ../schemas/model.yaml#/CatalogModel
+      "401":
         description: 未授权
         content:
           application/json:
             schema:
-              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
-      '403':
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+      "403":
         description: 无权限
         content:
           application/json:
             schema:
-              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
-      '404':
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+      "404":
         description: 模型不存在
         content:
           application/json:
             schema:
-              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+/api/v1/admin/models/options:
+  get:
+    operationId: adminModelOptions
+    tags:
+      - catalog
+    summary: 获取模型选项
+    security:
+      - bearerAuth: []
+    responses:
+      "200":
+        description: 成功
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: ../schemas/envelope.yaml#/ApiResponse
+                - type: object
+                  properties:
+                    data:
+                      type: object
+                      required:
+                        - items
+                        - page
+                        - limit
+                        - total
+                      properties:
+                        items:
+                          type: array
+                          items:
+                            $ref: ../schemas/model.yaml#/CatalogModel
+                        page:
+                          type: integer
+                        limit:
+                          type: integer
+                        total:
+                          type: integer
+      "401":
+        description: 未授权
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+      "403":
+        description: 无权限
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse

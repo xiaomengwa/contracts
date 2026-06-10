@@ -1,0 +1,78 @@
+/api/v1/public/models/list:
+  get:
+    operationId: publicModelList
+    tags:
+      - public
+    summary: 获取公开模型列表
+    security: []
+    responses:
+      "200":
+        description: 成功
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: ../schemas/envelope.yaml#/ApiResponse
+                - type: object
+                  properties:
+                    data:
+                      type: object
+                      required:
+                        - items
+                        - page
+                        - limit
+                        - total
+                      properties:
+                        items:
+                          type: array
+                          items:
+                            $ref: ../schemas/model.yaml#/CatalogModel
+                        page:
+                          type: integer
+                        limit:
+                          type: integer
+                        total:
+                          type: integer
+      "401":
+        description: 未授权
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+      "403":
+        description: 无权限
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+/api/v1/public/marketing/stats:
+  get:
+    operationId: publicMarketingStats
+    tags:
+      - public
+    summary: 获取公开营销统计
+    security: []
+    responses:
+      "200":
+        description: 成功
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: ../schemas/envelope.yaml#/ApiResponse
+                - type: object
+                  properties:
+                    data:
+                      $ref: ../schemas/common.yaml#/MarketingStats
+      "401":
+        description: 未授权
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+      "403":
+        description: 无权限
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse

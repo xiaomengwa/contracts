@@ -1,0 +1,108 @@
+/api/v1/user/config/model/auto:
+  get:
+    operationId: userConfigModelAuto
+    tags:
+      - user
+    summary: 获取自动模型配置
+    security:
+      - bearerAuth: []
+    responses:
+      "200":
+        description: 成功
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: ../schemas/envelope.yaml#/ApiResponse
+                - type: object
+                  properties:
+                    data:
+                      $ref: ../schemas/user.yaml#/UserAutoModelConfig
+      "401":
+        description: 未授权
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+      "403":
+        description: 无权限
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+/api/v1/user/config/model/auto/update:
+  post:
+    operationId: userConfigModelAutoUpdate
+    tags:
+      - user
+    summary: 更新自动模型配置
+    security:
+      - bearerAuth: []
+    responses:
+      "200":
+        description: 成功
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: ../schemas/envelope.yaml#/ApiResponse
+                - type: object
+                  properties:
+                    data:
+                      $ref: ../schemas/user.yaml#/UserAutoModelConfig
+      "400":
+        description: 参数无效
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+      "401":
+        description: 未授权
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+      "403":
+        description: 无权限
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../schemas/user.yaml#/UpdateUserAutoModelConfigRequest
+/api/v1/user/config/billing/detail:
+  get:
+    operationId: userConfigBillingDetail
+    tags:
+      - user
+    summary: 获取计费偏好配置
+    security:
+      - bearerAuth: []
+    responses:
+      "200":
+        description: 成功
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: ../schemas/envelope.yaml#/ApiResponse
+                - type: object
+                  properties:
+                    data:
+                      $ref: ../schemas/user.yaml#/BillingConfig
+      "401":
+        description: 未授权
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+      "403":
+        description: 无权限
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse

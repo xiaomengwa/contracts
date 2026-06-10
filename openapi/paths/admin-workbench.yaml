@@ -1,0 +1,160 @@
+/api/v1/admin/workbench/routes:
+  get:
+    operationId: adminWorkbenchRoutes
+    tags:
+      - admin
+    summary: 获取路由工作台
+    security:
+      - adminBearerAuth: []
+    responses:
+      "200":
+        description: 成功
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: ../schemas/envelope.yaml#/ApiResponse
+                - type: object
+                  properties:
+                    data:
+                      $ref: ../schemas/model.yaml#/RouteWorkbenchData
+      "401":
+        description: 未授权
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+      "403":
+        description: 无权限
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+/api/v1/admin/workbench/plans:
+  get:
+    operationId: adminWorkbenchPlans
+    tags:
+      - admin
+    summary: 获取套餐工作台
+    security:
+      - adminBearerAuth: []
+    responses:
+      "200":
+        description: 成功
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: ../schemas/envelope.yaml#/ApiResponse
+                - type: object
+                  properties:
+                    data:
+                      $ref: ../schemas/plan.yaml#/PlanWorkbenchData
+      "401":
+        description: 未授权
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+      "403":
+        description: 无权限
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+/api/v1/admin/workbench/users:
+  get:
+    operationId: adminWorkbenchUsers
+    tags:
+      - admin
+    summary: 获取用户工作台
+    security:
+      - adminBearerAuth: []
+    responses:
+      "200":
+        description: 成功
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: ../schemas/envelope.yaml#/ApiResponse
+                - type: object
+                  properties:
+                    data:
+                      $ref: ../schemas/user.yaml#/UserWorkbenchData
+      "401":
+        description: 未授权
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+      "403":
+        description: 无权限
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+/api/v1/admin/workbench/codes/redeem:
+  get:
+    operationId: adminWorkbenchRedeemCodes
+    tags:
+      - admin
+    summary: 获取兑换码工作台
+    security:
+      - adminBearerAuth: []
+    responses:
+      "200":
+        description: 成功
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: ../schemas/envelope.yaml#/ApiResponse
+                - type: object
+                  properties:
+                    data:
+                      $ref: ../schemas/redeem.yaml#/RedeemCodeWorkbenchData
+      "401":
+        description: 未授权
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+      "403":
+        description: 无权限
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+/api/v1/admin/workbench/rules/rate:
+  get:
+    operationId: adminWorkbenchRateRules
+    tags:
+      - admin
+    summary: 获取倍率规则工作台
+    security:
+      - adminBearerAuth: []
+    responses:
+      "200":
+        description: 成功
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: ../schemas/envelope.yaml#/ApiResponse
+                - type: object
+                  properties:
+                    data:
+                      $ref: ../schemas/ratrule.yaml#/RateRuleWorkbenchData
+      "401":
+        description: 未授权
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+      "403":
+        description: 无权限
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse

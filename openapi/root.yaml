@@ -1,6 +1,9 @@
 openapi: 3.1.0
 info:
   title: TokenMP Management API
+  license:
+    name: Proprietary
+    identifier: LicenseRef-Proprietary
   description: |
     TokenMP AI 模型 API 网关的管理接口。所有 Management API 响应使用 envelope 包裹：
     `{"code": 200, "data": {...}, "message": "ok", "error_code": ""}`

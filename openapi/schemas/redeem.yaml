@@ -1,5 +1,3 @@
-# 兑换码类型
-
 RedeemCode:
   type: object
   required:
@@ -30,13 +28,13 @@ RedeemCode:
     image_plan_id:
       type: string
     rewards:
-      $ref: '#/RedeemCodeRewards'
+      $ref: "#/RedeemCodeRewards"
     max_redemptions:
       type: integer
     redeemed_count:
       type: integer
     status:
-      $ref: './common.yaml#/StatusEnum'
+      $ref: ./common.yaml#/StatusEnum
     starts_at:
       type: string
     expires_at:
@@ -49,10 +47,9 @@ RedeemCode:
     created_by:
       type: string
     created_at:
-      $ref: './common.yaml#/Timestamp'
+      $ref: ./common.yaml#/Timestamp
     updated_at:
-      $ref: './common.yaml#/Timestamp'
-
+      $ref: ./common.yaml#/Timestamp
 RedeemCodeRewards:
   type: object
   properties:
@@ -72,10 +69,9 @@ RedeemCodeRewards:
       type: string
     token_recharge:
       type: integer
-
 RedeemCodeCreateResponse:
   allOf:
-    - $ref: '#/RedeemCode'
+    - $ref: "#/RedeemCode"
     - type: object
       required:
         - code
@@ -83,7 +79,6 @@ RedeemCodeCreateResponse:
         code:
           type: string
           description: 明文兑换码（仅创建时返回）
-
 RedeemCodeRedemption:
   type: object
   required:
@@ -116,8 +111,7 @@ RedeemCodeRedemption:
     ledger_id:
       type: string
     created_at:
-      $ref: './common.yaml#/Timestamp'
-
+      $ref: ./common.yaml#/Timestamp
 RedeemCodeRedemptionResponse:
   type: object
   required:
@@ -134,14 +128,11 @@ RedeemCodeRedemptionResponse:
     token_amount:
       type: integer
     rewards:
-      $ref: '#/RedeemCodeRewards'
+      $ref: "#/RedeemCodeRewards"
     ledger:
-      $ref: './usage.yaml#/UsageLedgerResponse'
+      $ref: ./usage.yaml#/UsageLedgerResponse
     redeemed_at:
-      $ref: './common.yaml#/Timestamp'
-
-# 请求体类型
-
+      $ref: ./common.yaml#/Timestamp
 CreateRedeemCodeRequest:
   type: object
   required:
@@ -170,7 +161,6 @@ CreateRedeemCodeRequest:
       type: string
     expires_at:
       type: string
-
 ToggleRedeemCodeRequest:
   type: object
   required:
@@ -178,7 +168,6 @@ ToggleRedeemCodeRequest:
   properties:
     id:
       type: string
-
 DeleteRedeemCodeRequest:
   type: object
   required:
@@ -186,7 +175,6 @@ DeleteRedeemCodeRequest:
   properties:
     id:
       type: string
-
 RedeemCodeRequest:
   type: object
   required:
@@ -194,3 +182,47 @@ RedeemCodeRequest:
   properties:
     code:
       type: string
+RedeemCodeWorkbenchData:
+  type: object
+  required:
+    - redemption_codes
+    - coding_plans
+    - token_plans
+    - image_plans
+  properties:
+    redemption_codes:
+      allOf:
+        - $ref: ./envelope.yaml#/PaginatedData
+        - type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: "#/RedeemCode"
+    coding_plans:
+      allOf:
+        - $ref: ./envelope.yaml#/PaginatedData
+        - type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: ./plan.yaml#/Plan
+    token_plans:
+      allOf:
+        - $ref: ./envelope.yaml#/PaginatedData
+        - type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: ./plan.yaml#/Plan
+    image_plans:
+      allOf:
+        - $ref: ./envelope.yaml#/PaginatedData
+        - type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: ./plan.yaml#/Plan

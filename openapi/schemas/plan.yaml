@@ -1,5 +1,3 @@
-# 套餐类型
-
 Plan:
   type: object
   required:
@@ -20,7 +18,7 @@ Plan:
     name:
       type: string
     plan_type:
-      $ref: './common.yaml#/PlanTypeEnum'
+      $ref: ./common.yaml#/PlanTypeEnum
     hourly_5h_limit:
       type: integer
     weekly_limit:
@@ -34,12 +32,11 @@ Plan:
       type: number
       format: double
     status:
-      $ref: './common.yaml#/StatusEnum'
+      $ref: ./common.yaml#/StatusEnum
     created_at:
-      $ref: './common.yaml#/Timestamp'
+      $ref: ./common.yaml#/Timestamp
     updated_at:
-      $ref: './common.yaml#/Timestamp'
-
+      $ref: ./common.yaml#/Timestamp
 UserPlan:
   type: object
   required:
@@ -58,18 +55,15 @@ UserPlan:
     plan_id:
       type: string
     plan_type:
-      $ref: './common.yaml#/PlanTypeEnum'
+      $ref: ./common.yaml#/PlanTypeEnum
     status:
-      $ref: './common.yaml#/StatusEnum'
+      $ref: ./common.yaml#/StatusEnum
     activated_at:
-      $ref: './common.yaml#/Timestamp'
+      $ref: ./common.yaml#/Timestamp
     expires_at:
       type: string
     created_at:
-      $ref: './common.yaml#/Timestamp'
-
-# 请求体类型
-
+      $ref: ./common.yaml#/Timestamp
 CreatePlanRequest:
   type: object
   required:
@@ -80,7 +74,7 @@ CreatePlanRequest:
     name:
       type: string
     plan_type:
-      $ref: './common.yaml#/PlanTypeEnum'
+      $ref: ./common.yaml#/PlanTypeEnum
     hourly_5h_limit:
       type: integer
     weekly_limit:
@@ -93,7 +87,6 @@ CreatePlanRequest:
     price:
       type: number
       format: double
-
 UpdatePlanRequest:
   type: object
   required:
@@ -115,7 +108,6 @@ UpdatePlanRequest:
     price:
       type: number
       format: double
-
 DeletePlanRequest:
   type: object
   required:
@@ -123,7 +115,6 @@ DeletePlanRequest:
   properties:
     id:
       type: string
-
 TogglePlanRequest:
   type: object
   required:
@@ -131,7 +122,6 @@ TogglePlanRequest:
   properties:
     id:
       type: string
-
 SetCodingPlanRequest:
   type: object
   required:
@@ -142,7 +132,12 @@ SetCodingPlanRequest:
       type: string
     plan_id:
       type: string
-
+    expires_at:
+      type: string
+    duration_days:
+      type: integer
+    permanent:
+      type: boolean
 SetTokenPlanRequest:
   type: object
   required:
@@ -153,7 +148,12 @@ SetTokenPlanRequest:
       type: string
     plan_id:
       type: string
-
+    expires_at:
+      type: string
+    duration_days:
+      type: integer
+    permanent:
+      type: boolean
 SetImagePlanRequest:
   type: object
   required:
@@ -164,3 +164,94 @@ SetImagePlanRequest:
       type: string
     plan_id:
       type: string
+    expires_at:
+      type: string
+    duration_days:
+      type: integer
+    permanent:
+      type: boolean
+RenewUserPlanRequest:
+  type: object
+  required:
+    - user_id
+    - user_plan_id
+  properties:
+    user_id:
+      type: string
+    user_plan_id:
+      type: string
+    expires_at:
+      type: string
+    duration_days:
+      type: integer
+    permanent:
+      type: boolean
+CancelUserPlanRequest:
+  type: object
+  required:
+    - user_id
+    - user_plan_id
+  properties:
+    user_id:
+      type: string
+    user_plan_id:
+      type: string
+ToggleUserPlanRequest:
+  type: object
+  required:
+    - user_id
+    - user_plan_id
+    - status
+  properties:
+    user_id:
+      type: string
+    user_plan_id:
+      type: string
+    status:
+      $ref: ./common.yaml#/StatusEnum
+ResetUserPlanUsageRequest:
+  type: object
+  required:
+    - user_id
+    - user_plan_id
+  properties:
+    user_id:
+      type: string
+    user_plan_id:
+      type: string
+    reason:
+      type: string
+PlanWorkbenchData:
+  type: object
+  required:
+    - coding_plans
+    - token_plans
+    - image_plans
+  properties:
+    coding_plans:
+      allOf:
+        - $ref: ./envelope.yaml#/PaginatedData
+        - type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: "#/Plan"
+    token_plans:
+      allOf:
+        - $ref: ./envelope.yaml#/PaginatedData
+        - type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: "#/Plan"
+    image_plans:
+      allOf:
+        - $ref: ./envelope.yaml#/PaginatedData
+        - type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: "#/Plan"

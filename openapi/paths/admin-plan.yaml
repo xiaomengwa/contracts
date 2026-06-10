@@ -1,6 +1,4 @@
-# 管理员套餐管理端点
-
-/api/v1/admin/plans:
+/api/v1/admin/plans/list:
   get:
     operationId: adminPlanList
     tags:
@@ -12,7 +10,7 @@
       - name: plan_type
         in: query
         schema:
-          $ref: '../schemas/common.yaml#/PlanTypeEnum'
+          $ref: ../schemas/common.yaml#/PlanTypeEnum
       - name: page
         in: query
         schema:
@@ -27,13 +25,13 @@
           maximum: 100
           default: 20
     responses:
-      '200':
+      "200":
         description: 成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: '../schemas/envelope.yaml#/ApiResponse'
+                - $ref: ../schemas/envelope.yaml#/ApiResponse
                 - type: object
                   properties:
                     data:
@@ -47,27 +45,26 @@
                         items:
                           type: array
                           items:
-                            $ref: '../schemas/plan.yaml#/Plan'
+                            $ref: ../schemas/plan.yaml#/Plan
                         page:
                           type: integer
                         limit:
                           type: integer
                         total:
                           type: integer
-      '401':
+      "401":
         description: 未授权
         content:
           application/json:
             schema:
-              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
-      '403':
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+      "403":
         description: 无权限
         content:
           application/json:
             schema:
-              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
-
-/api/v1/admin/plan/detail:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+/api/v1/admin/plans/detail:
   get:
     operationId: adminPlanDetail
     tags:
@@ -82,37 +79,36 @@
         schema:
           type: string
     responses:
-      '200':
+      "200":
         description: 成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: '../schemas/envelope.yaml#/ApiResponse'
+                - $ref: ../schemas/envelope.yaml#/ApiResponse
                 - type: object
                   properties:
                     data:
-                      $ref: '../schemas/plan.yaml#/Plan'
-      '401':
+                      $ref: ../schemas/plan.yaml#/Plan
+      "401":
         description: 未授权
         content:
           application/json:
             schema:
-              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
-      '403':
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+      "403":
         description: 无权限
         content:
           application/json:
             schema:
-              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
-      '404':
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+      "404":
         description: 套餐不存在
         content:
           application/json:
             schema:
-              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
-
-/api/v1/admin/plan/create:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+/api/v1/admin/plans/create:
   post:
     operationId: adminPlanCreate
     tags:
@@ -125,39 +121,38 @@
       content:
         application/json:
           schema:
-            $ref: '../schemas/plan.yaml#/CreatePlanRequest'
+            $ref: ../schemas/plan.yaml#/CreatePlanRequest
     responses:
-      '201':
+      "201":
         description: 创建成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: '../schemas/envelope.yaml#/ApiResponse'
+                - $ref: ../schemas/envelope.yaml#/ApiResponse
                 - type: object
                   properties:
                     data:
-                      $ref: '../schemas/plan.yaml#/Plan'
-      '400':
+                      $ref: ../schemas/plan.yaml#/Plan
+      "400":
         description: 参数无效
         content:
           application/json:
             schema:
-              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
-      '401':
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+      "401":
         description: 未授权
         content:
           application/json:
             schema:
-              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
-      '403':
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+      "403":
         description: 无权限
         content:
           application/json:
             schema:
-              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
-
-/api/v1/admin/plan/update:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+/api/v1/admin/plans/update:
   post:
     operationId: adminPlanUpdate
     tags:
@@ -170,45 +165,44 @@
       content:
         application/json:
           schema:
-            $ref: '../schemas/plan.yaml#/UpdatePlanRequest'
+            $ref: ../schemas/plan.yaml#/UpdatePlanRequest
     responses:
-      '200':
+      "200":
         description: 更新成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: '../schemas/envelope.yaml#/ApiResponse'
+                - $ref: ../schemas/envelope.yaml#/ApiResponse
                 - type: object
                   properties:
                     data:
-                      $ref: '../schemas/plan.yaml#/Plan'
-      '400':
+                      $ref: ../schemas/plan.yaml#/Plan
+      "400":
         description: 参数无效
         content:
           application/json:
             schema:
-              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
-      '401':
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+      "401":
         description: 未授权
         content:
           application/json:
             schema:
-              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
-      '403':
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+      "403":
         description: 无权限
         content:
           application/json:
             schema:
-              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
-      '404':
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+      "404":
         description: 套餐不存在
         content:
           application/json:
             schema:
-              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
-
-/api/v1/admin/plan/delete:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+/api/v1/admin/plans/delete:
   post:
     operationId: adminPlanDelete
     tags:
@@ -221,34 +215,33 @@
       content:
         application/json:
           schema:
-            $ref: '../schemas/plan.yaml#/DeletePlanRequest'
+            $ref: ../schemas/plan.yaml#/DeletePlanRequest
     responses:
-      '200':
+      "200":
         description: 删除成功
         content:
           application/json:
             schema:
-              $ref: '../schemas/envelope.yaml#/ApiResponse'
-      '401':
+              $ref: ../schemas/envelope.yaml#/ApiResponse
+      "401":
         description: 未授权
         content:
           application/json:
             schema:
-              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
-      '403':
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+      "403":
         description: 无权限
         content:
           application/json:
             schema:
-              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
-      '404':
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+      "404":
         description: 套餐不存在
         content:
           application/json:
             schema:
-              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
-
-/api/v1/admin/plan/toggle:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+/api/v1/admin/plans/toggle:
   post:
     operationId: adminPlanToggle
     tags:
@@ -261,34 +254,34 @@
       content:
         application/json:
           schema:
-            $ref: '../schemas/plan.yaml#/TogglePlanRequest'
+            $ref: ../schemas/plan.yaml#/TogglePlanRequest
     responses:
-      '200':
+      "200":
         description: 切换成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: '../schemas/envelope.yaml#/ApiResponse'
+                - $ref: ../schemas/envelope.yaml#/ApiResponse
                 - type: object
                   properties:
                     data:
-                      $ref: '../schemas/plan.yaml#/Plan'
-      '401':
+                      $ref: ../schemas/plan.yaml#/Plan
+      "401":
         description: 未授权
         content:
           application/json:
             schema:
-              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
-      '403':
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+      "403":
         description: 无权限
         content:
           application/json:
             schema:
-              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
-      '404':
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+      "404":
         description: 套餐不存在
         content:
           application/json:
             schema:
-              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse

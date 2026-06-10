@@ -1,8 +1,6 @@
-# 模型类型
-
 CatalogModel:
   allOf:
-    - $ref: './common.yaml#/CatalogStats'
+    - $ref: ./common.yaml#/CatalogStats
     - type: object
       required:
         - id
@@ -20,14 +18,11 @@ CatalogModel:
         description:
           type: string
         status:
-          $ref: './common.yaml#/StatusEnum'
+          $ref: ./common.yaml#/StatusEnum
         created_at:
-          $ref: './common.yaml#/Timestamp'
+          $ref: ./common.yaml#/Timestamp
         updated_at:
-          $ref: './common.yaml#/Timestamp'
-
-# 请求体类型
-
+          $ref: ./common.yaml#/Timestamp
 CreateModelRequest:
   type: object
   required:
@@ -39,7 +34,6 @@ CreateModelRequest:
       type: string
     description:
       type: string
-
 UpdateModelRequest:
   type: object
   required:
@@ -53,7 +47,6 @@ UpdateModelRequest:
       type: string
     description:
       type: string
-
 DeleteModelRequest:
   type: object
   required:
@@ -61,7 +54,6 @@ DeleteModelRequest:
   properties:
     id:
       type: string
-
 ToggleModelRequest:
   type: object
   required:
@@ -69,3 +61,221 @@ ToggleModelRequest:
   properties:
     id:
       type: string
+RouteGroup:
+  type: object
+  required:
+    - id
+    - name
+    - status
+    - created_at
+    - updated_at
+  properties:
+    id:
+      type: string
+    name:
+      type: string
+    display_name:
+      type: string
+    description:
+      type: string
+    is_system:
+      type: boolean
+    status:
+      $ref: ./common.yaml#/StatusEnum
+    route_count:
+      type: integer
+    model_count:
+      type: integer
+    provider_count:
+      type: integer
+    created_at:
+      $ref: ./common.yaml#/Timestamp
+    updated_at:
+      $ref: ./common.yaml#/Timestamp
+UpstreamRouteGroupMembership:
+  type: object
+  required:
+    - id
+    - upstream_model_mapping_id
+    - route_group_id
+    - route_group_name
+    - status
+  properties:
+    id:
+      type: string
+    upstream_model_mapping_id:
+      type: string
+    route_group_id:
+      type: string
+    route_group_name:
+      type: string
+    route_group_display_name:
+      type: string
+    is_system:
+      type: boolean
+    status:
+      $ref: ./common.yaml#/StatusEnum
+    created_at:
+      $ref: ./common.yaml#/Timestamp
+    updated_at:
+      $ref: ./common.yaml#/Timestamp
+UserModelRoute:
+  type: object
+  properties:
+    model_name:
+      type: string
+    display_name:
+      type: string
+    capabilities:
+      type: array
+      items:
+        type: string
+    context_window_tokens:
+      type: integer
+    groups:
+      type: array
+      items:
+        type: object
+    trend:
+      type: array
+      items:
+        type: object
+CreateRouteGroupRequest:
+  type: object
+  required:
+    - name
+  properties:
+    name:
+      type: string
+    display_name:
+      type: string
+    description:
+      type: string
+UpdateRouteGroupRequest:
+  type: object
+  required:
+    - id
+  properties:
+    id:
+      type: string
+    name:
+      type: string
+    display_name:
+      type: string
+    description:
+      type: string
+DeleteRouteGroupRequest:
+  type: object
+  required:
+    - id
+  properties:
+    id:
+      type: string
+ToggleRouteGroupRequest:
+  type: object
+  required:
+    - id
+    - status
+  properties:
+    id:
+      type: string
+    status:
+      $ref: ./common.yaml#/StatusEnum
+AddModelRouteGroupRequest:
+  type: object
+  required:
+    - upstream_model_mapping_id
+  properties:
+    upstream_model_mapping_id:
+      type: string
+    route_group_id:
+      type: string
+    route_group_name:
+      type: string
+RemoveModelRouteGroupRequest:
+  type: object
+  required:
+    - upstream_model_mapping_id
+  properties:
+    upstream_model_mapping_id:
+      type: string
+    route_group_id:
+      type: string
+    route_group_name:
+      type: string
+    confirm_remove_default:
+      type: boolean
+RouteWorkbenchData:
+  type: object
+  required:
+    - providers
+    - upstream_keys
+    - models
+    - route_groups
+    - mappings
+    - memberships
+    - model_routes
+  properties:
+    providers:
+      allOf:
+        - $ref: ./envelope.yaml#/PaginatedData
+        - type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: ./provider.yaml#/Provider
+    upstream_keys:
+      allOf:
+        - $ref: ./envelope.yaml#/PaginatedData
+        - type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: ./upstream-key.yaml#/UpstreamKey
+    models:
+      allOf:
+        - $ref: ./envelope.yaml#/PaginatedData
+        - type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: "#/CatalogModel"
+    route_groups:
+      allOf:
+        - $ref: ./envelope.yaml#/PaginatedData
+        - type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: "#/RouteGroup"
+    mappings:
+      allOf:
+        - $ref: ./envelope.yaml#/PaginatedData
+        - type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: ./upstream-key.yaml#/UpstreamModelMapping
+    memberships:
+      allOf:
+        - $ref: ./envelope.yaml#/PaginatedData
+        - type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: "#/UpstreamRouteGroupMembership"
+    model_routes:
+      allOf:
+        - $ref: ./envelope.yaml#/PaginatedData
+        - type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: "#/UserModelRoute"

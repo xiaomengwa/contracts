@@ -1,6 +1,4 @@
-# 管理员配置和路由端点
-
-/api/v1/admin/configs:
+/api/v1/admin/config/list:
   get:
     operationId: adminConfigList
     tags:
@@ -9,32 +7,31 @@
     security:
       - adminBearerAuth: []
     responses:
-      '200':
+      "200":
         description: 成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: '../schemas/envelope.yaml#/ApiResponse'
+                - $ref: ../schemas/envelope.yaml#/ApiResponse
                 - type: object
                   properties:
                     data:
                       type: array
                       items:
-                        $ref: '../schemas/sysconfig.yaml#/SystemConfig'
-      '401':
+                        $ref: ../schemas/sysconfig.yaml#/SystemConfig
+      "401":
         description: 未授权
         content:
           application/json:
             schema:
-              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
-      '403':
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+      "403":
         description: 无权限
         content:
           application/json:
             schema:
-              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
-
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
 /api/v1/admin/config/detail:
   get:
     operationId: adminConfigDetail
@@ -50,36 +47,35 @@
         schema:
           type: string
     responses:
-      '200':
+      "200":
         description: 成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: '../schemas/envelope.yaml#/ApiResponse'
+                - $ref: ../schemas/envelope.yaml#/ApiResponse
                 - type: object
                   properties:
                     data:
-                      $ref: '../schemas/sysconfig.yaml#/SystemConfig'
-      '401':
+                      $ref: ../schemas/sysconfig.yaml#/SystemConfig
+      "401":
         description: 未授权
         content:
           application/json:
             schema:
-              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
-      '403':
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+      "403":
         description: 无权限
         content:
           application/json:
             schema:
-              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
-      '404':
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+      "404":
         description: 配置项不存在
         content:
           application/json:
             schema:
-              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
-
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
 /api/v1/admin/config/update:
   post:
     operationId: adminConfigUpdate
@@ -93,44 +89,43 @@
       content:
         application/json:
           schema:
-            $ref: '../schemas/sysconfig.yaml#/UpdateSystemConfigRequest'
+            $ref: ../schemas/sysconfig.yaml#/UpdateSystemConfigRequest
     responses:
-      '200':
+      "200":
         description: 更新成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: '../schemas/envelope.yaml#/ApiResponse'
+                - $ref: ../schemas/envelope.yaml#/ApiResponse
                 - type: object
                   properties:
                     data:
-                      $ref: '../schemas/sysconfig.yaml#/SystemConfig'
-      '400':
+                      $ref: ../schemas/sysconfig.yaml#/SystemConfig
+      "400":
         description: 参数无效
         content:
           application/json:
             schema:
-              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
-      '401':
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+      "401":
         description: 未授权
         content:
           application/json:
             schema:
-              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
-      '403':
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+      "403":
         description: 无权限
         content:
           application/json:
             schema:
-              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
-      '404':
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+      "404":
         description: 配置项不存在
         content:
           application/json:
             schema:
-              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
-
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
 /api/v1/admin/config/reload:
   post:
     operationId: adminConfigReload
@@ -140,13 +135,13 @@
     security:
       - adminBearerAuth: []
     responses:
-      '200':
+      "200":
         description: 重载成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: '../schemas/envelope.yaml#/ApiResponse'
+                - $ref: ../schemas/envelope.yaml#/ApiResponse
                 - type: object
                   properties:
                     data:
@@ -162,20 +157,19 @@
                           type: boolean
                         executor_cache_version:
                           type: string
-      '401':
+      "401":
         description: 未授权
         content:
           application/json:
             schema:
-              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
-      '403':
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+      "403":
         description: 无权限
         content:
           application/json:
             schema:
-              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
-
-/api/v1/admin/routing/config:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+/api/v1/admin/config/routing/detail:
   get:
     operationId: adminRoutingConfig
     tags:
@@ -184,31 +178,30 @@
     security:
       - adminBearerAuth: []
     responses:
-      '200':
+      "200":
         description: 成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: '../schemas/envelope.yaml#/ApiResponse'
+                - $ref: ../schemas/envelope.yaml#/ApiResponse
                 - type: object
                   properties:
                     data:
-                      $ref: '../schemas/sysconfig.yaml#/RoutingPolicy'
-      '401':
+                      $ref: ../schemas/sysconfig.yaml#/RoutingPolicy
+      "401":
         description: 未授权
         content:
           application/json:
             schema:
-              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
-      '403':
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+      "403":
         description: 无权限
         content:
           application/json:
             schema:
-              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
-
-/api/v1/admin/routing/config/update:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+/api/v1/admin/config/routing/update:
   post:
     operationId: adminRoutingConfigUpdate
     tags:
@@ -221,39 +214,38 @@
       content:
         application/json:
           schema:
-            $ref: '../schemas/sysconfig.yaml#/UpdateRoutingConfigRequest'
+            $ref: ../schemas/sysconfig.yaml#/UpdateRoutingConfigRequest
     responses:
-      '200':
+      "200":
         description: 更新成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: '../schemas/envelope.yaml#/ApiResponse'
+                - $ref: ../schemas/envelope.yaml#/ApiResponse
                 - type: object
                   properties:
                     data:
-                      $ref: '../schemas/sysconfig.yaml#/RoutingPolicy'
-      '400':
+                      $ref: ../schemas/sysconfig.yaml#/RoutingPolicy
+      "400":
         description: 参数无效
         content:
           application/json:
             schema:
-              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
-      '401':
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+      "401":
         description: 未授权
         content:
           application/json:
             schema:
-              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
-      '403':
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+      "403":
         description: 无权限
         content:
           application/json:
             schema:
-              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
-
-/api/v1/admin/routing/reload:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+/api/v1/admin/config/routing/reload:
   post:
     operationId: adminRoutingReload
     tags:
@@ -262,13 +254,13 @@
     security:
       - adminBearerAuth: []
     responses:
-      '200':
+      "200":
         description: 重载成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: '../schemas/envelope.yaml#/ApiResponse'
+                - $ref: ../schemas/envelope.yaml#/ApiResponse
                 - type: object
                   properties:
                     data:
@@ -284,15 +276,15 @@
                           type: boolean
                         executor_cache_version:
                           type: string
-      '401':
+      "401":
         description: 未授权
         content:
           application/json:
             schema:
-              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
-      '403':
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+      "403":
         description: 无权限
         content:
           application/json:
             schema:
-              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse

@@ -1,47 +1,11 @@
-/api/v1/admin/keys/upstream/list:
+/api/v1/admin/users/quota:
   get:
-    operationId: adminUpstreamKeyList
+    operationId: adminUserQuota
     tags:
       - admin
-    summary: 获取上游密钥列表
+    summary: 获取用户配额
     security:
       - adminBearerAuth: []
-    parameters:
-      - name: query
-        in: query
-        schema:
-          type: string
-          description: 搜索名称 / ID
-      - name: provider_id
-        in: query
-        schema:
-          type: string
-      - name: status
-        in: query
-        schema:
-          $ref: ../schemas/common.yaml#/StatusEnum
-      - name: quota_type
-        in: query
-        schema:
-          $ref: ../schemas/common.yaml#/QuotaTypeEnum
-      - name: expiring
-        in: query
-        schema:
-          type: boolean
-          description: 是否即将过期
-      - name: page
-        in: query
-        schema:
-          type: integer
-          minimum: 1
-          default: 1
-      - name: limit
-        in: query
-        schema:
-          type: integer
-          minimum: 1
-          maximum: 100
-          default: 20
     responses:
       "200":
         description: 成功
@@ -53,23 +17,7 @@
                 - type: object
                   properties:
                     data:
-                      type: object
-                      required:
-                        - items
-                        - page
-                        - limit
-                        - total
-                      properties:
-                        items:
-                          type: array
-                          items:
-                            $ref: ../schemas/upstream-key.yaml#/UpstreamKey
-                        page:
-                          type: integer
-                        limit:
-                          type: integer
-                        total:
-                          type: integer
+                      $ref: ../schemas/usage.yaml#/UserQuota
       "401":
         description: 未授权
         content:
@@ -82,111 +30,17 @@
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-/api/v1/admin/keys/upstream/detail:
-  get:
-    operationId: adminUpstreamKeyDetail
-    tags:
-      - admin
-    summary: 获取上游密钥详情
-    security:
-      - adminBearerAuth: []
-    parameters:
-      - name: id
-        in: query
-        required: true
-        schema:
-          type: string
-    responses:
-      "200":
-        description: 成功
-        content:
-          application/json:
-            schema:
-              allOf:
-                - $ref: ../schemas/envelope.yaml#/ApiResponse
-                - type: object
-                  properties:
-                    data:
-                      $ref: ../schemas/upstream-key.yaml#/UpstreamKey
-      "401":
-        description: 未授权
-        content:
-          application/json:
-            schema:
-              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "403":
-        description: 无权限
-        content:
-          application/json:
-            schema:
-              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "404":
-        description: 上游密钥不存在
-        content:
-          application/json:
-            schema:
-              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-/api/v1/admin/keys/upstream/usage:
-  get:
-    operationId: adminUpstreamKeyUsage
-    tags:
-      - admin
-    summary: 获取上游密钥用量统计
-    security:
-      - adminBearerAuth: []
-    parameters:
-      - name: id
-        in: query
-        required: true
-        schema:
-          type: string
-    responses:
-      "200":
-        description: 成功
-        content:
-          application/json:
-            schema:
-              allOf:
-                - $ref: ../schemas/envelope.yaml#/ApiResponse
-                - type: object
-                  properties:
-                    data:
-                      $ref: ../schemas/upstream-key.yaml#/UpstreamKeyUsage
-      "401":
-        description: 未授权
-        content:
-          application/json:
-            schema:
-              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "403":
-        description: 无权限
-        content:
-          application/json:
-            schema:
-              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "404":
-        description: 上游密钥不存在
-        content:
-          application/json:
-            schema:
-              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-/api/v1/admin/keys/upstream/create:
+/api/v1/admin/users/plans/coding/renew:
   post:
-    operationId: adminUpstreamKeyCreate
+    operationId: adminUserCodingPlanRenew
     tags:
-      - admin
-    summary: 创建上游密钥
+      - plan
+    summary: 续期用户 Coding 套餐
     security:
-      - adminBearerAuth: []
-    requestBody:
-      required: true
-      content:
-        application/json:
-          schema:
-            $ref: ../schemas/upstream-key.yaml#/CreateUpstreamKeyRequest
+      - bearerAuth: []
     responses:
-      "201":
-        description: 创建成功
+      "200":
+        description: 成功
         content:
           application/json:
             schema:
@@ -195,7 +49,7 @@
                 - type: object
                   properties:
                     data:
-                      $ref: ../schemas/upstream-key.yaml#/UpstreamKey
+                      $ref: ../schemas/plan.yaml#/UserPlan
       "400":
         description: 参数无效
         content:
@@ -214,23 +68,23 @@
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-/api/v1/admin/keys/upstream/update:
-  post:
-    operationId: adminUpstreamKeyUpdate
-    tags:
-      - admin
-    summary: 更新上游密钥
-    security:
-      - adminBearerAuth: []
     requestBody:
       required: true
       content:
         application/json:
           schema:
-            $ref: ../schemas/upstream-key.yaml#/UpdateUpstreamKeyRequest
+            $ref: ../schemas/plan.yaml#/RenewUserPlanRequest
+/api/v1/admin/users/plans/coding/cancel:
+  post:
+    operationId: adminUserCodingPlanCancel
+    tags:
+      - plan
+    summary: 取消用户 Coding 套餐
+    security:
+      - bearerAuth: []
     responses:
       "200":
-        description: 更新成功
+        description: 成功
         content:
           application/json:
             schema:
@@ -238,8 +92,7 @@
                 - $ref: ../schemas/envelope.yaml#/ApiResponse
                 - type: object
                   properties:
-                    data:
-                      $ref: ../schemas/upstream-key.yaml#/UpstreamKey
+                    data: {}
       "400":
         description: 参数无效
         content:
@@ -258,122 +111,20 @@
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "404":
-        description: 上游密钥不存在
-        content:
-          application/json:
-            schema:
-              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-/api/v1/admin/keys/upstream/delete:
-  post:
-    operationId: adminUpstreamKeyDelete
-    tags:
-      - admin
-    summary: 删除上游密钥
-    security:
-      - adminBearerAuth: []
     requestBody:
       required: true
       content:
         application/json:
           schema:
-            $ref: ../schemas/upstream-key.yaml#/DeleteUpstreamKeyRequest
-    responses:
-      "200":
-        description: 删除成功
-        content:
-          application/json:
-            schema:
-              $ref: ../schemas/envelope.yaml#/ApiResponse
-      "401":
-        description: 未授权
-        content:
-          application/json:
-            schema:
-              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "403":
-        description: 无权限
-        content:
-          application/json:
-            schema:
-              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "404":
-        description: 上游密钥不存在
-        content:
-          application/json:
-            schema:
-              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-/api/v1/admin/keys/upstream/toggle:
+            $ref: ../schemas/plan.yaml#/CancelUserPlanRequest
+/api/v1/admin/users/plans/coding/toggle:
   post:
-    operationId: adminUpstreamKeyToggle
+    operationId: adminUserCodingPlanToggle
     tags:
-      - admin
-    summary: 切换上游密钥启用/禁用
+      - plan
+    summary: 切换用户 Coding 套餐状态
     security:
-      - adminBearerAuth: []
-    requestBody:
-      required: true
-      content:
-        application/json:
-          schema:
-            $ref: ../schemas/upstream-key.yaml#/ToggleUpstreamKeyRequest
-    responses:
-      "200":
-        description: 切换成功
-        content:
-          application/json:
-            schema:
-              allOf:
-                - $ref: ../schemas/envelope.yaml#/ApiResponse
-                - type: object
-                  properties:
-                    data:
-                      $ref: ../schemas/upstream-key.yaml#/UpstreamKey
-      "401":
-        description: 未授权
-        content:
-          application/json:
-            schema:
-              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "403":
-        description: 无权限
-        content:
-          application/json:
-            schema:
-              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "404":
-        description: 上游密钥不存在
-        content:
-          application/json:
-            schema:
-              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-/api/v1/admin/models/routes/list:
-  get:
-    operationId: adminUpstreamKeyModelList
-    tags:
-      - admin
-    summary: 获取上游密钥模型映射列表
-    security:
-      - adminBearerAuth: []
-    parameters:
-      - name: upstream_key_id
-        in: query
-        required: true
-        schema:
-          type: string
-      - name: page
-        in: query
-        schema:
-          type: integer
-          minimum: 1
-          default: 1
-      - name: limit
-        in: query
-        schema:
-          type: integer
-          minimum: 1
-          maximum: 100
-          default: 20
+      - bearerAuth: []
     responses:
       "200":
         description: 成功
@@ -385,61 +136,7 @@
                 - type: object
                   properties:
                     data:
-                      type: object
-                      required:
-                        - items
-                        - page
-                        - limit
-                        - total
-                      properties:
-                        items:
-                          type: array
-                          items:
-                            $ref: ../schemas/upstream-key.yaml#/UpstreamModelMapping
-                        page:
-                          type: integer
-                        limit:
-                          type: integer
-                        total:
-                          type: integer
-      "401":
-        description: 未授权
-        content:
-          application/json:
-            schema:
-              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "403":
-        description: 无权限
-        content:
-          application/json:
-            schema:
-              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-/api/v1/admin/models/routes/create:
-  post:
-    operationId: adminUpstreamKeyModelCreate
-    tags:
-      - admin
-    summary: 创建上游密钥模型映射
-    security:
-      - adminBearerAuth: []
-    requestBody:
-      required: true
-      content:
-        application/json:
-          schema:
-            $ref: ../schemas/upstream-key.yaml#/CreateUpstreamModelMappingRequest
-    responses:
-      "201":
-        description: 创建成功
-        content:
-          application/json:
-            schema:
-              allOf:
-                - $ref: ../schemas/envelope.yaml#/ApiResponse
-                - type: object
-                  properties:
-                    data:
-                      $ref: ../schemas/upstream-key.yaml#/UpstreamModelMapping
+                      $ref: ../schemas/plan.yaml#/UserPlan
       "400":
         description: 参数无效
         content:
@@ -458,36 +155,23 @@
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "409":
-        description: 映射已存在
-        content:
-          application/json:
-            schema:
-              allOf:
-                - $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-                - type: object
-                  properties:
-                    error_code:
-                      type: string
-                      enum:
-                        - CONFLICT
-/api/v1/admin/models/routes/update:
-  post:
-    operationId: adminUpstreamKeyModelUpdate
-    tags:
-      - admin
-    summary: 更新上游密钥模型映射
-    security:
-      - adminBearerAuth: []
     requestBody:
       required: true
       content:
         application/json:
           schema:
-            $ref: ../schemas/upstream-key.yaml#/UpdateUpstreamModelMappingRequest
+            $ref: ../schemas/plan.yaml#/ToggleUserPlanRequest
+/api/v1/admin/users/plans/coding/usage/reset:
+  post:
+    operationId: adminUserCodingPlanUsageReset
+    tags:
+      - plan
+    summary: 重置用户 Coding 套餐用量
+    security:
+      - bearerAuth: []
     responses:
       "200":
-        description: 更新成功
+        description: 成功
         content:
           application/json:
             schema:
@@ -495,8 +179,7 @@
                 - $ref: ../schemas/envelope.yaml#/ApiResponse
                 - type: object
                   properties:
-                    data:
-                      $ref: ../schemas/upstream-key.yaml#/UpstreamModelMapping
+                    data: {}
       "400":
         description: 参数无效
         content:
@@ -515,68 +198,23 @@
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "404":
-        description: 映射不存在
-        content:
-          application/json:
-            schema:
-              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-/api/v1/admin/models/routes/delete:
-  post:
-    operationId: adminUpstreamKeyModelDelete
-    tags:
-      - admin
-    summary: 删除上游密钥模型映射
-    security:
-      - adminBearerAuth: []
     requestBody:
       required: true
       content:
         application/json:
           schema:
-            $ref: ../schemas/upstream-key.yaml#/DeleteUpstreamModelMappingRequest
-    responses:
-      "200":
-        description: 删除成功
-        content:
-          application/json:
-            schema:
-              $ref: ../schemas/envelope.yaml#/ApiResponse
-      "401":
-        description: 未授权
-        content:
-          application/json:
-            schema:
-              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "403":
-        description: 无权限
-        content:
-          application/json:
-            schema:
-              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "404":
-        description: 映射不存在
-        content:
-          application/json:
-            schema:
-              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-/api/v1/admin/models/routes/toggle:
+            $ref: ../schemas/plan.yaml#/ResetUserPlanUsageRequest
+/api/v1/admin/users/plans/token/renew:
   post:
-    operationId: adminUpstreamKeyModelToggle
+    operationId: adminUserTokenPlanRenew
     tags:
-      - admin
-    summary: 切换上游密钥模型映射启用/禁用
+      - plan
+    summary: 续期用户 Token 套餐
     security:
-      - adminBearerAuth: []
-    requestBody:
-      required: true
-      content:
-        application/json:
-          schema:
-            $ref: ../schemas/upstream-key.yaml#/ToggleUpstreamModelMappingRequest
+      - bearerAuth: []
     responses:
       "200":
-        description: 切换成功
+        description: 成功
         content:
           application/json:
             schema:
@@ -585,7 +223,13 @@
                 - type: object
                   properties:
                     data:
-                      $ref: ../schemas/upstream-key.yaml#/UpstreamModelMapping
+                      $ref: ../schemas/plan.yaml#/UserPlan
+      "400":
+        description: 参数无效
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
       "401":
         description: 未授权
         content:
@@ -598,18 +242,365 @@
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "404":
-        description: 映射不存在
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../schemas/plan.yaml#/RenewUserPlanRequest
+/api/v1/admin/users/plans/token/cancel:
+  post:
+    operationId: adminUserTokenPlanCancel
+    tags:
+      - plan
+    summary: 取消用户 Token 套餐
+    security:
+      - bearerAuth: []
+    responses:
+      "200":
+        description: 成功
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: ../schemas/envelope.yaml#/ApiResponse
+                - type: object
+                  properties:
+                    data: {}
+      "400":
+        description: 参数无效
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-/api/v1/admin/keys/upstream/options:
-  get:
-    operationId: adminUpstreamKeyOptions
+      "401":
+        description: 未授权
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+      "403":
+        description: 无权限
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../schemas/plan.yaml#/CancelUserPlanRequest
+/api/v1/admin/users/plans/token/toggle:
+  post:
+    operationId: adminUserTokenPlanToggle
+    tags:
+      - plan
+    summary: 切换用户 Token 套餐状态
+    security:
+      - bearerAuth: []
+    responses:
+      "200":
+        description: 成功
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: ../schemas/envelope.yaml#/ApiResponse
+                - type: object
+                  properties:
+                    data:
+                      $ref: ../schemas/plan.yaml#/UserPlan
+      "400":
+        description: 参数无效
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+      "401":
+        description: 未授权
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+      "403":
+        description: 无权限
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../schemas/plan.yaml#/ToggleUserPlanRequest
+/api/v1/admin/users/plans/token/usage/reset:
+  post:
+    operationId: adminUserTokenPlanUsageReset
+    tags:
+      - plan
+    summary: 重置用户 Token 套餐用量
+    security:
+      - bearerAuth: []
+    responses:
+      "200":
+        description: 成功
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: ../schemas/envelope.yaml#/ApiResponse
+                - type: object
+                  properties:
+                    data: {}
+      "400":
+        description: 参数无效
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+      "401":
+        description: 未授权
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+      "403":
+        description: 无权限
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../schemas/plan.yaml#/ResetUserPlanUsageRequest
+/api/v1/admin/users/plans/image/renew:
+  post:
+    operationId: adminUserImagePlanRenew
+    tags:
+      - plan
+    summary: 续期用户 Image 套餐
+    security:
+      - bearerAuth: []
+    responses:
+      "200":
+        description: 成功
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: ../schemas/envelope.yaml#/ApiResponse
+                - type: object
+                  properties:
+                    data:
+                      $ref: ../schemas/plan.yaml#/UserPlan
+      "400":
+        description: 参数无效
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+      "401":
+        description: 未授权
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+      "403":
+        description: 无权限
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../schemas/plan.yaml#/RenewUserPlanRequest
+/api/v1/admin/users/plans/image/cancel:
+  post:
+    operationId: adminUserImagePlanCancel
+    tags:
+      - plan
+    summary: 取消用户 Image 套餐
+    security:
+      - bearerAuth: []
+    responses:
+      "200":
+        description: 成功
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: ../schemas/envelope.yaml#/ApiResponse
+                - type: object
+                  properties:
+                    data: {}
+      "400":
+        description: 参数无效
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+      "401":
+        description: 未授权
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+      "403":
+        description: 无权限
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../schemas/plan.yaml#/CancelUserPlanRequest
+/api/v1/admin/users/plans/image/toggle:
+  post:
+    operationId: adminUserImagePlanToggle
+    tags:
+      - plan
+    summary: 切换用户 Image 套餐状态
+    security:
+      - bearerAuth: []
+    responses:
+      "200":
+        description: 成功
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: ../schemas/envelope.yaml#/ApiResponse
+                - type: object
+                  properties:
+                    data:
+                      $ref: ../schemas/plan.yaml#/UserPlan
+      "400":
+        description: 参数无效
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+      "401":
+        description: 未授权
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+      "403":
+        description: 无权限
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../schemas/plan.yaml#/ToggleUserPlanRequest
+/api/v1/admin/users/plans/image/usage/reset:
+  post:
+    operationId: adminUserImagePlanUsageReset
+    tags:
+      - plan
+    summary: 重置用户 Image 套餐用量
+    security:
+      - bearerAuth: []
+    responses:
+      "200":
+        description: 成功
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: ../schemas/envelope.yaml#/ApiResponse
+                - type: object
+                  properties:
+                    data: {}
+      "400":
+        description: 参数无效
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+      "401":
+        description: 未授权
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+      "403":
+        description: 无权限
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../schemas/plan.yaml#/ResetUserPlanUsageRequest
+/api/v1/admin/users/password/reset:
+  post:
+    operationId: adminUserPasswordReset
     tags:
       - admin
-    summary: 获取上游密钥选项
+    summary: 重置用户密码
+    security:
+      - adminBearerAuth: []
+    responses:
+      "200":
+        description: 成功
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: ../schemas/envelope.yaml#/ApiResponse
+                - type: object
+                  properties:
+                    data: {}
+      "400":
+        description: 参数无效
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+      "401":
+        description: 未授权
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+      "403":
+        description: 无权限
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../schemas/user.yaml#/AdminResetUserPasswordRequest
+/api/v1/admin/users/risks/client-cancel/reset:
+  post:
+    operationId: adminUserClientCancelRiskReset
+    tags:
+      - admin
+    summary: 重置用户客户端取消风控
     security:
       - adminBearerAuth: []
     responses:
@@ -623,23 +614,13 @@
                 - type: object
                   properties:
                     data:
-                      type: object
-                      required:
-                        - items
-                        - page
-                        - limit
-                        - total
-                      properties:
-                        items:
-                          type: array
-                          items:
-                            $ref: ../schemas/upstream-key.yaml#/UpstreamKey
-                        page:
-                          type: integer
-                        limit:
-                          type: integer
-                        total:
-                          type: integer
+                      $ref: ../schemas/user.yaml#/UserRiskResetResponse
+      "400":
+        description: 参数无效
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
       "401":
         description: 未授权
         content:
@@ -652,3 +633,9 @@
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../schemas/user.yaml#/ResetUserClientCancelRiskRequest

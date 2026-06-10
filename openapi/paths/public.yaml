@@ -1,6 +1,4 @@
-# 公开端点（无需认证）
-
-/api/v1/public/plans:
+/api/v1/public/plans/list:
   get:
     operationId: publicPlanList
     tags:
@@ -11,7 +9,7 @@
       - name: plan_type
         in: query
         schema:
-          $ref: '../schemas/common.yaml#/PlanTypeEnum'
+          $ref: ../schemas/common.yaml#/PlanTypeEnum
       - name: page
         in: query
         schema:
@@ -26,14 +24,20 @@
           maximum: 100
           default: 20
     responses:
-      '200':
+      "200":
         description: 成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: '../schemas/envelope.yaml#/ApiResponse'
+                - $ref: ../schemas/envelope.yaml#/ApiResponse
                 - type: object
                   properties:
                     data:
-                      $ref: '../schemas/envelope.yaml#/PaginatedData'
+                      $ref: ../schemas/envelope.yaml#/PaginatedData
+      "400":
+        description: 错误
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse

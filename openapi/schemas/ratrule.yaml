@@ -1,5 +1,3 @@
-# 倍率规则类型
-
 PriceMultiplierRule:
   type: object
   required:
@@ -45,16 +43,13 @@ PriceMultiplierRule:
     priority:
       type: integer
     status:
-      $ref: './common.yaml#/StatusEnum'
+      $ref: ./common.yaml#/StatusEnum
     is_active:
       type: boolean
     created_at:
-      $ref: './common.yaml#/Timestamp'
+      $ref: ./common.yaml#/Timestamp
     updated_at:
-      $ref: './common.yaml#/Timestamp'
-
-# 请求体类型
-
+      $ref: ./common.yaml#/Timestamp
 CreateRateRuleRequest:
   type: object
   required:
@@ -91,7 +86,6 @@ CreateRateRuleRequest:
       format: double
     priority:
       type: integer
-
 ToggleRateRuleRequest:
   type: object
   required:
@@ -99,7 +93,6 @@ ToggleRateRuleRequest:
   properties:
     id:
       type: string
-
 DeleteRateRuleRequest:
   type: object
   required:
@@ -107,3 +100,47 @@ DeleteRateRuleRequest:
   properties:
     id:
       type: string
+RateRuleWorkbenchData:
+  type: object
+  required:
+    - rules
+    - providers
+    - upstream_keys
+    - models
+  properties:
+    rules:
+      allOf:
+        - $ref: ./envelope.yaml#/PaginatedData
+        - type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: "#/PriceMultiplierRule"
+    providers:
+      allOf:
+        - $ref: ./envelope.yaml#/PaginatedData
+        - type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: ./provider.yaml#/Provider
+    upstream_keys:
+      allOf:
+        - $ref: ./envelope.yaml#/PaginatedData
+        - type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: ./upstream-key.yaml#/UpstreamKey
+    models:
+      allOf:
+        - $ref: ./envelope.yaml#/PaginatedData
+        - type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: ./model.yaml#/CatalogModel

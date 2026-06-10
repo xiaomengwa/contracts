@@ -1,5 +1,3 @@
-# 用户面板端点（需 JWT）
-
 /api/v1/user/me:
   get:
     operationId: userMe
@@ -9,21 +7,26 @@
     security:
       - bearerAuth: []
     responses:
-      '200':
+      "200":
         description: 成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: '../schemas/envelope.yaml#/ApiResponse'
+                - $ref: ../schemas/envelope.yaml#/ApiResponse
                 - type: object
                   properties:
                     data:
                       type: object
                       properties:
                         user:
-                          $ref: '../schemas/user.yaml#/UserResponse'
-
+                          $ref: ../schemas/user.yaml#/UserResponse
+      "400":
+        description: 错误
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
 /api/v1/user/dashboard:
   get:
     operationId: userDashboard
@@ -33,19 +36,24 @@
     security:
       - bearerAuth: []
     responses:
-      '200':
+      "200":
         description: 成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: '../schemas/envelope.yaml#/ApiResponse'
+                - $ref: ../schemas/envelope.yaml#/ApiResponse
                 - type: object
                   properties:
                     data:
-                      $ref: '../schemas/user.yaml#/UserDashboard'
-
-/api/v1/user/keys:
+                      $ref: ../schemas/user.yaml#/UserDashboard
+      "400":
+        description: 错误
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+/api/v1/user/keys/api/list:
   get:
     operationId: userApiKeyList
     tags:
@@ -54,13 +62,13 @@
     security:
       - bearerAuth: []
     responses:
-      '200':
+      "200":
         description: 成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: '../schemas/envelope.yaml#/ApiResponse'
+                - $ref: ../schemas/envelope.yaml#/ApiResponse
                 - type: object
                   properties:
                     data:
@@ -74,15 +82,20 @@
                         items:
                           type: array
                           items:
-                            $ref: '../schemas/user.yaml#/APIKeyResponse'
+                            $ref: ../schemas/user.yaml#/APIKeyResponse
                         page:
                           type: integer
                         limit:
                           type: integer
                         total:
                           type: integer
-
-/api/v1/user/keys/create:
+      "400":
+        description: 错误
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+/api/v1/user/keys/api/create:
   post:
     operationId: userApiKeyCreate
     tags:
@@ -95,21 +108,26 @@
       content:
         application/json:
           schema:
-            $ref: '../schemas/user.yaml#/CreateAPIKeyRequest'
+            $ref: ../schemas/user.yaml#/CreateAPIKeyRequest
     responses:
-      '201':
+      "201":
         description: 创建成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: '../schemas/envelope.yaml#/ApiResponse'
+                - $ref: ../schemas/envelope.yaml#/ApiResponse
                 - type: object
                   properties:
                     data:
-                      $ref: '../schemas/user.yaml#/APIKeyResponse'
-
-/api/v1/user/keys/update:
+                      $ref: ../schemas/user.yaml#/APIKeyResponse
+      "400":
+        description: 错误
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+/api/v1/user/keys/api/update:
   post:
     operationId: userApiKeyUpdate
     tags:
@@ -122,21 +140,26 @@
       content:
         application/json:
           schema:
-            $ref: '../schemas/user.yaml#/UpdateAPIKeyRequest'
+            $ref: ../schemas/user.yaml#/UpdateAPIKeyRequest
     responses:
-      '200':
+      "200":
         description: 更新成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: '../schemas/envelope.yaml#/ApiResponse'
+                - $ref: ../schemas/envelope.yaml#/ApiResponse
                 - type: object
                   properties:
                     data:
-                      $ref: '../schemas/user.yaml#/APIKeyResponse'
-
-/api/v1/user/keys/delete:
+                      $ref: ../schemas/user.yaml#/APIKeyResponse
+      "400":
+        description: 错误
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+/api/v1/user/keys/api/delete:
   post:
     operationId: userApiKeyDelete
     tags:
@@ -149,16 +172,21 @@
       content:
         application/json:
           schema:
-            $ref: '../schemas/user.yaml#/DeleteAPIKeyRequest'
+            $ref: ../schemas/user.yaml#/DeleteAPIKeyRequest
     responses:
-      '200':
+      "200":
         description: 删除成功
         content:
           application/json:
             schema:
-              $ref: '../schemas/envelope.yaml#/ApiResponse'
-
-/api/v1/user/keys/toggle:
+              $ref: ../schemas/envelope.yaml#/ApiResponse
+      "400":
+        description: 错误
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+/api/v1/user/keys/api/toggle:
   post:
     operationId: userApiKeyToggle
     tags:
@@ -171,20 +199,25 @@
       content:
         application/json:
           schema:
-            $ref: '../schemas/user.yaml#/ToggleAPIKeyRequest'
+            $ref: ../schemas/user.yaml#/ToggleAPIKeyRequest
     responses:
-      '200':
+      "200":
         description: 切换成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: '../schemas/envelope.yaml#/ApiResponse'
+                - $ref: ../schemas/envelope.yaml#/ApiResponse
                 - type: object
                   properties:
                     data:
-                      $ref: '../schemas/user.yaml#/APIKeyResponse'
-
+                      $ref: ../schemas/user.yaml#/APIKeyResponse
+      "400":
+        description: 错误
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
 /api/v1/user/quota:
   get:
     operationId: userQuota
@@ -194,19 +227,24 @@
     security:
       - bearerAuth: []
     responses:
-      '200':
+      "200":
         description: 成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: '../schemas/envelope.yaml#/ApiResponse'
+                - $ref: ../schemas/envelope.yaml#/ApiResponse
                 - type: object
                   properties:
                     data:
-                      $ref: '../schemas/usage.yaml#/UserQuota'
-
-/api/v1/user/usage:
+                      $ref: ../schemas/usage.yaml#/UserQuota
+      "400":
+        description: 错误
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+/api/v1/user/usage/list:
   get:
     operationId: userUsage
     tags:
@@ -219,7 +257,7 @@
         in: query
         schema:
           type: string
-          description: "逗号分隔的账本类型过滤，如 charge,recharge"
+          description: 逗号分隔的账本类型过滤，如 charge,recharge
       - name: page
         in: query
         schema:
@@ -234,13 +272,13 @@
           maximum: 100
           default: 20
     responses:
-      '200':
+      "200":
         description: 成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: '../schemas/envelope.yaml#/ApiResponse'
+                - $ref: ../schemas/envelope.yaml#/ApiResponse
                 - type: object
                   properties:
                     data:
@@ -254,15 +292,20 @@
                         items:
                           type: array
                           items:
-                            $ref: '../schemas/usage.yaml#/UsageLedgerResponse'
+                            $ref: ../schemas/usage.yaml#/UsageLedgerResponse
                         page:
                           type: integer
                         limit:
                           type: integer
                         total:
                           type: integer
-
-/api/v1/user/plans:
+      "400":
+        description: 错误
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+/api/v1/user/plans/list:
   get:
     operationId: userPlanList
     tags:
@@ -274,15 +317,15 @@
       - name: plan_type
         in: query
         schema:
-          $ref: '../schemas/common.yaml#/PlanTypeEnum'
+          $ref: ../schemas/common.yaml#/PlanTypeEnum
     responses:
-      '200':
+      "200":
         description: 成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: '../schemas/envelope.yaml#/ApiResponse'
+                - $ref: ../schemas/envelope.yaml#/ApiResponse
                 - type: object
                   properties:
                     data:
@@ -296,15 +339,20 @@
                         items:
                           type: array
                           items:
-                            $ref: '../schemas/plan.yaml#/Plan'
+                            $ref: ../schemas/plan.yaml#/Plan
                         page:
                           type: integer
                         limit:
                           type: integer
                         total:
                           type: integer
-
-/api/v1/user/models:
+      "400":
+        description: 错误
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+/api/v1/user/models/list:
   get:
     operationId: userModelList
     tags:
@@ -313,13 +361,13 @@
     security:
       - bearerAuth: []
     responses:
-      '200':
+      "200":
         description: 成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: '../schemas/envelope.yaml#/ApiResponse'
+                - $ref: ../schemas/envelope.yaml#/ApiResponse
                 - type: object
                   properties:
                     data:
@@ -333,15 +381,20 @@
                         items:
                           type: array
                           items:
-                            $ref: '../schemas/model.yaml#/CatalogModel'
+                            $ref: ../schemas/model.yaml#/CatalogModel
                         page:
                           type: integer
                         limit:
                           type: integer
                         total:
                           type: integer
-
-/api/v1/user/requests:
+      "400":
+        description: 错误
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+/api/v1/user/requests/list:
   get:
     operationId: userRequestLogList
     tags:
@@ -354,7 +407,7 @@
         in: query
         schema:
           type: string
-          description: "搜索 trace_id / request_id / request_log_id"
+          description: 搜索 trace_id / request_id / request_log_id
       - name: page
         in: query
         schema:
@@ -369,13 +422,13 @@
           maximum: 100
           default: 20
     responses:
-      '200':
+      "200":
         description: 成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: '../schemas/envelope.yaml#/ApiResponse'
+                - $ref: ../schemas/envelope.yaml#/ApiResponse
                 - type: object
                   properties:
                     data:
@@ -389,14 +442,19 @@
                         items:
                           type: array
                           items:
-                            $ref: '../schemas/requestlog.yaml#/RequestLogResponse'
+                            $ref: ../schemas/requestlog.yaml#/RequestLogResponse
                         page:
                           type: integer
                         limit:
                           type: integer
                         total:
                           type: integer
-
+      "400":
+        description: 错误
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
 /api/v1/user/requests/trace:
   get:
     operationId: userRequestLogTrace
@@ -412,19 +470,24 @@
         schema:
           type: string
     responses:
-      '200':
+      "200":
         description: 成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: '../schemas/envelope.yaml#/ApiResponse'
+                - $ref: ../schemas/envelope.yaml#/ApiResponse
                 - type: object
                   properties:
                     data:
-                      $ref: '../schemas/requestlog.yaml#/RequestTraceResponse'
-
-/api/v1/user/billing/preference/update:
+                      $ref: ../schemas/requestlog.yaml#/RequestTraceResponse
+      "400":
+        description: 错误
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+/api/v1/user/config/billing/update:
   post:
     operationId: userBillingPreferenceUpdate
     tags:
@@ -437,16 +500,70 @@
       content:
         application/json:
           schema:
-            $ref: '../schemas/user.yaml#/UpdateBillingPreferenceRequest'
+            $ref: ../schemas/user.yaml#/UpdateBillingPreferenceRequest
     responses:
-      '200':
+      "200":
         description: 更新成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: '../schemas/envelope.yaml#/ApiResponse'
+                - $ref: ../schemas/envelope.yaml#/ApiResponse
                 - type: object
                   properties:
                     data:
-                      $ref: '../schemas/user.yaml#/UserResponse'
+                      $ref: ../schemas/user.yaml#/UserResponse
+      "400":
+        description: 错误
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+/api/v1/user/models/routes/list:
+  get:
+    operationId: userModelRouteList
+    tags:
+      - user
+    summary: 获取用户模型路由列表
+    security:
+      - bearerAuth: []
+    responses:
+      "200":
+        description: 成功
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: ../schemas/envelope.yaml#/ApiResponse
+                - type: object
+                  properties:
+                    data:
+                      type: object
+                      required:
+                        - items
+                        - page
+                        - limit
+                        - total
+                      properties:
+                        items:
+                          type: array
+                          items:
+                            $ref: ../schemas/model.yaml#/UserModelRoute
+                        page:
+                          type: integer
+                        limit:
+                          type: integer
+                        total:
+                          type: integer
+      "401":
+        description: 未授权
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+      "403":
+        description: 无权限
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse

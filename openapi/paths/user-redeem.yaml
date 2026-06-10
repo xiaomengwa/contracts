@@ -1,5 +1,3 @@
-# 用户兑换码端点
-
 /api/v1/user/codes/redeem/redeem:
   post:
     operationId: userRedeemCodeRedeem
@@ -13,26 +11,26 @@
       content:
         application/json:
           schema:
-            $ref: '../schemas/redeem.yaml#/RedeemCodeRequest'
+            $ref: ../schemas/redeem.yaml#/RedeemCodeRequest
     responses:
-      '200':
+      "200":
         description: 兑换成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: '../schemas/envelope.yaml#/ApiResponse'
+                - $ref: ../schemas/envelope.yaml#/ApiResponse
                 - type: object
                   properties:
                     data:
-                      $ref: '../schemas/redeem.yaml#/RedeemCodeRedemptionResponse'
-      '400':
+                      $ref: ../schemas/redeem.yaml#/RedeemCodeRedemptionResponse
+      "400":
         description: 兑换码无效
         content:
           application/json:
             schema:
               allOf:
-                - $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
+                - $ref: ../schemas/envelope.yaml#/ApiErrorResponse
                 - type: object
                   properties:
                     error_code:
@@ -43,7 +41,6 @@
                         - REDEEM_CODE_EXHAUSTED
                         - REDEEM_CODE_ALREADY_REDEEMED
                         - REDEEM_CODE_PLAN_DOWNGRADE
-
 /api/v1/user/codes/redeem/redemptions:
   get:
     operationId: userRedeemCodeRedemptionList
@@ -67,13 +64,13 @@
           maximum: 100
           default: 20
     responses:
-      '200':
+      "200":
         description: 成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: '../schemas/envelope.yaml#/ApiResponse'
+                - $ref: ../schemas/envelope.yaml#/ApiResponse
                 - type: object
                   properties:
                     data:
@@ -87,10 +84,16 @@
                         items:
                           type: array
                           items:
-                            $ref: '../schemas/redeem.yaml#/RedeemCodeRedemption'
+                            $ref: ../schemas/redeem.yaml#/RedeemCodeRedemption
                         page:
                           type: integer
                         limit:
                           type: integer
                         total:
                           type: integer
+      "400":
+        description: 错误
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
