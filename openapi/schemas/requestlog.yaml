@@ -84,6 +84,90 @@ RequestLogResponse:
     completed_at:
       $ref: './common.yaml#/Timestamp'
 
+RequestLogListItem:
+  type: object
+  description: 列表安全版请求日志；不包含 request_body、上游响应体或内部错误细节。需要审计明细时应使用受控详情/追踪接口。
+  required:
+    - id
+    - stream
+    - is_stream
+    - success
+    - is_success
+    - price_multiplier
+    - created_at
+  properties:
+    id:
+      type: string
+    request_id:
+      type: string
+    trace_id:
+      type: string
+    user_id:
+      type: string
+    user_name:
+      type: string
+    user_api_key_id:
+      type: string
+    provider_name:
+      type: string
+    model_name:
+      type: string
+    protocol:
+      type: string
+    stream:
+      type: boolean
+    is_stream:
+      type: boolean
+    billing_plan:
+      type: string
+    final_status_code:
+      type: integer
+    success:
+      type: boolean
+    is_success:
+      type: boolean
+    input_tokens:
+      type: integer
+    output_tokens:
+      type: integer
+    total_tokens:
+      type: integer
+    latency_ms:
+      type: integer
+    final_latency_ms:
+      type: integer
+    total_duration_ms:
+      type: integer
+    ttft_ms:
+      type: integer
+    kind:
+      type: string
+    price_multiplier:
+      type: number
+      format: double
+    price_multiplier_rule_id:
+      type: string
+    effective_input_tokens:
+      type: integer
+    effective_output_tokens:
+      type: integer
+    effective_total_tokens:
+      type: integer
+    tokens_per_second:
+      type: number
+      format: double
+    error_code:
+      type: string
+    error_message:
+      type: string
+      description: 面向用户/列表展示的脱敏错误摘要；不得包含内部堆栈、请求体或上游密钥材料。
+    usage_status:
+      type: string
+    created_at:
+      $ref: './common.yaml#/Timestamp'
+    completed_at:
+      $ref: './common.yaml#/Timestamp'
+
 RequestAttemptResponse:
   type: object
   required:

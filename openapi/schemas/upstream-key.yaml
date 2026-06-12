@@ -58,6 +58,65 @@ UpstreamKey:
         updated_at:
           $ref: './common.yaml#/Timestamp'
 
+UpstreamKeyListItem:
+  allOf:
+    - $ref: './common.yaml#/CatalogStats'
+    - type: object
+      description: 列表安全版上游密钥；仅返回脱敏展示字段，不暴露 key_prefix、key_suffix 或 encryption_version。
+      required:
+        - id
+        - provider_id
+        - name
+        - display_key
+        - max_concurrency
+        - priority
+        - quota_used
+        - status
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+        provider_id:
+          type: string
+        name:
+          type: string
+        display_key:
+          type: string
+          description: 脱敏展示密钥，例如 sk-****abcd。
+        masked_key:
+          type: string
+          description: 脱敏展示密钥；兼容需要 masked_key 命名的客户端。
+        max_concurrency:
+          type: integer
+        priority:
+          type: integer
+        quota_type:
+          $ref: './common.yaml#/QuotaTypeEnum'
+        quota_total:
+          type: integer
+          format: int64
+          minimum: 0
+          description: 总配额，必须大于等于 0；不使用负数 sentinel 表示无限。
+        quota_used:
+          type: integer
+          format: int64
+        cost:
+          type: number
+          format: double
+          minimum: 0
+          description: 采购/成本金额，必须大于等于 0。
+        expires_at:
+          type: string
+        notes:
+          type: string
+        status:
+          $ref: './common.yaml#/StatusEnum'
+        created_at:
+          $ref: './common.yaml#/Timestamp'
+        updated_at:
+          $ref: './common.yaml#/Timestamp'
+
 UpstreamModelMapping:
   type: object
   required:

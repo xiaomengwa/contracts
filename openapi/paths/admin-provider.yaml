@@ -418,7 +418,7 @@
                         items:
                           type: array
                           items:
-                            $ref: ../schemas/provider.yaml#/ProviderEndpoint
+                            $ref: ../schemas/provider.yaml#/ProviderEndpointListItem
                         page:
                           type: integer
                         limit:

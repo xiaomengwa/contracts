@@ -1422,7 +1422,7 @@ paths:
                           items:
                             type: array
                             items:
-                              $ref: "#/components/schemas/ProviderEndpoint"
+                              $ref: "#/components/schemas/ProviderEndpointListItem"
                           page:
                             type: integer
                           limit:
@@ -2318,7 +2318,7 @@ paths:
                           items:
                             type: array
                             items:
-                              $ref: "#/components/schemas/RequestLogResponse"
+                              $ref: "#/components/schemas/RequestLogListItem"
                           page:
                             type: integer
                           limit:
@@ -2926,7 +2926,7 @@ paths:
                           items:
                             type: array
                             items:
-                              $ref: "#/components/schemas/UpstreamKey"
+                              $ref: "#/components/schemas/UpstreamKeyListItem"
                           page:
                             type: integer
                           limit:
@@ -3581,7 +3581,7 @@ paths:
                           items:
                             type: array
                             items:
-                              $ref: "#/components/schemas/UpstreamKey"
+                              $ref: "#/components/schemas/UpstreamKeyListItem"
                           page:
                             type: integer
                           limit:
@@ -3934,7 +3934,7 @@ paths:
                           items:
                             type: array
                             items:
-                              $ref: "#/components/schemas/UsageLedgerResponse"
+                              $ref: "#/components/schemas/UsageLedgerListItem"
                           page:
                             type: integer
                           limit:
@@ -4012,7 +4012,7 @@ paths:
                           items:
                             type: array
                             items:
-                              $ref: "#/components/schemas/RequestLogResponse"
+                              $ref: "#/components/schemas/RequestLogListItem"
                           page:
                             type: integer
                           limit:
@@ -6167,7 +6167,7 @@ paths:
                           items:
                             type: array
                             items:
-                              $ref: "#/components/schemas/UsageLedgerResponse"
+                              $ref: "#/components/schemas/UsageLedgerListItem"
                           page:
                             type: integer
                           limit:
@@ -6329,7 +6329,7 @@ paths:
                           items:
                             type: array
                             items:
-                              $ref: "#/components/schemas/RequestLogResponse"
+                              $ref: "#/components/schemas/RequestLogListItem"
                           page:
                             type: integer
                           limit:
@@ -7702,6 +7702,44 @@ components:
           $ref: "#/components/schemas/Timestamp"
         updated_at:
           $ref: "#/components/schemas/Timestamp"
+    ProviderEndpointListItem:
+      type: object
+      description: 列表安全版供应商端点；不返回原始 headers/auth 构造字段，仅提供是否配置自定义请求头的布尔标记。
+      required:
+        - id
+        - provider_id
+        - protocol
+        - path
+        - has_custom_headers
+        - status
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+        provider_id:
+          type: string
+        protocol:
+          $ref: "#/components/schemas/ProtocolEnum"
+        kind:
+          $ref: "#/components/schemas/KindEnum"
+        adapter:
+          type: string
+        path:
+          type: string
+        method:
+          type: string
+        has_custom_headers:
+          type: boolean
+          description: 是否配置了自定义请求头；列表响应不得返回原始 headers 内容。
+        request_mode:
+          $ref: "#/components/schemas/RequestModeEnum"
+        status:
+          $ref: "#/components/schemas/StatusEnum"
+        created_at:
+          $ref: "#/components/schemas/Timestamp"
+        updated_at:
+          $ref: "#/components/schemas/Timestamp"
     CreateProviderRequest:
       type: object
       required:
@@ -8349,6 +8387,89 @@ components:
           $ref: "#/components/schemas/Timestamp"
         completed_at:
           $ref: "#/components/schemas/Timestamp"
+    RequestLogListItem:
+      type: object
+      description: 列表安全版请求日志；不包含 request_body、上游响应体或内部错误细节。需要审计明细时应使用受控详情/追踪接口。
+      required:
+        - id
+        - stream
+        - is_stream
+        - success
+        - is_success
+        - price_multiplier
+        - created_at
+      properties:
+        id:
+          type: string
+        request_id:
+          type: string
+        trace_id:
+          type: string
+        user_id:
+          type: string
+        user_name:
+          type: string
+        user_api_key_id:
+          type: string
+        provider_name:
+          type: string
+        model_name:
+          type: string
+        protocol:
+          type: string
+        stream:
+          type: boolean
+        is_stream:
+          type: boolean
+        billing_plan:
+          type: string
+        final_status_code:
+          type: integer
+        success:
+          type: boolean
+        is_success:
+          type: boolean
+        input_tokens:
+          type: integer
+        output_tokens:
+          type: integer
+        total_tokens:
+          type: integer
+        latency_ms:
+          type: integer
+        final_latency_ms:
+          type: integer
+        total_duration_ms:
+          type: integer
+        ttft_ms:
+          type: integer
+        kind:
+          type: string
+        price_multiplier:
+          type: number
+          format: double
+        price_multiplier_rule_id:
+          type: string
+        effective_input_tokens:
+          type: integer
+        effective_output_tokens:
+          type: integer
+        effective_total_tokens:
+          type: integer
+        tokens_per_second:
+          type: number
+          format: double
+        error_code:
+          type: string
+        error_message:
+          type: string
+          description: 面向用户/列表展示的脱敏错误摘要；不得包含内部堆栈、请求体或上游密钥材料。
+        usage_status:
+          type: string
+        created_at:
+          $ref: "#/components/schemas/Timestamp"
+        completed_at:
+          $ref: "#/components/schemas/Timestamp"
     RequestAttemptResponse:
       type: object
       required:
@@ -8590,6 +8711,64 @@ components:
             encryption_version:
               type: integer
               description: 密钥加密版本，仅用于兼容旧响应；新实现不应在列表/详情响应暴露加密元数据。
+            max_concurrency:
+              type: integer
+            priority:
+              type: integer
+            quota_type:
+              $ref: "#/components/schemas/QuotaTypeEnum"
+            quota_total:
+              type: integer
+              format: int64
+              minimum: 0
+              description: 总配额，必须大于等于 0；不使用负数 sentinel 表示无限。
+            quota_used:
+              type: integer
+              format: int64
+            cost:
+              type: number
+              format: double
+              minimum: 0
+              description: 采购/成本金额，必须大于等于 0。
+            expires_at:
+              type: string
+            notes:
+              type: string
+            status:
+              $ref: "#/components/schemas/StatusEnum"
+            created_at:
+              $ref: "#/components/schemas/Timestamp"
+            updated_at:
+              $ref: "#/components/schemas/Timestamp"
+    UpstreamKeyListItem:
+      allOf:
+        - $ref: "#/components/schemas/CatalogStats"
+        - type: object
+          description: 列表安全版上游密钥；仅返回脱敏展示字段，不暴露 key_prefix、key_suffix 或 encryption_version。
+          required:
+            - id
+            - provider_id
+            - name
+            - display_key
+            - max_concurrency
+            - priority
+            - quota_used
+            - status
+            - created_at
+            - updated_at
+          properties:
+            id:
+              type: string
+            provider_id:
+              type: string
+            name:
+              type: string
+            display_key:
+              type: string
+              description: 脱敏展示密钥，例如 sk-****abcd。
+            masked_key:
+              type: string
+              description: 脱敏展示密钥；兼容需要 masked_key 命名的客户端。
             max_concurrency:
               type: integer
             priority:
@@ -9067,6 +9246,42 @@ components:
           type: string
         created_at:
           $ref: "#/components/schemas/Timestamp"
+    UsageLedgerListItem:
+      type: object
+      description: 列表安全版用量流水；使用 display_reason 展示脱敏原因，不返回可能包含兑换码 UUID 等内部标识的原始 reason。
+      required:
+        - id
+        - ledger_type
+        - billing_plan
+        - token_delta
+        - request_delta
+        - created_at
+      properties:
+        id:
+          type: string
+        user_id:
+          type: string
+        request_log_id:
+          type: string
+        request_id:
+          type: string
+        trace_id:
+          type: string
+        request_model:
+          type: string
+        ledger_type:
+          $ref: "#/components/schemas/LedgerTypeEnum"
+        billing_plan:
+          type: string
+        token_delta:
+          type: integer
+        request_delta:
+          type: integer
+        display_reason:
+          type: string
+          description: 面向用户/列表展示的脱敏原因文本。
+        created_at:
+          $ref: "#/components/schemas/Timestamp"
     AdminUsageDailyItem:
       type: object
       required:
@@ -9155,6 +9370,7 @@ components:
           type: integer
     UserResponse:
       type: object
+      description: 用户响应不包含 password_hash、PasswordHash 或其他密码材料。
       required:
         - id
         - email

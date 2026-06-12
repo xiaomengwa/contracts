@@ -154,6 +154,43 @@ UsageLedgerResponse:
     created_at:
       $ref: './common.yaml#/Timestamp'
 
+UsageLedgerListItem:
+  type: object
+  description: 列表安全版用量流水；使用 display_reason 展示脱敏原因，不返回可能包含兑换码 UUID 等内部标识的原始 reason。
+  required:
+    - id
+    - ledger_type
+    - billing_plan
+    - token_delta
+    - request_delta
+    - created_at
+  properties:
+    id:
+      type: string
+    user_id:
+      type: string
+    request_log_id:
+      type: string
+    request_id:
+      type: string
+    trace_id:
+      type: string
+    request_model:
+      type: string
+    ledger_type:
+      $ref: './common.yaml#/LedgerTypeEnum'
+    billing_plan:
+      type: string
+    token_delta:
+      type: integer
+    request_delta:
+      type: integer
+    display_reason:
+      type: string
+      description: 面向用户/列表展示的脱敏原因文本。
+    created_at:
+      $ref: './common.yaml#/Timestamp'
+
 AdminUsageDailyItem:
   type: object
   required:

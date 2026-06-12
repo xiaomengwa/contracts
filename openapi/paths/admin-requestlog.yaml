@@ -83,7 +83,7 @@
                         items:
                           type: array
                           items:
-                            $ref: ../schemas/requestlog.yaml#/RequestLogResponse
+                            $ref: ../schemas/requestlog.yaml#/RequestLogListItem
                         page:
                           type: integer
                         limit:

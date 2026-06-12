@@ -1,5 +1,6 @@
 UserResponse:
   type: object
+  description: 用户响应不包含 password_hash、PasswordHash 或其他密码材料。
   required:
     - id
     - email

@@ -312,7 +312,7 @@
                         items:
                           type: array
                           items:
-                            $ref: ../schemas/usage.yaml#/UsageLedgerResponse
+                            $ref: ../schemas/usage.yaml#/UsageLedgerListItem
                         page:
                           type: integer
                         limit:
@@ -474,7 +474,7 @@
                         items:
                           type: array
                           items:
-                            $ref: ../schemas/requestlog.yaml#/RequestLogResponse
+                            $ref: ../schemas/requestlog.yaml#/RequestLogListItem
                         page:
                           type: integer
                         limit:

@@ -68,7 +68,7 @@
                         items:
                           type: array
                           items:
-                            $ref: ../schemas/upstream-key.yaml#/UpstreamKey
+                            $ref: ../schemas/upstream-key.yaml#/UpstreamKeyListItem
                         page:
                           type: integer
                         limit:
@@ -723,7 +723,7 @@
                         items:
                           type: array
                           items:
-                            $ref: ../schemas/upstream-key.yaml#/UpstreamKey
+                            $ref: ../schemas/upstream-key.yaml#/UpstreamKeyListItem
                         page:
                           type: integer
                         limit:

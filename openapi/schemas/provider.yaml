@@ -72,6 +72,45 @@ ProviderEndpoint:
     updated_at:
       $ref: './common.yaml#/Timestamp'
 
+ProviderEndpointListItem:
+  type: object
+  description: 列表安全版供应商端点；不返回原始 headers/auth 构造字段，仅提供是否配置自定义请求头的布尔标记。
+  required:
+    - id
+    - provider_id
+    - protocol
+    - path
+    - has_custom_headers
+    - status
+    - created_at
+    - updated_at
+  properties:
+    id:
+      type: string
+    provider_id:
+      type: string
+    protocol:
+      $ref: './common.yaml#/ProtocolEnum'
+    kind:
+      $ref: './common.yaml#/KindEnum'
+    adapter:
+      type: string
+    path:
+      type: string
+    method:
+      type: string
+    has_custom_headers:
+      type: boolean
+      description: 是否配置了自定义请求头；列表响应不得返回原始 headers 内容。
+    request_mode:
+      $ref: './common.yaml#/RequestModeEnum'
+    status:
+      $ref: './common.yaml#/StatusEnum'
+    created_at:
+      $ref: './common.yaml#/Timestamp'
+    updated_at:
+      $ref: './common.yaml#/Timestamp'
+
 # 请求体类型
 
 CreateProviderRequest:
