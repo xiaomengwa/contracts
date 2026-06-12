@@ -2,29 +2,32 @@
   get:
     operationId: userConfigModelAuto
     tags:
-      - user
+    - user
     summary: 获取自动模型配置
     security:
-      - bearerAuth: []
+    - bearerAuth: []
     responses:
-      "200":
+      '200':
         description: 成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: ../schemas/envelope.yaml#/ApiResponse
-                - type: object
-                  properties:
-                    data:
-                      $ref: ../schemas/user.yaml#/UserAutoModelConfig
-      "401":
+              - $ref: ../schemas/envelope.yaml#/ApiResponse
+              - type: object
+                properties:
+                  data:
+                    $ref: ../schemas/user.yaml#/UserAutoModelConfig
+        headers:
+          Cache-Control:
+            $ref: ../headers.yaml#/CacheNoStore
+      '401':
         description: 未授权
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "403":
+      '403':
         description: 无权限
         content:
           application/json:
@@ -34,35 +37,38 @@
   post:
     operationId: userConfigModelAutoUpdate
     tags:
-      - user
+    - user
     summary: 更新自动模型配置
     security:
-      - bearerAuth: []
+    - bearerAuth: []
     responses:
-      "200":
+      '200':
         description: 成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: ../schemas/envelope.yaml#/ApiResponse
-                - type: object
-                  properties:
-                    data:
-                      $ref: ../schemas/user.yaml#/UserAutoModelConfig
-      "400":
+              - $ref: ../schemas/envelope.yaml#/ApiResponse
+              - type: object
+                properties:
+                  data:
+                    $ref: ../schemas/user.yaml#/UserAutoModelConfig
+        headers:
+          Cache-Control:
+            $ref: ../headers.yaml#/CacheNoStore
+      '400':
         description: 参数无效
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "401":
+      '401':
         description: 未授权
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "403":
+      '403':
         description: 无权限
         content:
           application/json:
@@ -78,29 +84,32 @@
   get:
     operationId: userConfigBillingDetail
     tags:
-      - user
+    - user
     summary: 获取计费偏好配置
     security:
-      - bearerAuth: []
+    - bearerAuth: []
     responses:
-      "200":
+      '200':
         description: 成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: ../schemas/envelope.yaml#/ApiResponse
-                - type: object
-                  properties:
-                    data:
-                      $ref: ../schemas/user.yaml#/BillingConfig
-      "401":
+              - $ref: ../schemas/envelope.yaml#/ApiResponse
+              - type: object
+                properties:
+                  data:
+                    $ref: ../schemas/user.yaml#/BillingConfig
+        headers:
+          Cache-Control:
+            $ref: ../headers.yaml#/CacheNoStore
+      '401':
         description: 未授权
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "403":
+      '403':
         description: 无权限
         content:
           application/json:

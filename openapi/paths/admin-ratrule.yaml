@@ -2,84 +2,87 @@
   get:
     operationId: adminRateRuleList
     tags:
-      - ratrule
+    - ratrule
     summary: 获取倍率规则列表
     security:
-      - adminBearerAuth: []
+    - adminBearerAuth: []
     parameters:
-      - name: provider_id
-        in: query
-        schema:
-          type: string
-      - name: key_id
-        in: query
-        schema:
-          type: string
-      - name: model_id
-        in: query
-        schema:
-          type: string
-      - name: protocol
-        in: query
-        schema:
-          type: string
-      - name: status
-        in: query
-        schema:
-          $ref: ../schemas/common.yaml#/StatusEnum
-      - name: scope
-        in: query
-        schema:
-          type: string
-          description: 规则作用范围过滤
-      - name: page
-        in: query
-        schema:
-          type: integer
-          minimum: 1
-          default: 1
-      - name: limit
-        in: query
-        schema:
-          type: integer
-          minimum: 1
-          maximum: 100
-          default: 20
+    - name: provider_id
+      in: query
+      schema:
+        type: string
+    - name: key_id
+      in: query
+      schema:
+        type: string
+    - name: model_id
+      in: query
+      schema:
+        type: string
+    - name: protocol
+      in: query
+      schema:
+        type: string
+    - name: status
+      in: query
+      schema:
+        $ref: ../schemas/common.yaml#/StatusEnum
+    - name: scope
+      in: query
+      schema:
+        type: string
+        description: 规则作用范围过滤
+    - name: page
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+    - name: limit
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
     responses:
-      "200":
+      '200':
         description: 成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: ../schemas/envelope.yaml#/ApiResponse
-                - type: object
-                  properties:
-                    data:
-                      type: object
-                      required:
-                        - items
-                        - page
-                        - limit
-                        - total
-                      properties:
+              - $ref: ../schemas/envelope.yaml#/ApiResponse
+              - type: object
+                properties:
+                  data:
+                    type: object
+                    required:
+                    - items
+                    - page
+                    - limit
+                    - total
+                    properties:
+                      items:
+                        type: array
                         items:
-                          type: array
-                          items:
-                            $ref: ../schemas/ratrule.yaml#/PriceMultiplierRule
-                        page:
-                          type: integer
-                        limit:
-                          type: integer
-                        total:
-                          type: integer
-      "401":
+                          $ref: ../schemas/ratrule.yaml#/PriceMultiplierRule
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+        headers:
+          Cache-Control:
+            $ref: ../headers.yaml#/CacheNoStore
+      '401':
         description: 未授权
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "403":
+      '403':
         description: 无权限
         content:
           application/json:
@@ -89,10 +92,10 @@
   post:
     operationId: adminRateRuleCreate
     tags:
-      - ratrule
+    - ratrule
     summary: 创建倍率规则
     security:
-      - adminBearerAuth: []
+    - adminBearerAuth: []
     requestBody:
       required: true
       content:
@@ -100,30 +103,33 @@
           schema:
             $ref: ../schemas/ratrule.yaml#/CreateRateRuleRequest
     responses:
-      "201":
+      '201':
         description: 创建成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: ../schemas/envelope.yaml#/ApiResponse
-                - type: object
-                  properties:
-                    data:
-                      $ref: ../schemas/ratrule.yaml#/PriceMultiplierRule
-      "400":
+              - $ref: ../schemas/envelope.yaml#/ApiResponse
+              - type: object
+                properties:
+                  data:
+                    $ref: ../schemas/ratrule.yaml#/PriceMultiplierRule
+        headers:
+          Cache-Control:
+            $ref: ../headers.yaml#/CacheNoStore
+      '400':
         description: 参数无效
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "401":
+      '401':
         description: 未授权
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "403":
+      '403':
         description: 无权限
         content:
           application/json:
@@ -133,10 +139,10 @@
   post:
     operationId: adminRateRuleToggle
     tags:
-      - ratrule
+    - ratrule
     summary: 切换倍率规则启用/禁用
     security:
-      - adminBearerAuth: []
+    - adminBearerAuth: []
     requestBody:
       required: true
       content:
@@ -144,30 +150,33 @@
           schema:
             $ref: ../schemas/ratrule.yaml#/ToggleRateRuleRequest
     responses:
-      "200":
+      '200':
         description: 切换成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: ../schemas/envelope.yaml#/ApiResponse
-                - type: object
-                  properties:
-                    data:
-                      $ref: ../schemas/ratrule.yaml#/PriceMultiplierRule
-      "401":
+              - $ref: ../schemas/envelope.yaml#/ApiResponse
+              - type: object
+                properties:
+                  data:
+                    $ref: ../schemas/ratrule.yaml#/PriceMultiplierRule
+        headers:
+          Cache-Control:
+            $ref: ../headers.yaml#/CacheNoStore
+      '401':
         description: 未授权
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "403":
+      '403':
         description: 无权限
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "404":
+      '404':
         description: 倍率规则不存在
         content:
           application/json:
@@ -177,10 +186,10 @@
   post:
     operationId: adminRateRuleDelete
     tags:
-      - ratrule
+    - ratrule
     summary: 删除倍率规则
     security:
-      - adminBearerAuth: []
+    - adminBearerAuth: []
     requestBody:
       required: true
       content:
@@ -188,25 +197,28 @@
           schema:
             $ref: ../schemas/ratrule.yaml#/DeleteRateRuleRequest
     responses:
-      "200":
+      '200':
         description: 删除成功
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiResponse
-      "401":
+        headers:
+          Cache-Control:
+            $ref: ../headers.yaml#/CacheNoStore
+      '401':
         description: 未授权
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "403":
+      '403':
         description: 无权限
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "404":
+      '404':
         description: 倍率规则不存在
         content:
           application/json:
@@ -216,35 +228,38 @@
   post:
     operationId: adminRateRuleUpdate
     tags:
-      - ratrule
+    - ratrule
     summary: 更新倍率规则
     security:
-      - bearerAuth: []
+    - bearerAuth: []
     responses:
-      "200":
+      '200':
         description: 成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: ../schemas/envelope.yaml#/ApiResponse
-                - type: object
-                  properties:
-                    data:
-                      $ref: ../schemas/ratrule.yaml#/PriceMultiplierRule
-      "400":
+              - $ref: ../schemas/envelope.yaml#/ApiResponse
+              - type: object
+                properties:
+                  data:
+                    $ref: ../schemas/ratrule.yaml#/PriceMultiplierRule
+        headers:
+          Cache-Control:
+            $ref: ../headers.yaml#/CacheNoStore
+      '400':
         description: 参数无效
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "401":
+      '401':
         description: 未授权
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "403":
+      '403':
         description: 无权限
         content:
           application/json:

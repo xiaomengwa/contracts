@@ -2,23 +2,26 @@
   get:
     operationId: adminDashboard
     tags:
-      - admin
+    - admin
     summary: 获取管理员仪表盘数据
     security:
-      - adminBearerAuth: []
+    - adminBearerAuth: []
     responses:
-      "200":
+      '200':
         description: 成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: ../schemas/envelope.yaml#/ApiResponse
-                - type: object
-                  properties:
-                    data:
-                      $ref: ../schemas/sysconfig.yaml#/AdminDashboard
-      "400":
+              - $ref: ../schemas/envelope.yaml#/ApiResponse
+              - type: object
+                properties:
+                  data:
+                    $ref: ../schemas/sysconfig.yaml#/AdminDashboard
+        headers:
+          Cache-Control:
+            $ref: ../headers.yaml#/CacheNoStore
+      '400':
         description: 错误
         content:
           application/json:

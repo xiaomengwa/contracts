@@ -2,26 +2,29 @@
   get:
     operationId: userMe
     tags:
-      - user
+    - user
     summary: 获取当前用户信息
     security:
-      - bearerAuth: []
+    - bearerAuth: []
     responses:
-      "200":
+      '200':
         description: 成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: ../schemas/envelope.yaml#/ApiResponse
-                - type: object
-                  properties:
-                    data:
-                      type: object
-                      properties:
-                        user:
-                          $ref: ../schemas/user.yaml#/UserResponse
-      "400":
+              - $ref: ../schemas/envelope.yaml#/ApiResponse
+              - type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      user:
+                        $ref: ../schemas/user.yaml#/UserResponse
+        headers:
+          Cache-Control:
+            $ref: ../headers.yaml#/CacheNoStore
+      '400':
         description: 错误
         content:
           application/json:
@@ -31,27 +34,32 @@
   get:
     operationId: userDashboard
     tags:
-      - user
+    - user
     summary: 获取用户仪表盘数据
-    description: |
-      返回用户面板健康统计。`today_*` 字段统计当前业务日窗口（由服务端配置的业务时区决定）的已完成请求/用量；`total_*` 字段统计账号累计用量。
+    description: '返回用户面板健康统计。`today_*` 字段统计当前业务日窗口（由服务端配置的业务时区决定）的已完成请求/用量；`total_*` 字段统计账号累计用量。
+
 
       同屏趋势图不应从本接口伪造采样点；趋势数据应来自 `GET /api/v1/user/requests/list` 或后续专用趋势接口。若趋势窗口为空但 `today_requests > 0`，健康卡片仍展示 dashboard 统计，趋势图展示空态或 0 采样点。
+
+      '
     security:
-      - bearerAuth: []
+    - bearerAuth: []
     responses:
-      "200":
+      '200':
         description: 成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: ../schemas/envelope.yaml#/ApiResponse
-                - type: object
-                  properties:
-                    data:
-                      $ref: ../schemas/user.yaml#/UserDashboard
-      "400":
+              - $ref: ../schemas/envelope.yaml#/ApiResponse
+              - type: object
+                properties:
+                  data:
+                    $ref: ../schemas/user.yaml#/UserDashboard
+        headers:
+          Cache-Control:
+            $ref: ../headers.yaml#/CacheNoStore
+      '400':
         description: 错误
         content:
           application/json:
@@ -61,42 +69,42 @@
   get:
     operationId: userApiKeyList
     tags:
-      - user
+    - user
     summary: 获取用户 API 密钥列表
     security:
-      - bearerAuth: []
+    - bearerAuth: []
     responses:
-      "200":
+      '200':
         description: 成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: ../schemas/envelope.yaml#/ApiResponse
-                - type: object
-                  properties:
-                    data:
-                      type: object
-                      required:
-                        - items
-                        - page
-                        - limit
-                        - total
-                      properties:
+              - $ref: ../schemas/envelope.yaml#/ApiResponse
+              - type: object
+                properties:
+                  data:
+                    type: object
+                    required:
+                    - items
+                    - page
+                    - limit
+                    - total
+                    properties:
+                      items:
+                        type: array
                         items:
-                          type: array
-                          items:
-                            $ref: ../schemas/user.yaml#/APIKeyResponse
-                        page:
-                          type: integer
-                        limit:
-                          type: integer
-                        total:
-                          type: integer
+                          $ref: ../schemas/user.yaml#/APIKeyResponse
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
         headers:
           Cache-Control:
             $ref: ../headers.yaml#/CacheNoStore
-      "400":
+      '400':
         description: 错误
         content:
           application/json:
@@ -106,10 +114,10 @@
   post:
     operationId: userApiKeyCreate
     tags:
-      - user
+    - user
     summary: 创建 API 密钥
     security:
-      - bearerAuth: []
+    - bearerAuth: []
     requestBody:
       required: true
       content:
@@ -117,21 +125,21 @@
           schema:
             $ref: ../schemas/user.yaml#/CreateAPIKeyRequest
     responses:
-      "201":
+      '201':
         description: 创建成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: ../schemas/envelope.yaml#/ApiResponse
-                - type: object
-                  properties:
-                    data:
-                      $ref: ../schemas/user.yaml#/APIKeySecretResponse
+              - $ref: ../schemas/envelope.yaml#/ApiResponse
+              - type: object
+                properties:
+                  data:
+                    $ref: ../schemas/user.yaml#/APIKeySecretResponse
         headers:
           Cache-Control:
             $ref: ../headers.yaml#/CacheNoStore
-      "400":
+      '400':
         description: 错误
         content:
           application/json:
@@ -141,10 +149,10 @@
   post:
     operationId: userApiKeyUpdate
     tags:
-      - user
+    - user
     summary: 更新 API 密钥
     security:
-      - bearerAuth: []
+    - bearerAuth: []
     requestBody:
       required: true
       content:
@@ -152,21 +160,21 @@
           schema:
             $ref: ../schemas/user.yaml#/UpdateAPIKeyRequest
     responses:
-      "200":
+      '200':
         description: 更新成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: ../schemas/envelope.yaml#/ApiResponse
-                - type: object
-                  properties:
-                    data:
-                      $ref: ../schemas/user.yaml#/APIKeyResponse
+              - $ref: ../schemas/envelope.yaml#/ApiResponse
+              - type: object
+                properties:
+                  data:
+                    $ref: ../schemas/user.yaml#/APIKeyResponse
         headers:
           Cache-Control:
             $ref: ../headers.yaml#/CacheNoStore
-      "400":
+      '400':
         description: 错误
         content:
           application/json:
@@ -176,10 +184,10 @@
   post:
     operationId: userApiKeyDelete
     tags:
-      - user
+    - user
     summary: 删除 API 密钥
     security:
-      - bearerAuth: []
+    - bearerAuth: []
     requestBody:
       required: true
       content:
@@ -187,13 +195,16 @@
           schema:
             $ref: ../schemas/user.yaml#/DeleteAPIKeyRequest
     responses:
-      "200":
+      '200':
         description: 删除成功
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiResponse
-      "400":
+        headers:
+          Cache-Control:
+            $ref: ../headers.yaml#/CacheNoStore
+      '400':
         description: 错误
         content:
           application/json:
@@ -203,10 +214,10 @@
   post:
     operationId: userApiKeyToggle
     tags:
-      - user
+    - user
     summary: 切换 API 密钥启用/禁用
     security:
-      - bearerAuth: []
+    - bearerAuth: []
     requestBody:
       required: true
       content:
@@ -214,21 +225,21 @@
           schema:
             $ref: ../schemas/user.yaml#/ToggleAPIKeyRequest
     responses:
-      "200":
+      '200':
         description: 切换成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: ../schemas/envelope.yaml#/ApiResponse
-                - type: object
-                  properties:
-                    data:
-                      $ref: ../schemas/user.yaml#/APIKeyResponse
+              - $ref: ../schemas/envelope.yaml#/ApiResponse
+              - type: object
+                properties:
+                  data:
+                    $ref: ../schemas/user.yaml#/APIKeyResponse
         headers:
           Cache-Control:
             $ref: ../headers.yaml#/CacheNoStore
-      "400":
+      '400':
         description: 错误
         content:
           application/json:
@@ -238,27 +249,32 @@
   get:
     operationId: userQuota
     tags:
-      - user
+    - user
     summary: 获取用户配额
-    description: |
-      返回用户当前可用权益。套餐权益与充值 Token 余额是两个独立权益来源：`plan_tokens` 表示套餐提供的 token 额度，`recharged_tokens` 表示充值或兑换获得的 token 额度，`token_limit` 为两类 token 权益合计上限，`remaining_tokens` 为扣除已用和预留后的当前可用 token。
+    description: '返回用户当前可用权益。套餐权益与充值 Token 余额是两个独立权益来源：`plan_tokens` 表示套餐提供的 token 额度，`recharged_tokens` 表示充值或兑换获得的 token 额度，`token_limit` 为两类 token 权益合计上限，`remaining_tokens` 为扣除已用和预留后的当前可用 token。
+
 
       当套餐名称为空但 `recharged_tokens` 或 `remaining_tokens` 大于 0 时，前端不应展示为“无可用权益”，应展示充值 Token 余额；请求次数和图片额度同理按各自 remaining 字段判断可用性。
+
+      '
     security:
-      - bearerAuth: []
+    - bearerAuth: []
     responses:
-      "200":
+      '200':
         description: 成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: ../schemas/envelope.yaml#/ApiResponse
-                - type: object
-                  properties:
-                    data:
-                      $ref: ../schemas/usage.yaml#/UserQuota
-      "400":
+              - $ref: ../schemas/envelope.yaml#/ApiResponse
+              - type: object
+                properties:
+                  data:
+                    $ref: ../schemas/usage.yaml#/UserQuota
+        headers:
+          Cache-Control:
+            $ref: ../headers.yaml#/CacheNoStore
+      '400':
         description: 错误
         content:
           application/json:
@@ -268,58 +284,61 @@
   get:
     operationId: userUsage
     tags:
-      - user
+    - user
     summary: 获取用户用量账本
     security:
-      - bearerAuth: []
+    - bearerAuth: []
     parameters:
-      - name: ledger_type
-        in: query
-        schema:
-          type: string
-          description: 逗号分隔的账本类型过滤，如 charge,recharge
-      - name: page
-        in: query
-        schema:
-          type: integer
-          minimum: 1
-          default: 1
-      - name: limit
-        in: query
-        schema:
-          type: integer
-          minimum: 1
-          maximum: 100
-          default: 20
+    - name: ledger_type
+      in: query
+      schema:
+        type: string
+        description: 逗号分隔的账本类型过滤，如 charge,recharge
+    - name: page
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+    - name: limit
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
     responses:
-      "200":
+      '200':
         description: 成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: ../schemas/envelope.yaml#/ApiResponse
-                - type: object
-                  properties:
-                    data:
-                      type: object
-                      required:
-                        - items
-                        - page
-                        - limit
-                        - total
-                      properties:
+              - $ref: ../schemas/envelope.yaml#/ApiResponse
+              - type: object
+                properties:
+                  data:
+                    type: object
+                    required:
+                    - items
+                    - page
+                    - limit
+                    - total
+                    properties:
+                      items:
+                        type: array
                         items:
-                          type: array
-                          items:
-                            $ref: ../schemas/usage.yaml#/UsageLedgerListItem
-                        page:
-                          type: integer
-                        limit:
-                          type: integer
-                        total:
-                          type: integer
-      "400":
+                          $ref: ../schemas/usage.yaml#/UsageLedgerListItem
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+        headers:
+          Cache-Control:
+            $ref: ../headers.yaml#/CacheNoStore
+      '400':
         description: 错误
         content:
           application/json:
@@ -329,52 +348,56 @@
   get:
     operationId: userPlanList
     tags:
-      - user
+    - user
     summary: 获取用户可用套餐列表
-    description: |
-      返回登录用户上下文下可购买/可见的套餐列表，必须提供 `Authorization: Bearer <token>`。该接口可在未来包含用户特定资格、价格或订阅状态；未登录客户端应使用 `/api/v1/public/plans/list`。
+    description: '返回登录用户上下文下可购买/可见的套餐列表，必须提供 `Authorization: Bearer <token>`。该接口可在未来包含用户特定资格、价格或订阅状态；未登录客户端应使用 `/api/v1/public/plans/list`。
+
+      '
     security:
-      - bearerAuth: []
+    - bearerAuth: []
     parameters:
-      - name: plan_type
-        in: query
-        schema:
-          $ref: ../schemas/common.yaml#/PlanTypeEnum
+    - name: plan_type
+      in: query
+      schema:
+        $ref: ../schemas/common.yaml#/PlanTypeEnum
     responses:
-      "200":
+      '200':
         description: 成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: ../schemas/envelope.yaml#/ApiResponse
-                - type: object
-                  properties:
-                    data:
-                      type: object
-                      required:
-                        - items
-                        - page
-                        - limit
-                        - total
-                      properties:
+              - $ref: ../schemas/envelope.yaml#/ApiResponse
+              - type: object
+                properties:
+                  data:
+                    type: object
+                    required:
+                    - items
+                    - page
+                    - limit
+                    - total
+                    properties:
+                      items:
+                        type: array
                         items:
-                          type: array
-                          items:
-                            $ref: ../schemas/plan.yaml#/Plan
-                        page:
-                          type: integer
-                        limit:
-                          type: integer
-                        total:
-                          type: integer
-      "400":
+                          $ref: ../schemas/plan.yaml#/Plan
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+        headers:
+          Cache-Control:
+            $ref: ../headers.yaml#/CacheNoStore
+      '400':
         description: 错误
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "401":
+      '401':
         description: 未授权；用户上下文套餐列表必须登录访问，匿名客户端请使用 /api/v1/public/plans/list
         content:
           application/json:
@@ -384,39 +407,42 @@
   get:
     operationId: userModelList
     tags:
-      - user
+    - user
     summary: 获取用户可用模型列表
     security:
-      - bearerAuth: []
+    - bearerAuth: []
     responses:
-      "200":
+      '200':
         description: 成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: ../schemas/envelope.yaml#/ApiResponse
-                - type: object
-                  properties:
-                    data:
-                      type: object
-                      required:
-                        - items
-                        - page
-                        - limit
-                        - total
-                      properties:
+              - $ref: ../schemas/envelope.yaml#/ApiResponse
+              - type: object
+                properties:
+                  data:
+                    type: object
+                    required:
+                    - items
+                    - page
+                    - limit
+                    - total
+                    properties:
+                      items:
+                        type: array
                         items:
-                          type: array
-                          items:
-                            $ref: ../schemas/model.yaml#/CatalogModel
-                        page:
-                          type: integer
-                        limit:
-                          type: integer
-                        total:
-                          type: integer
-      "400":
+                          $ref: ../schemas/model.yaml#/CatalogModel
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+        headers:
+          Cache-Control:
+            $ref: ../headers.yaml#/CacheNoStore
+      '400':
         description: 错误
         content:
           application/json:
@@ -426,62 +452,67 @@
   get:
     operationId: userRequestLogList
     tags:
-      - user
+    - user
     summary: 获取用户请求日志列表
-    description: |
-      返回用户请求日志分页列表，可作为请求趋势图的数据来源。趋势图应按服务端返回的请求日志时间窗口聚合；当当前趋势窗口没有采样点时返回 `items: []`、`total: 0`，前端可展示空图或 0 采样点，但不应 fallback 到 `dashboard.today_requests` 生成虚假趋势点。
+    description: '返回用户请求日志分页列表，可作为请求趋势图的数据来源。趋势图应按服务端返回的请求日志时间窗口聚合；当当前趋势窗口没有采样点时返回 `items: []`、`total: 0`，前端可展示空图或 0 采样点，但不应 fallback 到 `dashboard.today_requests` 生成虚假趋势点。
+
 
       `total` 表示应用 `query` 过滤后的总数（分页前总数）。
+
+      '
     security:
-      - bearerAuth: []
+    - bearerAuth: []
     parameters:
-      - name: query
-        in: query
-        schema:
-          type: string
-          description: 搜索 trace_id / request_id / request_log_id
-      - name: page
-        in: query
-        schema:
-          type: integer
-          minimum: 1
-          default: 1
-      - name: limit
-        in: query
-        schema:
-          type: integer
-          minimum: 1
-          maximum: 100
-          default: 20
+    - name: query
+      in: query
+      schema:
+        type: string
+        description: 搜索 trace_id / request_id / request_log_id
+    - name: page
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+    - name: limit
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
     responses:
-      "200":
+      '200':
         description: 成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: ../schemas/envelope.yaml#/ApiResponse
-                - type: object
-                  properties:
-                    data:
-                      type: object
-                      required:
-                        - items
-                        - page
-                        - limit
-                        - total
-                      properties:
+              - $ref: ../schemas/envelope.yaml#/ApiResponse
+              - type: object
+                properties:
+                  data:
+                    type: object
+                    required:
+                    - items
+                    - page
+                    - limit
+                    - total
+                    properties:
+                      items:
+                        type: array
                         items:
-                          type: array
-                          items:
-                            $ref: ../schemas/requestlog.yaml#/RequestLogListItem
-                        page:
-                          type: integer
-                        limit:
-                          type: integer
-                        total:
-                          type: integer
-      "400":
+                          $ref: ../schemas/requestlog.yaml#/RequestLogListItem
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+        headers:
+          Cache-Control:
+            $ref: ../headers.yaml#/CacheNoStore
+      '400':
         description: 错误
         content:
           application/json:
@@ -491,29 +522,32 @@
   get:
     operationId: userRequestLogTrace
     tags:
-      - user
+    - user
     summary: 获取用户请求追踪详情
     security:
-      - bearerAuth: []
+    - bearerAuth: []
     parameters:
-      - name: query
-        in: query
-        required: true
-        schema:
-          type: string
+    - name: query
+      in: query
+      required: true
+      schema:
+        type: string
     responses:
-      "200":
+      '200':
         description: 成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: ../schemas/envelope.yaml#/ApiResponse
-                - type: object
-                  properties:
-                    data:
-                      $ref: ../schemas/requestlog.yaml#/RequestTraceResponse
-      "400":
+              - $ref: ../schemas/envelope.yaml#/ApiResponse
+              - type: object
+                properties:
+                  data:
+                    $ref: ../schemas/requestlog.yaml#/RequestTraceResponse
+        headers:
+          Cache-Control:
+            $ref: ../headers.yaml#/CacheNoStore
+      '400':
         description: 错误
         content:
           application/json:
@@ -523,10 +557,10 @@
   post:
     operationId: userBillingPreferenceUpdate
     tags:
-      - user
+    - user
     summary: 更新计费偏好
     security:
-      - bearerAuth: []
+    - bearerAuth: []
     requestBody:
       required: true
       content:
@@ -534,18 +568,21 @@
           schema:
             $ref: ../schemas/user.yaml#/UpdateBillingPreferenceRequest
     responses:
-      "200":
+      '200':
         description: 更新成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: ../schemas/envelope.yaml#/ApiResponse
-                - type: object
-                  properties:
-                    data:
-                      $ref: ../schemas/user.yaml#/UserResponse
-      "400":
+              - $ref: ../schemas/envelope.yaml#/ApiResponse
+              - type: object
+                properties:
+                  data:
+                    $ref: ../schemas/user.yaml#/UserResponse
+        headers:
+          Cache-Control:
+            $ref: ../headers.yaml#/CacheNoStore
+      '400':
         description: 错误
         content:
           application/json:
@@ -555,45 +592,48 @@
   get:
     operationId: userModelRouteList
     tags:
-      - user
+    - user
     summary: 获取用户模型路由列表
     security:
-      - bearerAuth: []
+    - bearerAuth: []
     responses:
-      "200":
+      '200':
         description: 成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: ../schemas/envelope.yaml#/ApiResponse
-                - type: object
-                  properties:
-                    data:
-                      type: object
-                      required:
-                        - items
-                        - page
-                        - limit
-                        - total
-                      properties:
+              - $ref: ../schemas/envelope.yaml#/ApiResponse
+              - type: object
+                properties:
+                  data:
+                    type: object
+                    required:
+                    - items
+                    - page
+                    - limit
+                    - total
+                    properties:
+                      items:
+                        type: array
                         items:
-                          type: array
-                          items:
-                            $ref: ../schemas/model.yaml#/UserModelRoute
-                        page:
-                          type: integer
-                        limit:
-                          type: integer
-                        total:
-                          type: integer
-      "401":
+                          $ref: ../schemas/model.yaml#/UserModelRoute
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+        headers:
+          Cache-Control:
+            $ref: ../headers.yaml#/CacheNoStore
+      '401':
         description: 未授权
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "403":
+      '403':
         description: 无权限
         content:
           application/json:

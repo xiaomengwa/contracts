@@ -2,38 +2,38 @@
   post:
     operationId: userApiKeyReset
     tags:
-      - user
+    - user
     summary: 重置 API Key
     security:
-      - bearerAuth: []
+    - bearerAuth: []
     responses:
-      "200":
+      '200':
         description: 成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: ../schemas/envelope.yaml#/ApiResponse
-                - type: object
-                  properties:
-                    data:
-                      $ref: ../schemas/user.yaml#/APIKeySecretResponse
+              - $ref: ../schemas/envelope.yaml#/ApiResponse
+              - type: object
+                properties:
+                  data:
+                    $ref: ../schemas/user.yaml#/APIKeySecretResponse
         headers:
           Cache-Control:
             $ref: ../headers.yaml#/CacheNoStore
-      "400":
+      '400':
         description: 参数无效
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "401":
+      '401':
         description: 未授权
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "403":
+      '403':
         description: 无权限
         content:
           application/json:
@@ -49,48 +49,48 @@
   get:
     operationId: userBotKeyList
     tags:
-      - user
+    - user
     summary: 获取 Bot Key 列表
     security:
-      - bearerAuth: []
+    - bearerAuth: []
     responses:
-      "200":
+      '200':
         description: 成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: ../schemas/envelope.yaml#/ApiResponse
-                - type: object
-                  properties:
-                    data:
-                      type: object
-                      required:
-                        - items
-                        - page
-                        - limit
-                        - total
-                      properties:
+              - $ref: ../schemas/envelope.yaml#/ApiResponse
+              - type: object
+                properties:
+                  data:
+                    type: object
+                    required:
+                    - items
+                    - page
+                    - limit
+                    - total
+                    properties:
+                      items:
+                        type: array
                         items:
-                          type: array
-                          items:
-                            $ref: ../schemas/user.yaml#/BotKeyResponse
-                        page:
-                          type: integer
-                        limit:
-                          type: integer
-                        total:
-                          type: integer
+                          $ref: ../schemas/user.yaml#/BotKeyResponse
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
         headers:
           Cache-Control:
             $ref: ../headers.yaml#/CacheNoStore
-      "401":
+      '401':
         description: 未授权
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "403":
+      '403':
         description: 无权限
         content:
           application/json:
@@ -100,38 +100,38 @@
   post:
     operationId: userBotKeyCreate
     tags:
-      - user
+    - user
     summary: 创建 Bot Key
     security:
-      - bearerAuth: []
+    - bearerAuth: []
     responses:
-      "200":
+      '200':
         description: 成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: ../schemas/envelope.yaml#/ApiResponse
-                - type: object
-                  properties:
-                    data:
-                      $ref: ../schemas/user.yaml#/BotKeySecretResponse
+              - $ref: ../schemas/envelope.yaml#/ApiResponse
+              - type: object
+                properties:
+                  data:
+                    $ref: ../schemas/user.yaml#/BotKeySecretResponse
         headers:
           Cache-Control:
             $ref: ../headers.yaml#/CacheNoStore
-      "400":
+      '400':
         description: 参数无效
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "401":
+      '401':
         description: 未授权
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "403":
+      '403':
         description: 无权限
         content:
           application/json:
@@ -147,38 +147,38 @@
   post:
     operationId: userBotKeyToggle
     tags:
-      - user
+    - user
     summary: 切换 Bot Key 状态
     security:
-      - bearerAuth: []
+    - bearerAuth: []
     responses:
-      "200":
+      '200':
         description: 成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: ../schemas/envelope.yaml#/ApiResponse
-                - type: object
-                  properties:
-                    data:
-                      $ref: ../schemas/user.yaml#/BotKeyResponse
+              - $ref: ../schemas/envelope.yaml#/ApiResponse
+              - type: object
+                properties:
+                  data:
+                    $ref: ../schemas/user.yaml#/BotKeyResponse
         headers:
           Cache-Control:
             $ref: ../headers.yaml#/CacheNoStore
-      "400":
+      '400':
         description: 参数无效
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "401":
+      '401':
         description: 未授权
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "403":
+      '403':
         description: 无权限
         content:
           application/json:
@@ -194,34 +194,37 @@
   post:
     operationId: userBotKeyDelete
     tags:
-      - user
+    - user
     summary: 删除 Bot Key
     security:
-      - bearerAuth: []
+    - bearerAuth: []
     responses:
-      "200":
+      '200':
         description: 成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: ../schemas/envelope.yaml#/ApiResponse
-                - type: object
-                  properties:
-                    data: {}
-      "400":
+              - $ref: ../schemas/envelope.yaml#/ApiResponse
+              - type: object
+                properties:
+                  data: {}
+        headers:
+          Cache-Control:
+            $ref: ../headers.yaml#/CacheNoStore
+      '400':
         description: 参数无效
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "401":
+      '401':
         description: 未授权
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "403":
+      '403':
         description: 无权限
         content:
           application/json:

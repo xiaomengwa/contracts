@@ -2,10 +2,10 @@
   post:
     operationId: userRedeemCodeRedeem
     tags:
-      - user
+    - user
     summary: 兑换码兑换
     security:
-      - bearerAuth: []
+    - bearerAuth: []
     requestBody:
       required: true
       content:
@@ -13,85 +13,91 @@
           schema:
             $ref: ../schemas/redeem.yaml#/RedeemCodeRequest
     responses:
-      "200":
+      '200':
         description: 兑换成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: ../schemas/envelope.yaml#/ApiResponse
-                - type: object
-                  properties:
-                    data:
-                      $ref: ../schemas/redeem.yaml#/RedeemCodeRedemptionResponse
-      "400":
+              - $ref: ../schemas/envelope.yaml#/ApiResponse
+              - type: object
+                properties:
+                  data:
+                    $ref: ../schemas/redeem.yaml#/RedeemCodeRedemptionResponse
+        headers:
+          Cache-Control:
+            $ref: ../headers.yaml#/CacheNoStore
+      '400':
         description: 兑换码无效
         content:
           application/json:
             schema:
               allOf:
-                - $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-                - type: object
-                  properties:
-                    error_code:
-                      type: string
-                      enum:
-                        - REDEEM_CODE_INACTIVE
-                        - REDEEM_CODE_EXPIRED
-                        - REDEEM_CODE_EXHAUSTED
-                        - REDEEM_CODE_ALREADY_REDEEMED
-                        - REDEEM_CODE_PLAN_DOWNGRADE
+              - $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+              - type: object
+                properties:
+                  error_code:
+                    type: string
+                    enum:
+                    - REDEEM_CODE_INACTIVE
+                    - REDEEM_CODE_EXPIRED
+                    - REDEEM_CODE_EXHAUSTED
+                    - REDEEM_CODE_ALREADY_REDEEMED
+                    - REDEEM_CODE_PLAN_DOWNGRADE
 /api/v1/user/codes/redeem/redemptions:
   get:
     operationId: userRedeemCodeRedemptionList
     tags:
-      - user
+    - user
     summary: 获取用户兑换记录
     security:
-      - bearerAuth: []
+    - bearerAuth: []
     parameters:
-      - name: page
-        in: query
-        schema:
-          type: integer
-          minimum: 1
-          default: 1
-      - name: limit
-        in: query
-        schema:
-          type: integer
-          minimum: 1
-          maximum: 100
-          default: 20
+    - name: page
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+    - name: limit
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
     responses:
-      "200":
+      '200':
         description: 成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: ../schemas/envelope.yaml#/ApiResponse
-                - type: object
-                  properties:
-                    data:
-                      type: object
-                      required:
-                        - items
-                        - page
-                        - limit
-                        - total
-                      properties:
+              - $ref: ../schemas/envelope.yaml#/ApiResponse
+              - type: object
+                properties:
+                  data:
+                    type: object
+                    required:
+                    - items
+                    - page
+                    - limit
+                    - total
+                    properties:
+                      items:
+                        type: array
                         items:
-                          type: array
-                          items:
-                            $ref: ../schemas/redeem.yaml#/RedeemCodeRedemption
-                        page:
-                          type: integer
-                        limit:
-                          type: integer
-                        total:
-                          type: integer
-      "400":
+                          $ref: ../schemas/redeem.yaml#/RedeemCodeRedemption
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+        headers:
+          Cache-Control:
+            $ref: ../headers.yaml#/CacheNoStore
+      '400':
         description: 错误
         content:
           application/json:

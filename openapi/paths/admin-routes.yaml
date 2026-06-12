@@ -2,45 +2,48 @@
   get:
     operationId: adminRouteGroupList
     tags:
-      - catalog
+    - catalog
     summary: 获取路由组列表
     security:
-      - bearerAuth: []
+    - bearerAuth: []
     responses:
-      "200":
+      '200':
         description: 成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: ../schemas/envelope.yaml#/ApiResponse
-                - type: object
-                  properties:
-                    data:
-                      type: object
-                      required:
-                        - items
-                        - page
-                        - limit
-                        - total
-                      properties:
+              - $ref: ../schemas/envelope.yaml#/ApiResponse
+              - type: object
+                properties:
+                  data:
+                    type: object
+                    required:
+                    - items
+                    - page
+                    - limit
+                    - total
+                    properties:
+                      items:
+                        type: array
                         items:
-                          type: array
-                          items:
-                            $ref: ../schemas/model.yaml#/RouteGroup
-                        page:
-                          type: integer
-                        limit:
-                          type: integer
-                        total:
-                          type: integer
-      "401":
+                          $ref: ../schemas/model.yaml#/RouteGroup
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+        headers:
+          Cache-Control:
+            $ref: ../headers.yaml#/CacheNoStore
+      '401':
         description: 未授权
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "403":
+      '403':
         description: 无权限
         content:
           application/json:
@@ -50,29 +53,32 @@
   get:
     operationId: adminRouteGroupDetail
     tags:
-      - catalog
+    - catalog
     summary: 获取路由组详情
     security:
-      - bearerAuth: []
+    - bearerAuth: []
     responses:
-      "200":
+      '200':
         description: 成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: ../schemas/envelope.yaml#/ApiResponse
-                - type: object
-                  properties:
-                    data:
-                      $ref: ../schemas/model.yaml#/RouteGroup
-      "401":
+              - $ref: ../schemas/envelope.yaml#/ApiResponse
+              - type: object
+                properties:
+                  data:
+                    $ref: ../schemas/model.yaml#/RouteGroup
+        headers:
+          Cache-Control:
+            $ref: ../headers.yaml#/CacheNoStore
+      '401':
         description: 未授权
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "403":
+      '403':
         description: 无权限
         content:
           application/json:
@@ -82,35 +88,38 @@
   post:
     operationId: adminRouteGroupCreate
     tags:
-      - catalog
+    - catalog
     summary: 创建路由组
     security:
-      - bearerAuth: []
+    - bearerAuth: []
     responses:
-      "200":
+      '200':
         description: 成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: ../schemas/envelope.yaml#/ApiResponse
-                - type: object
-                  properties:
-                    data:
-                      $ref: ../schemas/model.yaml#/RouteGroup
-      "400":
+              - $ref: ../schemas/envelope.yaml#/ApiResponse
+              - type: object
+                properties:
+                  data:
+                    $ref: ../schemas/model.yaml#/RouteGroup
+        headers:
+          Cache-Control:
+            $ref: ../headers.yaml#/CacheNoStore
+      '400':
         description: 参数无效
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "401":
+      '401':
         description: 未授权
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "403":
+      '403':
         description: 无权限
         content:
           application/json:
@@ -126,35 +135,38 @@
   post:
     operationId: adminRouteGroupUpdate
     tags:
-      - catalog
+    - catalog
     summary: 更新路由组
     security:
-      - bearerAuth: []
+    - bearerAuth: []
     responses:
-      "200":
+      '200':
         description: 成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: ../schemas/envelope.yaml#/ApiResponse
-                - type: object
-                  properties:
-                    data:
-                      $ref: ../schemas/model.yaml#/RouteGroup
-      "400":
+              - $ref: ../schemas/envelope.yaml#/ApiResponse
+              - type: object
+                properties:
+                  data:
+                    $ref: ../schemas/model.yaml#/RouteGroup
+        headers:
+          Cache-Control:
+            $ref: ../headers.yaml#/CacheNoStore
+      '400':
         description: 参数无效
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "401":
+      '401':
         description: 未授权
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "403":
+      '403':
         description: 无权限
         content:
           application/json:
@@ -170,34 +182,37 @@
   post:
     operationId: adminRouteGroupDelete
     tags:
-      - catalog
+    - catalog
     summary: 删除路由组
     security:
-      - bearerAuth: []
+    - bearerAuth: []
     responses:
-      "200":
+      '200':
         description: 成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: ../schemas/envelope.yaml#/ApiResponse
-                - type: object
-                  properties:
-                    data: {}
-      "400":
+              - $ref: ../schemas/envelope.yaml#/ApiResponse
+              - type: object
+                properties:
+                  data: {}
+        headers:
+          Cache-Control:
+            $ref: ../headers.yaml#/CacheNoStore
+      '400':
         description: 参数无效
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "401":
+      '401':
         description: 未授权
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "403":
+      '403':
         description: 无权限
         content:
           application/json:
@@ -213,35 +228,38 @@
   post:
     operationId: adminRouteGroupToggle
     tags:
-      - catalog
+    - catalog
     summary: 切换路由组状态
     security:
-      - bearerAuth: []
+    - bearerAuth: []
     responses:
-      "200":
+      '200':
         description: 成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: ../schemas/envelope.yaml#/ApiResponse
-                - type: object
-                  properties:
-                    data:
-                      $ref: ../schemas/model.yaml#/RouteGroup
-      "400":
+              - $ref: ../schemas/envelope.yaml#/ApiResponse
+              - type: object
+                properties:
+                  data:
+                    $ref: ../schemas/model.yaml#/RouteGroup
+        headers:
+          Cache-Control:
+            $ref: ../headers.yaml#/CacheNoStore
+      '400':
         description: 参数无效
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "401":
+      '401':
         description: 未授权
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "403":
+      '403':
         description: 无权限
         content:
           application/json:
@@ -257,45 +275,48 @@
   get:
     operationId: adminModelRouteGroupList
     tags:
-      - catalog
+    - catalog
     summary: 获取模型路由分组绑定列表
     security:
-      - bearerAuth: []
+    - bearerAuth: []
     responses:
-      "200":
+      '200':
         description: 成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: ../schemas/envelope.yaml#/ApiResponse
-                - type: object
-                  properties:
-                    data:
-                      type: object
-                      required:
-                        - items
-                        - page
-                        - limit
-                        - total
-                      properties:
+              - $ref: ../schemas/envelope.yaml#/ApiResponse
+              - type: object
+                properties:
+                  data:
+                    type: object
+                    required:
+                    - items
+                    - page
+                    - limit
+                    - total
+                    properties:
+                      items:
+                        type: array
                         items:
-                          type: array
-                          items:
-                            $ref: ../schemas/model.yaml#/UpstreamRouteGroupMembership
-                        page:
-                          type: integer
-                        limit:
-                          type: integer
-                        total:
-                          type: integer
-      "401":
+                          $ref: ../schemas/model.yaml#/UpstreamRouteGroupMembership
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+        headers:
+          Cache-Control:
+            $ref: ../headers.yaml#/CacheNoStore
+      '401':
         description: 未授权
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "403":
+      '403':
         description: 无权限
         content:
           application/json:
@@ -305,35 +326,38 @@
   post:
     operationId: adminModelRouteGroupAdd
     tags:
-      - catalog
+    - catalog
     summary: 添加模型路由分组绑定
     security:
-      - bearerAuth: []
+    - bearerAuth: []
     responses:
-      "200":
+      '200':
         description: 成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: ../schemas/envelope.yaml#/ApiResponse
-                - type: object
-                  properties:
-                    data:
-                      $ref: ../schemas/model.yaml#/UpstreamRouteGroupMembership
-      "400":
+              - $ref: ../schemas/envelope.yaml#/ApiResponse
+              - type: object
+                properties:
+                  data:
+                    $ref: ../schemas/model.yaml#/UpstreamRouteGroupMembership
+        headers:
+          Cache-Control:
+            $ref: ../headers.yaml#/CacheNoStore
+      '400':
         description: 参数无效
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "401":
+      '401':
         description: 未授权
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "403":
+      '403':
         description: 无权限
         content:
           application/json:
@@ -349,35 +373,38 @@
   post:
     operationId: adminModelRouteGroupRemove
     tags:
-      - catalog
+    - catalog
     summary: 移除模型路由分组绑定
     security:
-      - bearerAuth: []
+    - bearerAuth: []
     responses:
-      "200":
+      '200':
         description: 成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: ../schemas/envelope.yaml#/ApiResponse
-                - type: object
-                  properties:
-                    data:
-                      $ref: ../schemas/model.yaml#/UpstreamRouteGroupMembership
-      "400":
+              - $ref: ../schemas/envelope.yaml#/ApiResponse
+              - type: object
+                properties:
+                  data:
+                    $ref: ../schemas/model.yaml#/UpstreamRouteGroupMembership
+        headers:
+          Cache-Control:
+            $ref: ../headers.yaml#/CacheNoStore
+      '400':
         description: 参数无效
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "401":
+      '401':
         description: 未授权
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "403":
+      '403':
         description: 无权限
         content:
           application/json:

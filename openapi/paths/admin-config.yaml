@@ -2,34 +2,34 @@
   get:
     operationId: adminConfigList
     tags:
-      - config
+    - config
     summary: 获取系统配置列表
     security:
-      - adminBearerAuth: []
+    - adminBearerAuth: []
     responses:
-      "200":
+      '200':
         description: 成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: ../schemas/envelope.yaml#/ApiResponse
-                - type: object
-                  properties:
-                    data:
-                      type: array
-                      items:
-                        $ref: ../schemas/sysconfig.yaml#/SystemConfig
+              - $ref: ../schemas/envelope.yaml#/ApiResponse
+              - type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: ../schemas/sysconfig.yaml#/SystemConfig
         headers:
           Cache-Control:
             $ref: ../headers.yaml#/CacheNoStore
-      "401":
+      '401':
         description: 未授权
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "403":
+      '403':
         description: 无权限
         content:
           application/json:
@@ -39,44 +39,44 @@
   get:
     operationId: adminConfigDetail
     tags:
-      - config
+    - config
     summary: 获取系统配置详情
     security:
-      - adminBearerAuth: []
+    - adminBearerAuth: []
     parameters:
-      - name: key
-        in: query
-        required: true
-        schema:
-          type: string
+    - name: key
+      in: query
+      required: true
+      schema:
+        type: string
     responses:
-      "200":
+      '200':
         description: 成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: ../schemas/envelope.yaml#/ApiResponse
-                - type: object
-                  properties:
-                    data:
-                      $ref: ../schemas/sysconfig.yaml#/SystemConfig
+              - $ref: ../schemas/envelope.yaml#/ApiResponse
+              - type: object
+                properties:
+                  data:
+                    $ref: ../schemas/sysconfig.yaml#/SystemConfig
         headers:
           Cache-Control:
             $ref: ../headers.yaml#/CacheNoStore
-      "401":
+      '401':
         description: 未授权
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "403":
+      '403':
         description: 无权限
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "404":
+      '404':
         description: 配置项不存在
         content:
           application/json:
@@ -86,10 +86,10 @@
   post:
     operationId: adminConfigUpdate
     tags:
-      - config
+    - config
     summary: 更新系统配置
     security:
-      - adminBearerAuth: []
+    - adminBearerAuth: []
     requestBody:
       required: true
       content:
@@ -97,39 +97,39 @@
           schema:
             $ref: ../schemas/sysconfig.yaml#/UpdateSystemConfigRequest
     responses:
-      "200":
+      '200':
         description: 更新成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: ../schemas/envelope.yaml#/ApiResponse
-                - type: object
-                  properties:
-                    data:
-                      $ref: ../schemas/sysconfig.yaml#/SystemConfig
+              - $ref: ../schemas/envelope.yaml#/ApiResponse
+              - type: object
+                properties:
+                  data:
+                    $ref: ../schemas/sysconfig.yaml#/SystemConfig
         headers:
           Cache-Control:
             $ref: ../headers.yaml#/CacheNoStore
-      "400":
+      '400':
         description: 参数无效
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "401":
+      '401':
         description: 未授权
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "403":
+      '403':
         description: 无权限
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "404":
+      '404':
         description: 配置项不存在
         content:
           application/json:
@@ -139,40 +139,43 @@
   post:
     operationId: adminConfigReload
     tags:
-      - config
+    - config
     summary: 重载系统配置
     security:
-      - adminBearerAuth: []
+    - adminBearerAuth: []
     responses:
-      "200":
+      '200':
         description: 重载成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: ../schemas/envelope.yaml#/ApiResponse
-                - type: object
-                  properties:
-                    data:
-                      type: object
-                      required:
-                        - routing_reloaded
-                        - executor_reloaded
-                        - executor_cache_version
-                      properties:
-                        routing_reloaded:
-                          type: boolean
-                        executor_reloaded:
-                          type: boolean
-                        executor_cache_version:
-                          type: string
-      "401":
+              - $ref: ../schemas/envelope.yaml#/ApiResponse
+              - type: object
+                properties:
+                  data:
+                    type: object
+                    required:
+                    - routing_reloaded
+                    - executor_reloaded
+                    - executor_cache_version
+                    properties:
+                      routing_reloaded:
+                        type: boolean
+                      executor_reloaded:
+                        type: boolean
+                      executor_cache_version:
+                        type: string
+        headers:
+          Cache-Control:
+            $ref: ../headers.yaml#/CacheNoStore
+      '401':
         description: 未授权
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "403":
+      '403':
         description: 无权限
         content:
           application/json:
@@ -182,29 +185,32 @@
   get:
     operationId: adminRoutingConfig
     tags:
-      - config
+    - config
     summary: 获取路由配置
     security:
-      - adminBearerAuth: []
+    - adminBearerAuth: []
     responses:
-      "200":
+      '200':
         description: 成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: ../schemas/envelope.yaml#/ApiResponse
-                - type: object
-                  properties:
-                    data:
-                      $ref: ../schemas/sysconfig.yaml#/RoutingPolicy
-      "401":
+              - $ref: ../schemas/envelope.yaml#/ApiResponse
+              - type: object
+                properties:
+                  data:
+                    $ref: ../schemas/sysconfig.yaml#/RoutingPolicy
+        headers:
+          Cache-Control:
+            $ref: ../headers.yaml#/CacheNoStore
+      '401':
         description: 未授权
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "403":
+      '403':
         description: 无权限
         content:
           application/json:
@@ -214,10 +220,10 @@
   post:
     operationId: adminRoutingConfigUpdate
     tags:
-      - config
+    - config
     summary: 更新路由配置
     security:
-      - adminBearerAuth: []
+    - adminBearerAuth: []
     requestBody:
       required: true
       content:
@@ -225,30 +231,33 @@
           schema:
             $ref: ../schemas/sysconfig.yaml#/UpdateRoutingConfigRequest
     responses:
-      "200":
+      '200':
         description: 更新成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: ../schemas/envelope.yaml#/ApiResponse
-                - type: object
-                  properties:
-                    data:
-                      $ref: ../schemas/sysconfig.yaml#/RoutingPolicy
-      "400":
+              - $ref: ../schemas/envelope.yaml#/ApiResponse
+              - type: object
+                properties:
+                  data:
+                    $ref: ../schemas/sysconfig.yaml#/RoutingPolicy
+        headers:
+          Cache-Control:
+            $ref: ../headers.yaml#/CacheNoStore
+      '400':
         description: 参数无效
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "401":
+      '401':
         description: 未授权
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "403":
+      '403':
         description: 无权限
         content:
           application/json:
@@ -258,40 +267,43 @@
   post:
     operationId: adminRoutingReload
     tags:
-      - config
+    - config
     summary: 重载路由配置
     security:
-      - adminBearerAuth: []
+    - adminBearerAuth: []
     responses:
-      "200":
+      '200':
         description: 重载成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: ../schemas/envelope.yaml#/ApiResponse
-                - type: object
-                  properties:
-                    data:
-                      type: object
-                      required:
-                        - routing_reloaded
-                        - executor_reloaded
-                        - executor_cache_version
-                      properties:
-                        routing_reloaded:
-                          type: boolean
-                        executor_reloaded:
-                          type: boolean
-                        executor_cache_version:
-                          type: string
-      "401":
+              - $ref: ../schemas/envelope.yaml#/ApiResponse
+              - type: object
+                properties:
+                  data:
+                    type: object
+                    required:
+                    - routing_reloaded
+                    - executor_reloaded
+                    - executor_cache_version
+                    properties:
+                      routing_reloaded:
+                        type: boolean
+                      executor_reloaded:
+                        type: boolean
+                      executor_cache_version:
+                        type: string
+        headers:
+          Cache-Control:
+            $ref: ../headers.yaml#/CacheNoStore
+      '401':
         description: 未授权
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "403":
+      '403':
         description: 无权限
         content:
           application/json:

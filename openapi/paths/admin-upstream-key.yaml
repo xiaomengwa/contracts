@@ -2,89 +2,92 @@
   get:
     operationId: adminUpstreamKeyList
     tags:
-      - admin
+    - admin
     summary: 获取上游密钥列表
-    description: |
-      返回上游密钥分页列表。客户端搜索/筛选时应重新请求本接口并携带当前 `query`、过滤条件、`page`、`limit`；契约不限定 UI 触发方式（实时输入、回车或点击筛选均可），但列表展示和分页必须以服务端返回为准。
+    description: '返回上游密钥分页列表。客户端搜索/筛选时应重新请求本接口并携带当前 `query`、过滤条件、`page`、`limit`；契约不限定 UI 触发方式（实时输入、回车或点击筛选均可），但列表展示和分页必须以服务端返回为准。
+
 
       `total` 表示应用 `query`、`provider_id`、`status`、`quota_type`、`expiring` 后的总数；无匹配结果时返回 `items: []`、`total: 0`。
+
+      '
     security:
-      - adminBearerAuth: []
+    - adminBearerAuth: []
     parameters:
-      - name: query
-        in: query
-        schema:
-          type: string
-          description: |
-            搜索关键字。服务端至少应匹配 `id`、`name`、`provider_name`、`notes`。空字符串或省略表示不按关键字过滤。
-      - name: provider_id
-        in: query
-        schema:
-          type: string
-      - name: status
-        in: query
-        schema:
-          $ref: ../schemas/common.yaml#/StatusEnum
-      - name: quota_type
-        in: query
-        schema:
-          $ref: ../schemas/common.yaml#/QuotaTypeEnum
-      - name: expiring
-        in: query
-        schema:
-          type: boolean
-          description: 是否即将过期
-      - name: page
-        in: query
-        schema:
-          type: integer
-          minimum: 1
-          default: 1
-      - name: limit
-        in: query
-        schema:
-          type: integer
-          minimum: 1
-          maximum: 100
-          default: 20
+    - name: query
+      in: query
+      schema:
+        type: string
+        description: '搜索关键字。服务端至少应匹配 `id`、`name`、`provider_name`、`notes`。空字符串或省略表示不按关键字过滤。
+
+          '
+    - name: provider_id
+      in: query
+      schema:
+        type: string
+    - name: status
+      in: query
+      schema:
+        $ref: ../schemas/common.yaml#/StatusEnum
+    - name: quota_type
+      in: query
+      schema:
+        $ref: ../schemas/common.yaml#/QuotaTypeEnum
+    - name: expiring
+      in: query
+      schema:
+        type: boolean
+        description: 是否即将过期
+    - name: page
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+    - name: limit
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
     responses:
-      "200":
+      '200':
         description: 成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: ../schemas/envelope.yaml#/ApiResponse
-                - type: object
-                  properties:
-                    data:
-                      type: object
-                      required:
-                        - items
-                        - page
-                        - limit
-                        - total
-                      properties:
+              - $ref: ../schemas/envelope.yaml#/ApiResponse
+              - type: object
+                properties:
+                  data:
+                    type: object
+                    required:
+                    - items
+                    - page
+                    - limit
+                    - total
+                    properties:
+                      items:
+                        type: array
                         items:
-                          type: array
-                          items:
-                            $ref: ../schemas/upstream-key.yaml#/UpstreamKeyListItem
-                        page:
-                          type: integer
-                        limit:
-                          type: integer
-                        total:
-                          type: integer
+                          $ref: ../schemas/upstream-key.yaml#/UpstreamKeyListItem
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
         headers:
           Cache-Control:
             $ref: ../headers.yaml#/CacheNoStore
-      "401":
+      '401':
         description: 未授权
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "403":
+      '403':
         description: 无权限
         content:
           application/json:
@@ -94,44 +97,44 @@
   get:
     operationId: adminUpstreamKeyDetail
     tags:
-      - admin
+    - admin
     summary: 获取上游密钥详情
     security:
-      - adminBearerAuth: []
+    - adminBearerAuth: []
     parameters:
-      - name: id
-        in: query
-        required: true
-        schema:
-          type: string
+    - name: id
+      in: query
+      required: true
+      schema:
+        type: string
     responses:
-      "200":
+      '200':
         description: 成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: ../schemas/envelope.yaml#/ApiResponse
-                - type: object
-                  properties:
-                    data:
-                      $ref: ../schemas/upstream-key.yaml#/UpstreamKey
+              - $ref: ../schemas/envelope.yaml#/ApiResponse
+              - type: object
+                properties:
+                  data:
+                    $ref: ../schemas/upstream-key.yaml#/UpstreamKey
         headers:
           Cache-Control:
             $ref: ../headers.yaml#/CacheNoStore
-      "401":
+      '401':
         description: 未授权
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "403":
+      '403':
         description: 无权限
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "404":
+      '404':
         description: 上游密钥不存在
         content:
           application/json:
@@ -141,41 +144,44 @@
   get:
     operationId: adminUpstreamKeyUsage
     tags:
-      - admin
+    - admin
     summary: 获取上游密钥用量统计
     security:
-      - adminBearerAuth: []
+    - adminBearerAuth: []
     parameters:
-      - name: id
-        in: query
-        required: true
-        schema:
-          type: string
+    - name: id
+      in: query
+      required: true
+      schema:
+        type: string
     responses:
-      "200":
+      '200':
         description: 成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: ../schemas/envelope.yaml#/ApiResponse
-                - type: object
-                  properties:
-                    data:
-                      $ref: ../schemas/upstream-key.yaml#/UpstreamKeyUsage
-      "401":
+              - $ref: ../schemas/envelope.yaml#/ApiResponse
+              - type: object
+                properties:
+                  data:
+                    $ref: ../schemas/upstream-key.yaml#/UpstreamKeyUsage
+        headers:
+          Cache-Control:
+            $ref: ../headers.yaml#/CacheNoStore
+      '401':
         description: 未授权
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "403":
+      '403':
         description: 无权限
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "404":
+      '404':
         description: 上游密钥不存在
         content:
           application/json:
@@ -185,10 +191,10 @@
   post:
     operationId: adminUpstreamKeyCreate
     tags:
-      - admin
+    - admin
     summary: 创建上游密钥
     security:
-      - adminBearerAuth: []
+    - adminBearerAuth: []
     requestBody:
       required: true
       content:
@@ -196,33 +202,33 @@
           schema:
             $ref: ../schemas/upstream-key.yaml#/CreateUpstreamKeyRequest
     responses:
-      "201":
+      '201':
         description: 创建成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: ../schemas/envelope.yaml#/ApiResponse
-                - type: object
-                  properties:
-                    data:
-                      $ref: ../schemas/upstream-key.yaml#/UpstreamKey
+              - $ref: ../schemas/envelope.yaml#/ApiResponse
+              - type: object
+                properties:
+                  data:
+                    $ref: ../schemas/upstream-key.yaml#/UpstreamKey
         headers:
           Cache-Control:
             $ref: ../headers.yaml#/CacheNoStore
-      "400":
+      '400':
         description: 参数无效
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "401":
+      '401':
         description: 未授权
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "403":
+      '403':
         description: 无权限
         content:
           application/json:
@@ -232,10 +238,10 @@
   post:
     operationId: adminUpstreamKeyUpdate
     tags:
-      - admin
+    - admin
     summary: 更新上游密钥
     security:
-      - adminBearerAuth: []
+    - adminBearerAuth: []
     requestBody:
       required: true
       content:
@@ -243,39 +249,39 @@
           schema:
             $ref: ../schemas/upstream-key.yaml#/UpdateUpstreamKeyRequest
     responses:
-      "200":
+      '200':
         description: 更新成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: ../schemas/envelope.yaml#/ApiResponse
-                - type: object
-                  properties:
-                    data:
-                      $ref: ../schemas/upstream-key.yaml#/UpstreamKey
+              - $ref: ../schemas/envelope.yaml#/ApiResponse
+              - type: object
+                properties:
+                  data:
+                    $ref: ../schemas/upstream-key.yaml#/UpstreamKey
         headers:
           Cache-Control:
             $ref: ../headers.yaml#/CacheNoStore
-      "400":
+      '400':
         description: 参数无效
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "401":
+      '401':
         description: 未授权
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "403":
+      '403':
         description: 无权限
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "404":
+      '404':
         description: 上游密钥不存在
         content:
           application/json:
@@ -285,10 +291,10 @@
   post:
     operationId: adminUpstreamKeyDelete
     tags:
-      - admin
+    - admin
     summary: 删除上游密钥
     security:
-      - adminBearerAuth: []
+    - adminBearerAuth: []
     requestBody:
       required: true
       content:
@@ -296,25 +302,28 @@
           schema:
             $ref: ../schemas/upstream-key.yaml#/DeleteUpstreamKeyRequest
     responses:
-      "200":
+      '200':
         description: 删除成功
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiResponse
-      "401":
+        headers:
+          Cache-Control:
+            $ref: ../headers.yaml#/CacheNoStore
+      '401':
         description: 未授权
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "403":
+      '403':
         description: 无权限
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "404":
+      '404':
         description: 上游密钥不存在
         content:
           application/json:
@@ -324,10 +333,10 @@
   post:
     operationId: adminUpstreamKeyToggle
     tags:
-      - admin
+    - admin
     summary: 切换上游密钥启用/禁用
     security:
-      - adminBearerAuth: []
+    - adminBearerAuth: []
     requestBody:
       required: true
       content:
@@ -335,33 +344,33 @@
           schema:
             $ref: ../schemas/upstream-key.yaml#/ToggleUpstreamKeyRequest
     responses:
-      "200":
+      '200':
         description: 切换成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: ../schemas/envelope.yaml#/ApiResponse
-                - type: object
-                  properties:
-                    data:
-                      $ref: ../schemas/upstream-key.yaml#/UpstreamKey
+              - $ref: ../schemas/envelope.yaml#/ApiResponse
+              - type: object
+                properties:
+                  data:
+                    $ref: ../schemas/upstream-key.yaml#/UpstreamKey
         headers:
           Cache-Control:
             $ref: ../headers.yaml#/CacheNoStore
-      "401":
+      '401':
         description: 未授权
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "403":
+      '403':
         description: 无权限
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "404":
+      '404':
         description: 上游密钥不存在
         content:
           application/json:
@@ -371,71 +380,74 @@
   get:
     operationId: adminUpstreamKeyModelList
     tags:
-      - admin
+    - admin
     summary: 获取上游密钥模型映射列表
     security:
-      - adminBearerAuth: []
+    - adminBearerAuth: []
     parameters:
-      - name: upstream_key_id
-        in: query
-        required: false
-        description: 上游密钥 ID；不传时不过滤上游密钥。
-        schema:
-          type: string
-      - name: model_id
-        in: query
-        required: false
-        description: 模型 ID；不传时不过滤模型。upstream_key_id 和 model_id 都不传时返回全部非 deleted 映射。
-        schema:
-          type: string
-      - name: page
-        in: query
-        schema:
-          type: integer
-          minimum: 1
-          default: 1
-      - name: limit
-        in: query
-        schema:
-          type: integer
-          minimum: 1
-          maximum: 100
-          default: 20
+    - name: upstream_key_id
+      in: query
+      required: false
+      description: 上游密钥 ID；不传时不过滤上游密钥。
+      schema:
+        type: string
+    - name: model_id
+      in: query
+      required: false
+      description: 模型 ID；不传时不过滤模型。upstream_key_id 和 model_id 都不传时返回全部非 deleted 映射。
+      schema:
+        type: string
+    - name: page
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+    - name: limit
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
     responses:
-      "200":
+      '200':
         description: 成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: ../schemas/envelope.yaml#/ApiResponse
-                - type: object
-                  properties:
-                    data:
-                      type: object
-                      required:
-                        - items
-                        - page
-                        - limit
-                        - total
-                      properties:
+              - $ref: ../schemas/envelope.yaml#/ApiResponse
+              - type: object
+                properties:
+                  data:
+                    type: object
+                    required:
+                    - items
+                    - page
+                    - limit
+                    - total
+                    properties:
+                      items:
+                        type: array
                         items:
-                          type: array
-                          items:
-                            $ref: ../schemas/upstream-key.yaml#/UpstreamModelMapping
-                        page:
-                          type: integer
-                        limit:
-                          type: integer
-                        total:
-                          type: integer
-      "401":
+                          $ref: ../schemas/upstream-key.yaml#/UpstreamModelMapping
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+        headers:
+          Cache-Control:
+            $ref: ../headers.yaml#/CacheNoStore
+      '401':
         description: 未授权
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "403":
+      '403':
         description: 无权限
         content:
           application/json:
@@ -445,10 +457,10 @@
   post:
     operationId: adminUpstreamKeyModelCreate
     tags:
-      - admin
+    - admin
     summary: 创建上游密钥模型映射
     security:
-      - adminBearerAuth: []
+    - adminBearerAuth: []
     requestBody:
       required: true
       content:
@@ -456,56 +468,59 @@
           schema:
             $ref: ../schemas/upstream-key.yaml#/CreateUpstreamModelMappingRequest
     responses:
-      "201":
+      '201':
         description: 创建成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: ../schemas/envelope.yaml#/ApiResponse
-                - type: object
-                  properties:
-                    data:
-                      $ref: ../schemas/upstream-key.yaml#/UpstreamModelMapping
-      "400":
+              - $ref: ../schemas/envelope.yaml#/ApiResponse
+              - type: object
+                properties:
+                  data:
+                    $ref: ../schemas/upstream-key.yaml#/UpstreamModelMapping
+        headers:
+          Cache-Control:
+            $ref: ../headers.yaml#/CacheNoStore
+      '400':
         description: 参数无效
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "401":
+      '401':
         description: 未授权
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "403":
+      '403':
         description: 无权限
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "409":
+      '409':
         description: 映射已存在
         content:
           application/json:
             schema:
               allOf:
-                - $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-                - type: object
-                  properties:
-                    error_code:
-                      type: string
-                      enum:
-                        - CONFLICT
+              - $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+              - type: object
+                properties:
+                  error_code:
+                    type: string
+                    enum:
+                    - CONFLICT
 /api/v1/admin/models/routes/batch/create:
   post:
     operationId: adminUpstreamKeyModelBatchCreate
     tags:
-      - admin
+    - admin
     summary: 批量创建上游密钥模型映射
     security:
-      - adminBearerAuth: []
+    - adminBearerAuth: []
     requestBody:
       required: true
       content:
@@ -513,62 +528,65 @@
           schema:
             $ref: ../schemas/upstream-key.yaml#/BatchCreateUpstreamModelMappingsRequest
     responses:
-      "200":
+      '200':
         description: 批量处理完成
         content:
           application/json:
             schema:
               allOf:
-                - $ref: ../schemas/envelope.yaml#/ApiResponse
-                - type: object
-                  properties:
-                    data:
-                      $ref: ../schemas/upstream-key.yaml#/BatchCreateUpstreamModelMappingsResponse
-      "400":
+              - $ref: ../schemas/envelope.yaml#/ApiResponse
+              - type: object
+                properties:
+                  data:
+                    $ref: ../schemas/upstream-key.yaml#/BatchCreateUpstreamModelMappingsResponse
+        headers:
+          Cache-Control:
+            $ref: ../headers.yaml#/CacheNoStore
+      '400':
         description: 参数无效
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "401":
+      '401':
         description: 未授权
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "403":
+      '403':
         description: 无权限
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "404":
+      '404':
         description: 模型、上游密钥或路由组不存在
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "409":
+      '409':
         description: conflict_strategy 为 fail 且存在冲突
         content:
           application/json:
             schema:
               allOf:
-                - $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-                - type: object
-                  properties:
-                    error_code:
-                      type: string
-                      enum:
-                        - CONFLICT
+              - $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+              - type: object
+                properties:
+                  error_code:
+                    type: string
+                    enum:
+                    - CONFLICT
 /api/v1/admin/models/routes/update:
   post:
     operationId: adminUpstreamKeyModelUpdate
     tags:
-      - admin
+    - admin
     summary: 更新上游密钥模型映射
     security:
-      - adminBearerAuth: []
+    - adminBearerAuth: []
     requestBody:
       required: true
       content:
@@ -576,36 +594,39 @@
           schema:
             $ref: ../schemas/upstream-key.yaml#/UpdateUpstreamModelMappingRequest
     responses:
-      "200":
+      '200':
         description: 更新成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: ../schemas/envelope.yaml#/ApiResponse
-                - type: object
-                  properties:
-                    data:
-                      $ref: ../schemas/upstream-key.yaml#/UpstreamModelMapping
-      "400":
+              - $ref: ../schemas/envelope.yaml#/ApiResponse
+              - type: object
+                properties:
+                  data:
+                    $ref: ../schemas/upstream-key.yaml#/UpstreamModelMapping
+        headers:
+          Cache-Control:
+            $ref: ../headers.yaml#/CacheNoStore
+      '400':
         description: 参数无效
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "401":
+      '401':
         description: 未授权
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "403":
+      '403':
         description: 无权限
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "404":
+      '404':
         description: 映射不存在
         content:
           application/json:
@@ -615,10 +636,10 @@
   post:
     operationId: adminUpstreamKeyModelDelete
     tags:
-      - admin
+    - admin
     summary: 删除上游密钥模型映射
     security:
-      - adminBearerAuth: []
+    - adminBearerAuth: []
     requestBody:
       required: true
       content:
@@ -626,25 +647,28 @@
           schema:
             $ref: ../schemas/upstream-key.yaml#/DeleteUpstreamModelMappingRequest
     responses:
-      "200":
+      '200':
         description: 删除成功
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiResponse
-      "401":
+        headers:
+          Cache-Control:
+            $ref: ../headers.yaml#/CacheNoStore
+      '401':
         description: 未授权
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "403":
+      '403':
         description: 无权限
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "404":
+      '404':
         description: 映射不存在
         content:
           application/json:
@@ -654,10 +678,10 @@
   post:
     operationId: adminUpstreamKeyModelToggle
     tags:
-      - admin
+    - admin
     summary: 切换上游密钥模型映射启用/禁用
     security:
-      - adminBearerAuth: []
+    - adminBearerAuth: []
     requestBody:
       required: true
       content:
@@ -665,30 +689,33 @@
           schema:
             $ref: ../schemas/upstream-key.yaml#/ToggleUpstreamModelMappingRequest
     responses:
-      "200":
+      '200':
         description: 切换成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: ../schemas/envelope.yaml#/ApiResponse
-                - type: object
-                  properties:
-                    data:
-                      $ref: ../schemas/upstream-key.yaml#/UpstreamModelMapping
-      "401":
+              - $ref: ../schemas/envelope.yaml#/ApiResponse
+              - type: object
+                properties:
+                  data:
+                    $ref: ../schemas/upstream-key.yaml#/UpstreamModelMapping
+        headers:
+          Cache-Control:
+            $ref: ../headers.yaml#/CacheNoStore
+      '401':
         description: 未授权
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "403":
+      '403':
         description: 无权限
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "404":
+      '404':
         description: 映射不存在
         content:
           application/json:
@@ -698,48 +725,48 @@
   get:
     operationId: adminUpstreamKeyOptions
     tags:
-      - admin
+    - admin
     summary: 获取上游密钥选项
     security:
-      - adminBearerAuth: []
+    - adminBearerAuth: []
     responses:
-      "200":
+      '200':
         description: 成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: ../schemas/envelope.yaml#/ApiResponse
-                - type: object
-                  properties:
-                    data:
-                      type: object
-                      required:
-                        - items
-                        - page
-                        - limit
-                        - total
-                      properties:
+              - $ref: ../schemas/envelope.yaml#/ApiResponse
+              - type: object
+                properties:
+                  data:
+                    type: object
+                    required:
+                    - items
+                    - page
+                    - limit
+                    - total
+                    properties:
+                      items:
+                        type: array
                         items:
-                          type: array
-                          items:
-                            $ref: ../schemas/upstream-key.yaml#/UpstreamKeyListItem
-                        page:
-                          type: integer
-                        limit:
-                          type: integer
-                        total:
-                          type: integer
+                          $ref: ../schemas/upstream-key.yaml#/UpstreamKeyListItem
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
         headers:
           Cache-Control:
             $ref: ../headers.yaml#/CacheNoStore
-      "401":
+      '401':
         description: 未授权
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "403":
+      '403':
         description: 无权限
         content:
           application/json:

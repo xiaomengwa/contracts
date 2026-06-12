@@ -2,63 +2,66 @@
   get:
     operationId: adminPlanList
     tags:
-      - plan
+    - plan
     summary: 获取套餐列表
     security:
-      - adminBearerAuth: []
+    - adminBearerAuth: []
     parameters:
-      - name: plan_type
-        in: query
-        schema:
-          $ref: ../schemas/common.yaml#/PlanTypeEnum
-      - name: page
-        in: query
-        schema:
-          type: integer
-          minimum: 1
-          default: 1
-      - name: limit
-        in: query
-        schema:
-          type: integer
-          minimum: 1
-          maximum: 100
-          default: 20
+    - name: plan_type
+      in: query
+      schema:
+        $ref: ../schemas/common.yaml#/PlanTypeEnum
+    - name: page
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+    - name: limit
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
     responses:
-      "200":
+      '200':
         description: 成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: ../schemas/envelope.yaml#/ApiResponse
-                - type: object
-                  properties:
-                    data:
-                      type: object
-                      required:
-                        - items
-                        - page
-                        - limit
-                        - total
-                      properties:
+              - $ref: ../schemas/envelope.yaml#/ApiResponse
+              - type: object
+                properties:
+                  data:
+                    type: object
+                    required:
+                    - items
+                    - page
+                    - limit
+                    - total
+                    properties:
+                      items:
+                        type: array
                         items:
-                          type: array
-                          items:
-                            $ref: ../schemas/plan.yaml#/Plan
-                        page:
-                          type: integer
-                        limit:
-                          type: integer
-                        total:
-                          type: integer
-      "401":
+                          $ref: ../schemas/plan.yaml#/Plan
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+        headers:
+          Cache-Control:
+            $ref: ../headers.yaml#/CacheNoStore
+      '401':
         description: 未授权
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "403":
+      '403':
         description: 无权限
         content:
           application/json:
@@ -68,41 +71,44 @@
   get:
     operationId: adminPlanDetail
     tags:
-      - plan
+    - plan
     summary: 获取套餐详情
     security:
-      - adminBearerAuth: []
+    - adminBearerAuth: []
     parameters:
-      - name: id
-        in: query
-        required: true
-        schema:
-          type: string
+    - name: id
+      in: query
+      required: true
+      schema:
+        type: string
     responses:
-      "200":
+      '200':
         description: 成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: ../schemas/envelope.yaml#/ApiResponse
-                - type: object
-                  properties:
-                    data:
-                      $ref: ../schemas/plan.yaml#/Plan
-      "401":
+              - $ref: ../schemas/envelope.yaml#/ApiResponse
+              - type: object
+                properties:
+                  data:
+                    $ref: ../schemas/plan.yaml#/Plan
+        headers:
+          Cache-Control:
+            $ref: ../headers.yaml#/CacheNoStore
+      '401':
         description: 未授权
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "403":
+      '403':
         description: 无权限
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "404":
+      '404':
         description: 套餐不存在
         content:
           application/json:
@@ -112,10 +118,10 @@
   post:
     operationId: adminPlanCreate
     tags:
-      - plan
+    - plan
     summary: 创建套餐
     security:
-      - adminBearerAuth: []
+    - adminBearerAuth: []
     requestBody:
       required: true
       content:
@@ -123,30 +129,33 @@
           schema:
             $ref: ../schemas/plan.yaml#/CreatePlanRequest
     responses:
-      "201":
+      '201':
         description: 创建成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: ../schemas/envelope.yaml#/ApiResponse
-                - type: object
-                  properties:
-                    data:
-                      $ref: ../schemas/plan.yaml#/Plan
-      "400":
+              - $ref: ../schemas/envelope.yaml#/ApiResponse
+              - type: object
+                properties:
+                  data:
+                    $ref: ../schemas/plan.yaml#/Plan
+        headers:
+          Cache-Control:
+            $ref: ../headers.yaml#/CacheNoStore
+      '400':
         description: 参数无效
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "401":
+      '401':
         description: 未授权
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "403":
+      '403':
         description: 无权限
         content:
           application/json:
@@ -156,10 +165,10 @@
   post:
     operationId: adminPlanUpdate
     tags:
-      - plan
+    - plan
     summary: 更新套餐
     security:
-      - adminBearerAuth: []
+    - adminBearerAuth: []
     requestBody:
       required: true
       content:
@@ -167,36 +176,39 @@
           schema:
             $ref: ../schemas/plan.yaml#/UpdatePlanRequest
     responses:
-      "200":
+      '200':
         description: 更新成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: ../schemas/envelope.yaml#/ApiResponse
-                - type: object
-                  properties:
-                    data:
-                      $ref: ../schemas/plan.yaml#/Plan
-      "400":
+              - $ref: ../schemas/envelope.yaml#/ApiResponse
+              - type: object
+                properties:
+                  data:
+                    $ref: ../schemas/plan.yaml#/Plan
+        headers:
+          Cache-Control:
+            $ref: ../headers.yaml#/CacheNoStore
+      '400':
         description: 参数无效
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "401":
+      '401':
         description: 未授权
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "403":
+      '403':
         description: 无权限
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "404":
+      '404':
         description: 套餐不存在
         content:
           application/json:
@@ -206,10 +218,10 @@
   post:
     operationId: adminPlanDelete
     tags:
-      - plan
+    - plan
     summary: 删除套餐
     security:
-      - adminBearerAuth: []
+    - adminBearerAuth: []
     requestBody:
       required: true
       content:
@@ -217,25 +229,28 @@
           schema:
             $ref: ../schemas/plan.yaml#/DeletePlanRequest
     responses:
-      "200":
+      '200':
         description: 删除成功
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiResponse
-      "401":
+        headers:
+          Cache-Control:
+            $ref: ../headers.yaml#/CacheNoStore
+      '401':
         description: 未授权
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "403":
+      '403':
         description: 无权限
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "404":
+      '404':
         description: 套餐不存在
         content:
           application/json:
@@ -245,10 +260,10 @@
   post:
     operationId: adminPlanToggle
     tags:
-      - plan
+    - plan
     summary: 切换套餐启用/禁用
     security:
-      - adminBearerAuth: []
+    - adminBearerAuth: []
     requestBody:
       required: true
       content:
@@ -256,30 +271,33 @@
           schema:
             $ref: ../schemas/plan.yaml#/TogglePlanRequest
     responses:
-      "200":
+      '200':
         description: 切换成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: ../schemas/envelope.yaml#/ApiResponse
-                - type: object
-                  properties:
-                    data:
-                      $ref: ../schemas/plan.yaml#/Plan
-      "401":
+              - $ref: ../schemas/envelope.yaml#/ApiResponse
+              - type: object
+                properties:
+                  data:
+                    $ref: ../schemas/plan.yaml#/Plan
+        headers:
+          Cache-Control:
+            $ref: ../headers.yaml#/CacheNoStore
+      '401':
         description: 未授权
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "403":
+      '403':
         description: 无权限
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "404":
+      '404':
         description: 套餐不存在
         content:
           application/json:

@@ -2,73 +2,79 @@
   get:
     operationId: adminProviderList
     tags:
-      - admin
+    - admin
     summary: 获取供应商列表
-    description: |
-      返回供应商分页列表。客户端搜索/筛选时应重新请求本接口并携带当前 `query`、过滤条件、`page`、`limit`；契约不限定 UI 触发方式（实时输入、回车或点击筛选均可），但列表展示和分页必须以服务端返回为准。
+    description: '返回供应商分页列表。客户端搜索/筛选时应重新请求本接口并携带当前 `query`、过滤条件、`page`、`limit`；契约不限定 UI 触发方式（实时输入、回车或点击筛选均可），但列表展示和分页必须以服务端返回为准。
+
 
       `total` 表示应用 `query` 和过滤条件后的总数；无匹配结果时返回 `items: []`、`total: 0`。
+
+      '
     security:
-      - adminBearerAuth: []
+    - adminBearerAuth: []
     parameters:
-      - name: query
-        in: query
-        schema:
-          type: string
-          description: |
-            搜索关键字。服务端至少应匹配 `id`、`name`、`display_name`、`base_url`。空字符串或省略表示不按关键字过滤。
-      - name: status
-        in: query
-        schema:
-          $ref: ../schemas/common.yaml#/StatusEnum
-      - name: page
-        in: query
-        schema:
-          type: integer
-          minimum: 1
-          default: 1
-      - name: limit
-        in: query
-        schema:
-          type: integer
-          minimum: 1
-          maximum: 100
-          default: 20
+    - name: query
+      in: query
+      schema:
+        type: string
+        description: '搜索关键字。服务端至少应匹配 `id`、`name`、`display_name`、`base_url`。空字符串或省略表示不按关键字过滤。
+
+          '
+    - name: status
+      in: query
+      schema:
+        $ref: ../schemas/common.yaml#/StatusEnum
+    - name: page
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+    - name: limit
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
     responses:
-      "200":
+      '200':
         description: 成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: ../schemas/envelope.yaml#/ApiResponse
-                - type: object
-                  properties:
-                    data:
-                      type: object
-                      required:
-                        - items
-                        - page
-                        - limit
-                        - total
-                      properties:
+              - $ref: ../schemas/envelope.yaml#/ApiResponse
+              - type: object
+                properties:
+                  data:
+                    type: object
+                    required:
+                    - items
+                    - page
+                    - limit
+                    - total
+                    properties:
+                      items:
+                        type: array
                         items:
-                          type: array
-                          items:
-                            $ref: ../schemas/provider.yaml#/Provider
-                        page:
-                          type: integer
-                        limit:
-                          type: integer
-                        total:
-                          type: integer
-      "401":
+                          $ref: ../schemas/provider.yaml#/Provider
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+        headers:
+          Cache-Control:
+            $ref: ../headers.yaml#/CacheNoStore
+      '401':
         description: 未授权
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "403":
+      '403':
         description: 无权限
         content:
           application/json:
@@ -78,41 +84,44 @@
   get:
     operationId: adminProviderDetail
     tags:
-      - admin
+    - admin
     summary: 获取供应商详情
     security:
-      - adminBearerAuth: []
+    - adminBearerAuth: []
     parameters:
-      - name: id
-        in: query
-        required: true
-        schema:
-          type: string
+    - name: id
+      in: query
+      required: true
+      schema:
+        type: string
     responses:
-      "200":
+      '200':
         description: 成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: ../schemas/envelope.yaml#/ApiResponse
-                - type: object
-                  properties:
-                    data:
-                      $ref: ../schemas/provider.yaml#/Provider
-      "401":
+              - $ref: ../schemas/envelope.yaml#/ApiResponse
+              - type: object
+                properties:
+                  data:
+                    $ref: ../schemas/provider.yaml#/Provider
+        headers:
+          Cache-Control:
+            $ref: ../headers.yaml#/CacheNoStore
+      '401':
         description: 未授权
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "403":
+      '403':
         description: 无权限
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "404":
+      '404':
         description: 供应商不存在
         content:
           application/json:
@@ -122,10 +131,10 @@
   post:
     operationId: adminProviderCreate
     tags:
-      - admin
+    - admin
     summary: 创建供应商
     security:
-      - adminBearerAuth: []
+    - adminBearerAuth: []
     requestBody:
       required: true
       content:
@@ -133,30 +142,33 @@
           schema:
             $ref: ../schemas/provider.yaml#/CreateProviderRequest
     responses:
-      "201":
+      '201':
         description: 创建成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: ../schemas/envelope.yaml#/ApiResponse
-                - type: object
-                  properties:
-                    data:
-                      $ref: ../schemas/provider.yaml#/Provider
-      "400":
+              - $ref: ../schemas/envelope.yaml#/ApiResponse
+              - type: object
+                properties:
+                  data:
+                    $ref: ../schemas/provider.yaml#/Provider
+        headers:
+          Cache-Control:
+            $ref: ../headers.yaml#/CacheNoStore
+      '400':
         description: 参数无效
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "401":
+      '401':
         description: 未授权
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "403":
+      '403':
         description: 无权限
         content:
           application/json:
@@ -166,10 +178,10 @@
   post:
     operationId: adminProviderUpdate
     tags:
-      - admin
+    - admin
     summary: 更新供应商
     security:
-      - adminBearerAuth: []
+    - adminBearerAuth: []
     requestBody:
       required: true
       content:
@@ -177,36 +189,39 @@
           schema:
             $ref: ../schemas/provider.yaml#/UpdateProviderRequest
     responses:
-      "200":
+      '200':
         description: 更新成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: ../schemas/envelope.yaml#/ApiResponse
-                - type: object
-                  properties:
-                    data:
-                      $ref: ../schemas/provider.yaml#/Provider
-      "400":
+              - $ref: ../schemas/envelope.yaml#/ApiResponse
+              - type: object
+                properties:
+                  data:
+                    $ref: ../schemas/provider.yaml#/Provider
+        headers:
+          Cache-Control:
+            $ref: ../headers.yaml#/CacheNoStore
+      '400':
         description: 参数无效
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "401":
+      '401':
         description: 未授权
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "403":
+      '403':
         description: 无权限
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "404":
+      '404':
         description: 供应商不存在
         content:
           application/json:
@@ -216,10 +231,10 @@
   post:
     operationId: adminProviderDelete
     tags:
-      - admin
+    - admin
     summary: 删除供应商
     security:
-      - adminBearerAuth: []
+    - adminBearerAuth: []
     requestBody:
       required: true
       content:
@@ -227,25 +242,28 @@
           schema:
             $ref: ../schemas/provider.yaml#/DeleteProviderRequest
     responses:
-      "200":
+      '200':
         description: 删除成功
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiResponse
-      "401":
+        headers:
+          Cache-Control:
+            $ref: ../headers.yaml#/CacheNoStore
+      '401':
         description: 未授权
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "403":
+      '403':
         description: 无权限
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "404":
+      '404':
         description: 供应商不存在
         content:
           application/json:
@@ -255,10 +273,10 @@
   post:
     operationId: adminProviderToggle
     tags:
-      - admin
+    - admin
     summary: 切换供应商启用/禁用
     security:
-      - adminBearerAuth: []
+    - adminBearerAuth: []
     requestBody:
       required: true
       content:
@@ -266,30 +284,33 @@
           schema:
             $ref: ../schemas/provider.yaml#/ToggleProviderRequest
     responses:
-      "200":
+      '200':
         description: 切换成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: ../schemas/envelope.yaml#/ApiResponse
-                - type: object
-                  properties:
-                    data:
-                      $ref: ../schemas/provider.yaml#/Provider
-      "401":
+              - $ref: ../schemas/envelope.yaml#/ApiResponse
+              - type: object
+                properties:
+                  data:
+                    $ref: ../schemas/provider.yaml#/Provider
+        headers:
+          Cache-Control:
+            $ref: ../headers.yaml#/CacheNoStore
+      '401':
         description: 未授权
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "403":
+      '403':
         description: 无权限
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "404":
+      '404':
         description: 供应商不存在
         content:
           application/json:
@@ -299,72 +320,77 @@
   get:
     operationId: adminProviderModelList
     tags:
-      - catalog
+    - catalog
     summary: 获取上游供应商模型列表
-    description: |
-      使用指定供应商与上游密钥调用上游 models API，返回可导入/可选择的上游模型列表。该接口用于后台预览上游可用模型，不会创建或修改本地模型目录。
+    description: '使用指定供应商与上游密钥调用上游 models API，返回可导入/可选择的上游模型列表。该接口用于后台预览上游可用模型，不会创建或修改本地模型目录。
+
 
       本接口必须使用 `GET`，并从 query 参数读取 `provider_id` 和 `upstream_key_id`；客户端不应再使用 POST body 传参。缺少必需参数、供应商无可用端点或上游密钥不匹配等情况应返回 Management JSON error envelope。
+
+      '
     security:
-      - adminBearerAuth: []
+    - adminBearerAuth: []
     parameters:
-      - name: provider_id
-        in: query
-        required: true
-        schema:
-          type: string
-        description: 供应商 ID。
-      - name: upstream_key_id
-        in: query
-        required: true
-        schema:
-          type: string
-        description: 用于调用上游 models API 的上游密钥 ID。
+    - name: provider_id
+      in: query
+      required: true
+      schema:
+        type: string
+      description: 供应商 ID。
+    - name: upstream_key_id
+      in: query
+      required: true
+      schema:
+        type: string
+      description: 用于调用上游 models API 的上游密钥 ID。
     responses:
-      "200":
+      '200':
         description: 成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: ../schemas/envelope.yaml#/ApiResponse
-                - type: object
-                  properties:
-                    data:
-                      type: object
-                      required:
-                        - models
-                      properties:
-                        models:
-                          type: array
-                          description: 上游返回的可用模型列表；上游协议没有 models API 时返回空数组。
-                          items:
-                            $ref: ../schemas/provider.yaml#/UpstreamProviderModel
-      "400":
+              - $ref: ../schemas/envelope.yaml#/ApiResponse
+              - type: object
+                properties:
+                  data:
+                    type: object
+                    required:
+                    - models
+                    properties:
+                      models:
+                        type: array
+                        description: 上游返回的可用模型列表；上游协议没有 models API 时返回空数组。
+                        items:
+                          $ref: ../schemas/provider.yaml#/UpstreamProviderModel
+        headers:
+          Cache-Control:
+            $ref: ../headers.yaml#/CacheNoStore
+      '400':
         description: 参数无效、供应商端点配置缺失或该协议不支持模型探测
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "401":
+      '401':
         description: 未授权
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "403":
+      '403':
         description: 无权限
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "404":
+      '404':
         description: 供应商或上游密钥不存在
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "502":
+      '502':
         description: 上游 models API 调用失败或响应无法解析
         content:
           application/json:
@@ -374,64 +400,67 @@
   get:
     operationId: adminProviderEndpointList
     tags:
-      - admin
+    - admin
     summary: 获取供应商端点列表
     security:
-      - adminBearerAuth: []
+    - adminBearerAuth: []
     parameters:
-      - name: provider_id
-        in: query
-        required: true
-        schema:
-          type: string
-      - name: page
-        in: query
-        schema:
-          type: integer
-          minimum: 1
-          default: 1
-      - name: limit
-        in: query
-        schema:
-          type: integer
-          minimum: 1
-          maximum: 100
-          default: 20
+    - name: provider_id
+      in: query
+      required: true
+      schema:
+        type: string
+    - name: page
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+    - name: limit
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
     responses:
-      "200":
+      '200':
         description: 成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: ../schemas/envelope.yaml#/ApiResponse
-                - type: object
-                  properties:
-                    data:
-                      type: object
-                      required:
-                        - items
-                        - page
-                        - limit
-                        - total
-                      properties:
+              - $ref: ../schemas/envelope.yaml#/ApiResponse
+              - type: object
+                properties:
+                  data:
+                    type: object
+                    required:
+                    - items
+                    - page
+                    - limit
+                    - total
+                    properties:
+                      items:
+                        type: array
                         items:
-                          type: array
-                          items:
-                            $ref: ../schemas/provider.yaml#/ProviderEndpointListItem
-                        page:
-                          type: integer
-                        limit:
-                          type: integer
-                        total:
-                          type: integer
-      "401":
+                          $ref: ../schemas/provider.yaml#/ProviderEndpointListItem
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+        headers:
+          Cache-Control:
+            $ref: ../headers.yaml#/CacheNoStore
+      '401':
         description: 未授权
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "403":
+      '403':
         description: 无权限
         content:
           application/json:
@@ -441,10 +470,10 @@
   post:
     operationId: adminProviderEndpointCreate
     tags:
-      - admin
+    - admin
     summary: 创建供应商端点
     security:
-      - adminBearerAuth: []
+    - adminBearerAuth: []
     requestBody:
       required: true
       content:
@@ -452,30 +481,33 @@
           schema:
             $ref: ../schemas/provider.yaml#/CreateProviderEndpointRequest
     responses:
-      "201":
+      '201':
         description: 创建成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: ../schemas/envelope.yaml#/ApiResponse
-                - type: object
-                  properties:
-                    data:
-                      $ref: ../schemas/provider.yaml#/ProviderEndpoint
-      "400":
+              - $ref: ../schemas/envelope.yaml#/ApiResponse
+              - type: object
+                properties:
+                  data:
+                    $ref: ../schemas/provider.yaml#/ProviderEndpoint
+        headers:
+          Cache-Control:
+            $ref: ../headers.yaml#/CacheNoStore
+      '400':
         description: 参数无效
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "401":
+      '401':
         description: 未授权
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "403":
+      '403':
         description: 无权限
         content:
           application/json:
@@ -485,10 +517,10 @@
   post:
     operationId: adminProviderEndpointUpdate
     tags:
-      - admin
+    - admin
     summary: 更新供应商端点
     security:
-      - adminBearerAuth: []
+    - adminBearerAuth: []
     requestBody:
       required: true
       content:
@@ -496,36 +528,39 @@
           schema:
             $ref: ../schemas/provider.yaml#/UpdateProviderEndpointRequest
     responses:
-      "200":
+      '200':
         description: 更新成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: ../schemas/envelope.yaml#/ApiResponse
-                - type: object
-                  properties:
-                    data:
-                      $ref: ../schemas/provider.yaml#/ProviderEndpoint
-      "400":
+              - $ref: ../schemas/envelope.yaml#/ApiResponse
+              - type: object
+                properties:
+                  data:
+                    $ref: ../schemas/provider.yaml#/ProviderEndpoint
+        headers:
+          Cache-Control:
+            $ref: ../headers.yaml#/CacheNoStore
+      '400':
         description: 参数无效
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "401":
+      '401':
         description: 未授权
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "403":
+      '403':
         description: 无权限
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "404":
+      '404':
         description: 端点不存在
         content:
           application/json:
@@ -535,10 +570,10 @@
   post:
     operationId: adminProviderEndpointDelete
     tags:
-      - admin
+    - admin
     summary: 删除供应商端点
     security:
-      - adminBearerAuth: []
+    - adminBearerAuth: []
     requestBody:
       required: true
       content:
@@ -546,25 +581,28 @@
           schema:
             $ref: ../schemas/provider.yaml#/DeleteProviderEndpointRequest
     responses:
-      "200":
+      '200':
         description: 删除成功
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiResponse
-      "401":
+        headers:
+          Cache-Control:
+            $ref: ../headers.yaml#/CacheNoStore
+      '401':
         description: 未授权
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "403":
+      '403':
         description: 无权限
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "404":
+      '404':
         description: 端点不存在
         content:
           application/json:
@@ -574,10 +612,10 @@
   post:
     operationId: adminProviderEndpointToggle
     tags:
-      - admin
+    - admin
     summary: 切换供应商端点启用/禁用
     security:
-      - adminBearerAuth: []
+    - adminBearerAuth: []
     requestBody:
       required: true
       content:
@@ -585,30 +623,33 @@
           schema:
             $ref: ../schemas/provider.yaml#/ToggleProviderEndpointRequest
     responses:
-      "200":
+      '200':
         description: 切换成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: ../schemas/envelope.yaml#/ApiResponse
-                - type: object
-                  properties:
-                    data:
-                      $ref: ../schemas/provider.yaml#/ProviderEndpoint
-      "401":
+              - $ref: ../schemas/envelope.yaml#/ApiResponse
+              - type: object
+                properties:
+                  data:
+                    $ref: ../schemas/provider.yaml#/ProviderEndpoint
+        headers:
+          Cache-Control:
+            $ref: ../headers.yaml#/CacheNoStore
+      '401':
         description: 未授权
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "403":
+      '403':
         description: 无权限
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "404":
+      '404':
         description: 端点不存在
         content:
           application/json:
@@ -618,45 +659,48 @@
   get:
     operationId: adminProviderOptions
     tags:
-      - admin
+    - admin
     summary: 获取供应商选项
     security:
-      - adminBearerAuth: []
+    - adminBearerAuth: []
     responses:
-      "200":
+      '200':
         description: 成功
         content:
           application/json:
             schema:
               allOf:
-                - $ref: ../schemas/envelope.yaml#/ApiResponse
-                - type: object
-                  properties:
-                    data:
-                      type: object
-                      required:
-                        - items
-                        - page
-                        - limit
-                        - total
-                      properties:
+              - $ref: ../schemas/envelope.yaml#/ApiResponse
+              - type: object
+                properties:
+                  data:
+                    type: object
+                    required:
+                    - items
+                    - page
+                    - limit
+                    - total
+                    properties:
+                      items:
+                        type: array
                         items:
-                          type: array
-                          items:
-                            $ref: ../schemas/provider.yaml#/Provider
-                        page:
-                          type: integer
-                        limit:
-                          type: integer
-                        total:
-                          type: integer
-      "401":
+                          $ref: ../schemas/provider.yaml#/Provider
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+        headers:
+          Cache-Control:
+            $ref: ../headers.yaml#/CacheNoStore
+      '401':
         description: 未授权
         content:
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      "403":
+      '403':
         description: 无权限
         content:
           application/json:

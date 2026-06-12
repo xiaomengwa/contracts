@@ -1,26 +1,24 @@
-# 管理员用量统计端点
-
 /api/v1/admin/usage/overview:
   get:
     operationId: adminUsageOverview
     tags:
-      - usage
+    - usage
     summary: 获取管理员用量概览
     security:
-      - adminBearerAuth: []
+    - adminBearerAuth: []
     parameters:
-      - name: from
-        in: query
-        schema:
-          type: string
-          format: date-time
-          description: "开始时间"
-      - name: to
-        in: query
-        schema:
-          type: string
-          format: date-time
-          description: "结束时间"
+    - name: from
+      in: query
+      schema:
+        type: string
+        format: date-time
+        description: 开始时间
+    - name: to
+      in: query
+      schema:
+        type: string
+        format: date-time
+        description: 结束时间
     responses:
       '200':
         description: 成功
@@ -28,20 +26,23 @@
           application/json:
             schema:
               allOf:
-                - $ref: '../schemas/envelope.yaml#/ApiResponse'
-                - type: object
-                  properties:
-                    data:
-                      $ref: '../schemas/usage.yaml#/AdminUsageOverview'
+              - $ref: ../schemas/envelope.yaml#/ApiResponse
+              - type: object
+                properties:
+                  data:
+                    $ref: ../schemas/usage.yaml#/AdminUsageOverview
+        headers:
+          Cache-Control:
+            $ref: ../headers.yaml#/CacheNoStore
       '401':
         description: 未授权
         content:
           application/json:
             schema:
-              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
       '403':
         description: 无权限
         content:
           application/json:
             schema:
-              $ref: '../schemas/envelope.yaml#/ApiErrorResponse'
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse

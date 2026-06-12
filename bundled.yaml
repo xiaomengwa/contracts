@@ -213,6 +213,9 @@ paths:
                             type: boolean
                           executor_cache_version:
                             type: string
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -245,6 +248,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/RoutingPolicy"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -283,6 +289,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/RoutingPolicy"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -332,6 +341,9 @@ paths:
                             type: boolean
                           executor_cache_version:
                             type: string
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -364,6 +376,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/AdminDashboard"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 错误
           content:
@@ -434,6 +449,9 @@ paths:
                             type: integer
                           total:
                             type: integer
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -472,6 +490,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/CatalogModel"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -516,6 +537,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/CatalogModel"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -560,6 +584,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/CatalogModel"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -605,6 +632,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ApiResponse"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -649,6 +679,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/CatalogModel"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -703,6 +736,9 @@ paths:
                             type: integer
                           total:
                             type: integer
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -769,6 +805,9 @@ paths:
                             type: integer
                           total:
                             type: integer
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -807,6 +846,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/Plan"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -851,6 +893,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/Plan"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -895,6 +940,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/Plan"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -940,6 +988,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ApiResponse"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -984,6 +1035,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/Plan"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -1066,6 +1120,9 @@ paths:
                             type: integer
                           total:
                             type: integer
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -1104,6 +1161,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/Provider"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -1148,6 +1208,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/Provider"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -1192,6 +1255,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/Provider"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -1237,6 +1303,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ApiResponse"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -1281,6 +1350,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/Provider"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -1344,6 +1416,9 @@ paths:
                             description: 上游返回的可用模型列表；上游协议没有 models API 时返回空数组。
                             items:
                               $ref: "#/components/schemas/UpstreamProviderModel"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效、供应商端点配置缺失或该协议不支持模型探测
           content:
@@ -1429,6 +1504,9 @@ paths:
                             type: integer
                           total:
                             type: integer
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -1467,6 +1545,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/ProviderEndpoint"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -1511,6 +1592,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/ProviderEndpoint"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -1556,6 +1640,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ApiResponse"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -1600,6 +1687,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/ProviderEndpoint"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -1654,6 +1744,9 @@ paths:
                             type: integer
                           total:
                             type: integer
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -1741,6 +1834,9 @@ paths:
                             type: integer
                           total:
                             type: integer
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -1779,6 +1875,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/PriceMultiplierRule"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -1823,6 +1922,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/PriceMultiplierRule"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -1862,6 +1964,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ApiResponse"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -1900,6 +2005,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/PriceMultiplierRule"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -1988,6 +2096,9 @@ paths:
                             type: integer
                           total:
                             type: integer
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -2026,6 +2137,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/RedeemCodeCreateResponse"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -2070,6 +2184,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/RedeemCode"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -2109,6 +2226,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ApiResponse"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -2177,6 +2297,9 @@ paths:
                             type: integer
                           total:
                             type: integer
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -2209,6 +2332,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/RedeemCode"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -2325,6 +2451,9 @@ paths:
                             type: integer
                           total:
                             type: integer
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -2363,6 +2492,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/RequestLogResponse"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -2409,6 +2541,9 @@ paths:
                         type: array
                         items:
                           $ref: "#/components/schemas/RequestAttemptResponse"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -2453,6 +2588,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/RequestTraceResponse"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -2501,6 +2639,9 @@ paths:
                             type: integer
                           total:
                             type: integer
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -2533,6 +2674,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/RouteGroup"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -2565,6 +2709,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/RouteGroup"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -2609,6 +2756,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/RouteGroup"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -2652,6 +2802,9 @@ paths:
                   - type: object
                     properties:
                       data: {}
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -2696,6 +2849,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/RouteGroup"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -2756,6 +2912,9 @@ paths:
                             type: integer
                           total:
                             type: integer
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -2788,6 +2947,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/UpstreamRouteGroupMembership"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -2832,6 +2994,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/UpstreamRouteGroupMembership"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -3021,6 +3186,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/UpstreamKeyUsage"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -3160,6 +3328,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ApiResponse"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -3287,6 +3458,9 @@ paths:
                             type: integer
                           total:
                             type: integer
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -3325,6 +3499,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/UpstreamModelMapping"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -3382,6 +3559,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/BatchCreateUpstreamModelMappingsResponse"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -3445,6 +3625,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/UpstreamModelMapping"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -3490,6 +3673,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ApiResponse"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -3534,6 +3720,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/UpstreamModelMapping"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -3636,6 +3825,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/AdminUsageOverview"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -3727,6 +3919,9 @@ paths:
                             type: integer
                           total:
                             type: integer
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -3768,6 +3963,9 @@ paths:
                         properties:
                           user:
                             $ref: "#/components/schemas/UserResponse"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -3815,6 +4013,9 @@ paths:
                         properties:
                           user:
                             $ref: "#/components/schemas/UserResponse"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -3868,6 +4069,9 @@ paths:
                         properties:
                           user:
                             $ref: "#/components/schemas/UserResponse"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -3941,6 +4145,9 @@ paths:
                             type: integer
                           total:
                             type: integer
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -4019,6 +4226,9 @@ paths:
                             type: integer
                           total:
                             type: integer
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -4066,6 +4276,9 @@ paths:
                         properties:
                           user:
                             $ref: "#/components/schemas/UserResponse"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -4119,6 +4332,9 @@ paths:
                         properties:
                           user:
                             $ref: "#/components/schemas/UserResponse"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -4172,6 +4388,9 @@ paths:
                         properties:
                           user:
                             $ref: "#/components/schemas/UserResponse"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -4222,6 +4441,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/UsageLedgerResponse"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -4266,6 +4488,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/UserQuota"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -4298,6 +4523,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/UserPlan"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -4341,6 +4569,9 @@ paths:
                   - type: object
                     properties:
                       data: {}
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -4385,6 +4616,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/UserPlan"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -4428,6 +4662,9 @@ paths:
                   - type: object
                     properties:
                       data: {}
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -4472,6 +4709,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/UserPlan"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -4515,6 +4755,9 @@ paths:
                   - type: object
                     properties:
                       data: {}
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -4559,6 +4802,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/UserPlan"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -4602,6 +4848,9 @@ paths:
                   - type: object
                     properties:
                       data: {}
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -4646,6 +4895,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/UserPlan"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -4689,6 +4941,9 @@ paths:
                   - type: object
                     properties:
                       data: {}
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -4733,6 +4988,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/UserPlan"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -4776,6 +5034,9 @@ paths:
                   - type: object
                     properties:
                       data: {}
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -4819,6 +5080,9 @@ paths:
                   - type: object
                     properties:
                       data: {}
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -4863,6 +5127,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/UserRiskResetResponse"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -4907,6 +5174,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/RouteWorkbenchData"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -4939,6 +5209,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/PlanWorkbenchData"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -4994,6 +5267,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/UserWorkbenchData"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -5043,6 +5319,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/RedeemCodeWorkbenchData"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -5075,6 +5354,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/RateRuleWorkbenchData"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -5248,6 +5530,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ApiResponse"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 错误
           content:
@@ -5308,6 +5593,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ApiResponse"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 旧密码错误
           content:
@@ -5530,6 +5818,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/UserAutoModelConfig"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -5562,6 +5853,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/UserAutoModelConfig"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -5606,6 +5900,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/BillingConfig"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -5829,6 +6126,9 @@ paths:
                   - type: object
                     properties:
                       data: {}
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -5876,6 +6176,9 @@ paths:
                         properties:
                           user:
                             $ref: "#/components/schemas/UserResponse"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 错误
           content:
@@ -5906,6 +6209,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/UserDashboard"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 错误
           content:
@@ -6048,6 +6354,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ApiResponse"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 错误
           content:
@@ -6113,6 +6422,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/UserQuota"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 错误
           content:
@@ -6174,6 +6486,9 @@ paths:
                             type: integer
                           total:
                             type: integer
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 错误
           content:
@@ -6223,6 +6538,9 @@ paths:
                             type: integer
                           total:
                             type: integer
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 错误
           content:
@@ -6271,6 +6589,9 @@ paths:
                             type: integer
                           total:
                             type: integer
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 错误
           content:
@@ -6336,6 +6657,9 @@ paths:
                             type: integer
                           total:
                             type: integer
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 错误
           content:
@@ -6368,6 +6692,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/RequestTraceResponse"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 错误
           content:
@@ -6400,6 +6727,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/UserResponse"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 错误
           content:
@@ -6442,6 +6772,9 @@ paths:
                             type: integer
                           total:
                             type: integer
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -6480,6 +6813,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/RedeemCodeRedemptionResponse"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 兑换码无效
           content:
@@ -6547,6 +6883,9 @@ paths:
                             type: integer
                           total:
                             type: integer
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 错误
           content:
