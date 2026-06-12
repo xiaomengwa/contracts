@@ -20,6 +20,9 @@ Provider:
           type: string
         base_url:
           type: string
+          format: uri
+          pattern: '^https?://.+$'
+          description: Provider base URL，必须是合法的 http 或 https URL；无效值应返回结构化 400 validation error。
         status:
           $ref: './common.yaml#/StatusEnum'
         created_at:
@@ -83,6 +86,9 @@ CreateProviderRequest:
       type: string
     base_url:
       type: string
+      format: uri
+      pattern: '^https?://.+$'
+      description: Provider base URL，必须是合法的 http 或 https URL；无效值应返回结构化 400 validation error。
 
 UpdateProviderRequest:
   type: object
@@ -97,6 +103,9 @@ UpdateProviderRequest:
       type: string
     base_url:
       type: string
+      format: uri
+      pattern: '^https?://.+$'
+      description: Provider base URL，必须是合法的 http 或 https URL；未传时不修改现有值，无效值应返回结构化 400 validation error。
 
 DeleteProviderRequest:
   type: object

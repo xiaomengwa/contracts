@@ -25,8 +25,13 @@ PriceMultiplierRule:
       type: string
     protocol:
       type: string
+    global:
+      type: boolean
+      description: 创建全局规则时必须显式传 `true`，且不应同时传 provider_id/key_id/upstream_key_id/model_id/protocol 等 scope 字段；省略或为 false 时至少需要一个 scope 字段。
     timezone:
       type: string
+      pattern: '^[A-Za-z_]+(?:/[A-Za-z0-9_+.-]+)+$|^UTC$'
+      description: IANA timezone 名称，例如 `UTC`、`Asia/Shanghai`。无效 timezone 应返回结构化 400 validation error。
     days_of_week:
       type: array
       items:
@@ -69,8 +74,13 @@ CreateRateRuleRequest:
       type: string
     protocol:
       type: string
+    global:
+      type: boolean
+      description: 创建全局规则时必须显式传 `true`，且不应同时传 provider_id/key_id/upstream_key_id/model_id/protocol 等 scope 字段；省略或为 false 时至少需要一个 scope 字段。
     timezone:
       type: string
+      pattern: '^[A-Za-z_]+(?:/[A-Za-z0-9_+.-]+)+$|^UTC$'
+      description: IANA timezone 名称，例如 `UTC`、`Asia/Shanghai`。无效 timezone 应返回结构化 400 validation error。
     days_of_week:
       type: array
       items:

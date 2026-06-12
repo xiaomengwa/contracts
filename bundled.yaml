@@ -7007,6 +7007,13 @@ components:
                 - $ref: "#/components/schemas/ModelBillingModeEnum"
               default: billable
               description: 模型计费模式。缺省时按 billable 处理。
+            mapping_count:
+              type: integer
+              minimum: 0
+              description: 当前模型关联的活跃 upstream mapping 数量；为 0 时模型即使 status 为 active 也不可调用。
+            available:
+              type: boolean
+              description: 模型当前是否可调用；仅当模型启用且至少存在一个活跃可用 upstream mapping 时为 true。
             status:
               $ref: "#/components/schemas/StatusEnum"
             created_at:
@@ -7072,6 +7079,8 @@ components:
           type: string
         name:
           type: string
+          pattern: ^[a-z0-9_-]+$
+          description: Route Group 名称，只允许 lowercase 字母、数字、下划线和连字符；uppercase 或其他非法字符应返回结构化 400 validation error。
         display_name:
           type: string
         description:
@@ -7145,6 +7154,8 @@ components:
       properties:
         name:
           type: string
+          pattern: ^[a-z0-9_-]+$
+          description: Route Group 名称，只允许 lowercase 字母、数字、下划线和连字符；uppercase 或其他非法字符应返回结构化 400 validation error。
         display_name:
           type: string
         description:
@@ -7158,6 +7169,8 @@ components:
           type: string
         name:
           type: string
+          pattern: ^[a-z0-9_-]+$
+          description: Route Group 名称，只允许 lowercase 字母、数字、下划线和连字符；未传时不修改现有值。
         display_name:
           type: string
         description:
@@ -7310,6 +7323,13 @@ components:
         price:
           type: number
           format: double
+        duration_days:
+          type: integer
+          minimum: 1
+          description: Plan-level 默认有效期天数；创建/更新传入后，详情、列表和 workbench plans 应返回同一字段。
+        permanent:
+          type: boolean
+          description: 是否为永久套餐。为 true 时表示无 plan-level 过期策略；省略时使用服务端默认策略。
         status:
           $ref: "#/components/schemas/StatusEnum"
         created_at:
@@ -7366,6 +7386,13 @@ components:
         price:
           type: number
           format: double
+        duration_days:
+          type: integer
+          minimum: 1
+          description: 可选的 plan-level 默认有效期天数；省略时使用服务端默认策略。
+        permanent:
+          type: boolean
+          description: 可选；为 true 时创建永久套餐。
     UpdatePlanRequest:
       type: object
       required:
@@ -7387,6 +7414,13 @@ components:
         price:
           type: number
           format: double
+        duration_days:
+          type: integer
+          minimum: 1
+          description: 可选的 plan-level 默认有效期天数；未传时不修改现有值。
+        permanent:
+          type: boolean
+          description: 可选；为 true 时改为永久套餐，未传时不修改现有值。
     DeletePlanRequest:
       type: object
       required:
@@ -7415,6 +7449,7 @@ components:
           type: string
         duration_days:
           type: integer
+          minimum: 1
         permanent:
           type: boolean
     SetTokenPlanRequest:
@@ -7431,6 +7466,7 @@ components:
           type: string
         duration_days:
           type: integer
+          minimum: 1
         permanent:
           type: boolean
     SetImagePlanRequest:
@@ -7447,6 +7483,7 @@ components:
           type: string
         duration_days:
           type: integer
+          minimum: 1
         permanent:
           type: boolean
     RenewUserPlanRequest:
@@ -7463,6 +7500,7 @@ components:
           type: string
         duration_days:
           type: integer
+          minimum: 1
         permanent:
           type: boolean
     CancelUserPlanRequest:
@@ -7554,6 +7592,9 @@ components:
               type: string
             base_url:
               type: string
+              format: uri
+              pattern: ^https?://.+$
+              description: Provider base URL，必须是合法的 http 或 https URL；无效值应返回结构化 400 validation error。
             status:
               $ref: "#/components/schemas/StatusEnum"
             created_at:
@@ -7613,6 +7654,9 @@ components:
           type: string
         base_url:
           type: string
+          format: uri
+          pattern: ^https?://.+$
+          description: Provider base URL，必须是合法的 http 或 https URL；无效值应返回结构化 400 validation error。
     UpdateProviderRequest:
       type: object
       required:
@@ -7626,6 +7670,9 @@ components:
           type: string
         base_url:
           type: string
+          format: uri
+          pattern: ^https?://.+$
+          description: Provider base URL，必须是合法的 http 或 https URL；未传时不修改现有值，无效值应返回结构化 400 validation error。
     DeleteProviderRequest:
       type: object
       required:
@@ -7746,8 +7793,13 @@ components:
           type: string
         protocol:
           type: string
+        global:
+          type: boolean
+          description: 创建全局规则时必须显式传 `true`，且不应同时传 provider_id/key_id/upstream_key_id/model_id/protocol 等 scope 字段；省略或为 false 时至少需要一个 scope 字段。
         timezone:
           type: string
+          pattern: ^[A-Za-z_]+(?:/[A-Za-z0-9_+.-]+)+$|^UTC$
+          description: IANA timezone 名称，例如 `UTC`、`Asia/Shanghai`。无效 timezone 应返回结构化 400 validation error。
         days_of_week:
           type: array
           items:
@@ -7790,8 +7842,13 @@ components:
           type: string
         protocol:
           type: string
+        global:
+          type: boolean
+          description: 创建全局规则时必须显式传 `true`，且不应同时传 provider_id/key_id/upstream_key_id/model_id/protocol 等 scope 字段；省略或为 false 时至少需要一个 scope 字段。
         timezone:
           type: string
+          pattern: ^[A-Za-z_]+(?:/[A-Za-z0-9_+.-]+)+$|^UTC$
+          description: IANA timezone 名称，例如 `UTC`、`Asia/Shanghai`。无效 timezone 应返回结构化 400 validation error。
         days_of_week:
           type: array
           items:
@@ -8482,12 +8539,16 @@ components:
             quota_total:
               type: integer
               format: int64
+              minimum: 0
+              description: 总配额，必须大于等于 0；不使用负数 sentinel 表示无限。
             quota_used:
               type: integer
               format: int64
             cost:
               type: number
               format: double
+              minimum: 0
+              description: 采购/成本金额，必须大于等于 0。
             expires_at:
               type: string
             notes:
@@ -8599,9 +8660,13 @@ components:
         quota_total:
           type: integer
           format: int64
+          minimum: 0
+          description: 总配额，必须大于等于 0；负数应返回结构化 400 validation error。
         cost:
           type: number
           format: double
+          minimum: 0
+          description: 采购/成本金额，必须大于等于 0；负数应返回结构化 400 validation error。
         expires_at:
           type: string
         notes:
@@ -8627,9 +8692,13 @@ components:
         quota_total:
           type: integer
           format: int64
+          minimum: 0
+          description: 总配额，必须大于等于 0；负数应返回结构化 400 validation error。
         cost:
           type: number
           format: double
+          minimum: 0
+          description: 采购/成本金额，必须大于等于 0；负数应返回结构化 400 validation error。
         expires_at:
           type: string
         notes:

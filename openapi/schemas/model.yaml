@@ -28,6 +28,13 @@ CatalogModel:
             - $ref: "#/ModelBillingModeEnum"
           default: billable
           description: 模型计费模式。缺省时按 billable 处理。
+        mapping_count:
+          type: integer
+          minimum: 0
+          description: 当前模型关联的活跃 upstream mapping 数量；为 0 时模型即使 status 为 active 也不可调用。
+        available:
+          type: boolean
+          description: 模型当前是否可调用；仅当模型启用且至少存在一个活跃可用 upstream mapping 时为 true。
         status:
           $ref: ./common.yaml#/StatusEnum
         created_at:
@@ -93,6 +100,8 @@ RouteGroup:
       type: string
     name:
       type: string
+      pattern: '^[a-z0-9_-]+$'
+      description: Route Group 名称，只允许 lowercase 字母、数字、下划线和连字符；uppercase 或其他非法字符应返回结构化 400 validation error。
     display_name:
       type: string
     description:
@@ -166,6 +175,8 @@ CreateRouteGroupRequest:
   properties:
     name:
       type: string
+      pattern: '^[a-z0-9_-]+$'
+      description: Route Group 名称，只允许 lowercase 字母、数字、下划线和连字符；uppercase 或其他非法字符应返回结构化 400 validation error。
     display_name:
       type: string
     description:
@@ -179,6 +190,8 @@ UpdateRouteGroupRequest:
       type: string
     name:
       type: string
+      pattern: '^[a-z0-9_-]+$'
+      description: Route Group 名称，只允许 lowercase 字母、数字、下划线和连字符；未传时不修改现有值。
     display_name:
       type: string
     description:

@@ -37,12 +37,16 @@ UpstreamKey:
         quota_total:
           type: integer
           format: int64
+          minimum: 0
+          description: 总配额，必须大于等于 0；不使用负数 sentinel 表示无限。
         quota_used:
           type: integer
           format: int64
         cost:
           type: number
           format: double
+          minimum: 0
+          description: 采购/成本金额，必须大于等于 0。
         expires_at:
           type: string
         notes:
@@ -159,9 +163,13 @@ CreateUpstreamKeyRequest:
     quota_total:
       type: integer
       format: int64
+      minimum: 0
+      description: 总配额，必须大于等于 0；负数应返回结构化 400 validation error。
     cost:
       type: number
       format: double
+      minimum: 0
+      description: 采购/成本金额，必须大于等于 0；负数应返回结构化 400 validation error。
     expires_at:
       type: string
     notes:
@@ -188,9 +196,13 @@ UpdateUpstreamKeyRequest:
     quota_total:
       type: integer
       format: int64
+      minimum: 0
+      description: 总配额，必须大于等于 0；负数应返回结构化 400 validation error。
     cost:
       type: number
       format: double
+      minimum: 0
+      description: 采购/成本金额，必须大于等于 0；负数应返回结构化 400 validation error。
     expires_at:
       type: string
     notes:
