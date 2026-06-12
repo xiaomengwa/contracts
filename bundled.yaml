@@ -8285,6 +8285,21 @@ components:
           type: string
         model_id:
           type: string
+        model_name:
+          type: string
+          description: 平台模型名称，用于管理端列表展示和搜索。
+        model_display_name:
+          type: string
+          description: 平台模型展示名称；前端可优先展示该字段，缺省时回退到 model_name 或 model_id。
+        upstream_key_name:
+          type: string
+          description: 上游 Key 名称，用于管理端列表展示。
+        provider_id:
+          type: string
+          description: 供应商 ID，用于筛选和排障。
+        provider_name:
+          type: string
+          description: 供应商名称，用于管理端列表展示。
         provider_endpoint_id:
           type: string
         provider_protocol_id:
