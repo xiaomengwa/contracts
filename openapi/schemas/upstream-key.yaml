@@ -85,6 +85,11 @@ UpstreamModelMapping:
     provider_name:
       type: string
       description: 供应商名称，用于管理端列表展示。
+    route_groups:
+      type: array
+      description: 当前映射所属的活跃路由组，用于管理端列表稳定展示分组信息。
+      items:
+        $ref: './model.yaml#/UpstreamRouteGroupMembership'
     provider_endpoint_id:
       type: string
     provider_protocol_id:
