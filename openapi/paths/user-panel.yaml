@@ -93,6 +93,9 @@
                           type: integer
                         total:
                           type: integer
+        headers:
+          Cache-Control:
+            $ref: ../headers.yaml#/CacheNoStore
       "400":
         description: 错误
         content:
@@ -124,7 +127,10 @@
                 - type: object
                   properties:
                     data:
-                      $ref: ../schemas/user.yaml#/APIKeyResponse
+                      $ref: ../schemas/user.yaml#/APIKeySecretResponse
+        headers:
+          Cache-Control:
+            $ref: ../headers.yaml#/CacheNoStore
       "400":
         description: 错误
         content:
@@ -157,6 +163,9 @@
                   properties:
                     data:
                       $ref: ../schemas/user.yaml#/APIKeyResponse
+        headers:
+          Cache-Control:
+            $ref: ../headers.yaml#/CacheNoStore
       "400":
         description: 错误
         content:
@@ -216,6 +225,9 @@
                   properties:
                     data:
                       $ref: ../schemas/user.yaml#/APIKeyResponse
+        headers:
+          Cache-Control:
+            $ref: ../headers.yaml#/CacheNoStore
       "400":
         description: 错误
         content:

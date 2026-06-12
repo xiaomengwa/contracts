@@ -8,7 +8,6 @@ UpstreamKey:
         - id
         - provider_id
         - name
-        - encryption_version
         - max_concurrency
         - priority
         - quota_used
@@ -28,6 +27,7 @@ UpstreamKey:
           type: string
         encryption_version:
           type: integer
+          description: 密钥加密版本，仅用于兼容旧响应；新实现不应在列表/详情响应暴露加密元数据。
         max_concurrency:
           type: integer
         priority:

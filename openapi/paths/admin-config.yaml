@@ -20,6 +20,9 @@
                       type: array
                       items:
                         $ref: ../schemas/sysconfig.yaml#/SystemConfig
+        headers:
+          Cache-Control:
+            $ref: ../headers.yaml#/CacheNoStore
       "401":
         description: 未授权
         content:
@@ -58,6 +61,9 @@
                   properties:
                     data:
                       $ref: ../schemas/sysconfig.yaml#/SystemConfig
+        headers:
+          Cache-Control:
+            $ref: ../headers.yaml#/CacheNoStore
       "401":
         description: 未授权
         content:
@@ -102,6 +108,9 @@
                   properties:
                     data:
                       $ref: ../schemas/sysconfig.yaml#/SystemConfig
+        headers:
+          Cache-Control:
+            $ref: ../headers.yaml#/CacheNoStore
       "400":
         description: 参数无效
         content:

@@ -8,6 +8,7 @@ const root = path.resolve(__dirname, '..');
 
 const pathsDir = path.join(root, 'openapi', 'paths');
 const schemasDir = path.join(root, 'openapi', 'schemas');
+const headersPath = path.join(root, 'openapi', 'headers.yaml');
 
 // Read base root.yaml
 const rootContent = yaml.load(fs.readFileSync(path.join(root, 'openapi', 'root.yaml'), 'utf-8'));
@@ -31,6 +32,9 @@ for (const file of schemaFiles) {
 rootContent.paths = mergedPaths;
 if (!rootContent.components) rootContent.components = {};
 rootContent.components.schemas = mergedSchemas;
+if (fs.existsSync(headersPath)) {
+  rootContent.components.headers = yaml.load(fs.readFileSync(headersPath, 'utf-8'));
+}
 
 // Recursively convert all $ref from file-based to internal #/components/schemas/ references
 function rewriteRefs(obj) {
@@ -46,6 +50,13 @@ function rewriteRefs(obj) {
       const match = value.match(/^(?:\.\.\/|\.{0,2}\/)?schemas\/[^/]+\.yaml#\/(.+)$/);
       if (match) {
         result[key] = `#/components/schemas/${match[1]}`;
+      }
+      // Convert '../headers.yaml#/HeaderName' to '#/components/headers/HeaderName'
+      else if (value.match(/^(?:\.\.\/|\.{0,2}\/)?headers\.yaml#\/(.+)$/)) {
+        const headerMatch = value.match(/#\/(.+)$/);
+        if (headerMatch) {
+          result[key] = `#/components/headers/${headerMatch[1]}`;
+        }
       }
       // Convert './common.yaml#/EnumName' within schemas dir
       else if (value.match(/^\.{0,2}\/(?:common|envelope|user|provider|model|upstream-key|plan|redeem|ratrule|requestlog|usage|sysconfig)\.yaml#\/(.+)$/)) {
@@ -72,6 +83,9 @@ function rewriteRefs(obj) {
 // Rewrite all $ref references
 rootContent.paths = rewriteRefs(rootContent.paths);
 rootContent.components.schemas = rewriteRefs(rootContent.components.schemas);
+if (rootContent.components.headers) {
+  rootContent.components.headers = rewriteRefs(rootContent.components.headers);
+}
 
 // Write the final bundled.yaml directly
 const output = yaml.dump(rootContent, {

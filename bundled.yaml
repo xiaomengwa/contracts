@@ -67,6 +67,9 @@ paths:
                         type: array
                         items:
                           $ref: "#/components/schemas/SystemConfig"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -105,6 +108,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/SystemConfig"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -149,6 +155,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/SystemConfig"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -2924,6 +2933,9 @@ paths:
                             type: integer
                           total:
                             type: integer
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -2962,6 +2974,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/UpstreamKey"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -3050,6 +3065,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/UpstreamKey"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -3094,6 +3112,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/UpstreamKey"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -3183,6 +3204,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/UpstreamKey"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -3564,6 +3588,9 @@ paths:
                             type: integer
                           total:
                             type: integer
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -5084,6 +5111,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/AuthResponse"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -5187,6 +5217,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/AuthResponse"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 凭据无效
           content:
@@ -5245,6 +5278,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/AuthResponse"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: Refresh token 无效
           content:
@@ -5601,7 +5637,10 @@ paths:
                   - type: object
                     properties:
                       data:
-                        $ref: "#/components/schemas/APIKeyResponse"
+                        $ref: "#/components/schemas/APIKeySecretResponse"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -5662,6 +5701,9 @@ paths:
                             type: integer
                           total:
                             type: integer
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -5693,7 +5735,10 @@ paths:
                   - type: object
                     properties:
                       data:
-                        $ref: "#/components/schemas/BotKeyResponse"
+                        $ref: "#/components/schemas/BotKeySecretResponse"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -5738,6 +5783,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/BotKeyResponse"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -5900,6 +5948,9 @@ paths:
                             type: integer
                           total:
                             type: integer
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 错误
           content:
@@ -5931,7 +5982,10 @@ paths:
                   - type: object
                     properties:
                       data:
-                        $ref: "#/components/schemas/APIKeyResponse"
+                        $ref: "#/components/schemas/APIKeySecretResponse"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 错误
           content:
@@ -5964,6 +6018,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/APIKeyResponse"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 错误
           content:
@@ -6023,6 +6080,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/APIKeyResponse"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 错误
           content:
@@ -8510,7 +8570,6 @@ components:
             - id
             - provider_id
             - name
-            - encryption_version
             - max_concurrency
             - priority
             - quota_used
@@ -8530,6 +8589,7 @@ components:
               type: string
             encryption_version:
               type: integer
+              description: 密钥加密版本，仅用于兼容旧响应；新实现不应在列表/详情响应暴露加密元数据。
             max_concurrency:
               type: integer
             priority:
@@ -9166,6 +9226,7 @@ components:
           type: integer
     APIKeyResponse:
       type: object
+      description: API Key 通用脱敏响应；常规读取/更新/切换仅返回脱敏 display_key，不返回明文 key。
       required:
         - id
         - name
@@ -9178,9 +9239,6 @@ components:
           type: string
         name:
           type: string
-        key:
-          type: string
-          description: 明文密钥（仅创建时返回）
         display_key:
           type: string
           description: 脱敏显示密钥
@@ -9192,6 +9250,17 @@ components:
           type: string
         request_count:
           type: integer
+    APIKeySecretResponse:
+      allOf:
+        - $ref: "#/components/schemas/APIKeyResponse"
+        - type: object
+          description: API Key 创建/重置响应；仅这些一次性明文展示场景允许返回 key，客户端不得持久化明文。
+          required:
+            - key
+          properties:
+            key:
+              type: string
+              description: 明文密钥（仅创建或重置时返回一次）
     AuthResponse:
       type: object
       required:
@@ -9329,6 +9398,7 @@ components:
           type: string
     BotKeyResponse:
       type: object
+      description: Bot Key 通用脱敏响应；常规读取/更新/切换仅返回脱敏 display_key，不返回明文 key。
       required:
         - id
         - name
@@ -9342,14 +9412,23 @@ components:
           type: string
         display_key:
           type: string
-        key:
-          type: string
         status:
           $ref: "#/components/schemas/StatusEnum"
         created_at:
           $ref: "#/components/schemas/Timestamp"
         last_used_at:
           type: string
+    BotKeySecretResponse:
+      allOf:
+        - $ref: "#/components/schemas/BotKeyResponse"
+        - type: object
+          description: Bot Key 创建响应；仅一次性明文展示场景允许返回 key，客户端不得持久化明文。
+          required:
+            - key
+          properties:
+            key:
+              type: string
+              description: 明文 Bot Key（仅创建时返回一次）
     CreateBotKeyRequest:
       type: object
       required:
@@ -9538,3 +9617,11 @@ components:
                   type: array
                   items:
                     $ref: "#/components/schemas/Plan"
+  headers:
+    CacheNoStore:
+      description: Sensitive authenticated JSON responses must not be stored by shared or private caches.
+      schema:
+        type: string
+        enum:
+          - no-store
+      example: no-store

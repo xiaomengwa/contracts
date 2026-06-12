@@ -17,7 +17,10 @@
                 - type: object
                   properties:
                     data:
-                      $ref: ../schemas/user.yaml#/APIKeyResponse
+                      $ref: ../schemas/user.yaml#/APIKeySecretResponse
+        headers:
+          Cache-Control:
+            $ref: ../headers.yaml#/CacheNoStore
       "400":
         description: 参数无效
         content:
@@ -78,6 +81,9 @@
                           type: integer
                         total:
                           type: integer
+        headers:
+          Cache-Control:
+            $ref: ../headers.yaml#/CacheNoStore
       "401":
         description: 未授权
         content:
@@ -109,7 +115,10 @@
                 - type: object
                   properties:
                     data:
-                      $ref: ../schemas/user.yaml#/BotKeyResponse
+                      $ref: ../schemas/user.yaml#/BotKeySecretResponse
+        headers:
+          Cache-Control:
+            $ref: ../headers.yaml#/CacheNoStore
       "400":
         description: 参数无效
         content:
@@ -154,6 +163,9 @@
                   properties:
                     data:
                       $ref: ../schemas/user.yaml#/BotKeyResponse
+        headers:
+          Cache-Control:
+            $ref: ../headers.yaml#/CacheNoStore
       "400":
         description: 参数无效
         content:

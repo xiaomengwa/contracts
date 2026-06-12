@@ -75,6 +75,9 @@
                           type: integer
                         total:
                           type: integer
+        headers:
+          Cache-Control:
+            $ref: ../headers.yaml#/CacheNoStore
       "401":
         description: 未授权
         content:
@@ -113,6 +116,9 @@
                   properties:
                     data:
                       $ref: ../schemas/upstream-key.yaml#/UpstreamKey
+        headers:
+          Cache-Control:
+            $ref: ../headers.yaml#/CacheNoStore
       "401":
         description: 未授权
         content:
@@ -201,6 +207,9 @@
                   properties:
                     data:
                       $ref: ../schemas/upstream-key.yaml#/UpstreamKey
+        headers:
+          Cache-Control:
+            $ref: ../headers.yaml#/CacheNoStore
       "400":
         description: 参数无效
         content:
@@ -245,6 +254,9 @@
                   properties:
                     data:
                       $ref: ../schemas/upstream-key.yaml#/UpstreamKey
+        headers:
+          Cache-Control:
+            $ref: ../headers.yaml#/CacheNoStore
       "400":
         description: 参数无效
         content:
@@ -334,6 +346,9 @@
                   properties:
                     data:
                       $ref: ../schemas/upstream-key.yaml#/UpstreamKey
+        headers:
+          Cache-Control:
+            $ref: ../headers.yaml#/CacheNoStore
       "401":
         description: 未授权
         content:
@@ -715,6 +730,9 @@
                           type: integer
                         total:
                           type: integer
+        headers:
+          Cache-Control:
+            $ref: ../headers.yaml#/CacheNoStore
       "401":
         description: 未授权
         content:

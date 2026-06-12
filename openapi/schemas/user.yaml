@@ -71,6 +71,7 @@ UserDashboard:
       type: integer
 APIKeyResponse:
   type: object
+  description: API Key 通用脱敏响应；常规读取/更新/切换仅返回脱敏 display_key，不返回明文 key。
   required:
     - id
     - name
@@ -83,9 +84,6 @@ APIKeyResponse:
       type: string
     name:
       type: string
-    key:
-      type: string
-      description: 明文密钥（仅创建时返回）
     display_key:
       type: string
       description: 脱敏显示密钥
@@ -97,6 +95,17 @@ APIKeyResponse:
       type: string
     request_count:
       type: integer
+APIKeySecretResponse:
+  allOf:
+    - $ref: "#/APIKeyResponse"
+    - type: object
+      description: API Key 创建/重置响应；仅这些一次性明文展示场景允许返回 key，客户端不得持久化明文。
+      required:
+        - key
+      properties:
+        key:
+          type: string
+          description: 明文密钥（仅创建或重置时返回一次）
 AuthResponse:
   type: object
   required:
@@ -234,6 +243,7 @@ ResetAPIKeyRequest:
       type: string
 BotKeyResponse:
   type: object
+  description: Bot Key 通用脱敏响应；常规读取/更新/切换仅返回脱敏 display_key，不返回明文 key。
   required:
     - id
     - name
@@ -247,14 +257,23 @@ BotKeyResponse:
       type: string
     display_key:
       type: string
-    key:
-      type: string
     status:
       $ref: ./common.yaml#/StatusEnum
     created_at:
       $ref: ./common.yaml#/Timestamp
     last_used_at:
       type: string
+BotKeySecretResponse:
+  allOf:
+    - $ref: "#/BotKeyResponse"
+    - type: object
+      description: Bot Key 创建响应；仅一次性明文展示场景允许返回 key，客户端不得持久化明文。
+      required:
+        - key
+      properties:
+        key:
+          type: string
+          description: 明文 Bot Key（仅创建时返回一次）
 CreateBotKeyRequest:
   type: object
   required:
