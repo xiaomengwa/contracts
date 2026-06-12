@@ -471,6 +471,69 @@
                       type: string
                       enum:
                         - CONFLICT
+/api/v1/admin/models/routes/batch/create:
+  post:
+    operationId: adminUpstreamKeyModelBatchCreate
+    tags:
+      - admin
+    summary: 批量创建上游密钥模型映射
+    security:
+      - adminBearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../schemas/upstream-key.yaml#/BatchCreateUpstreamModelMappingsRequest
+    responses:
+      "200":
+        description: 批量处理完成
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: ../schemas/envelope.yaml#/ApiResponse
+                - type: object
+                  properties:
+                    data:
+                      $ref: ../schemas/upstream-key.yaml#/BatchCreateUpstreamModelMappingsResponse
+      "400":
+        description: 参数无效
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+      "401":
+        description: 未授权
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+      "403":
+        description: 无权限
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+      "404":
+        description: 模型、上游密钥或路由组不存在
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+      "409":
+        description: conflict_strategy 为 fail 且存在冲突
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+                - type: object
+                  properties:
+                    error_code:
+                      type: string
+                      enum:
+                        - CONFLICT
 /api/v1/admin/models/routes/update:
   post:
     operationId: adminUpstreamKeyModelUpdate
