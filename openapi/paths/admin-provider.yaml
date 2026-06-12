@@ -295,6 +295,81 @@
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+/api/v1/admin/providers/models/list:
+  get:
+    operationId: adminProviderModelList
+    tags:
+      - catalog
+    summary: 获取上游供应商模型列表
+    description: |
+      使用指定供应商与上游密钥调用上游 models API，返回可导入/可选择的上游模型列表。该接口用于后台预览上游可用模型，不会创建或修改本地模型目录。
+
+      本接口必须使用 `GET`，并从 query 参数读取 `provider_id` 和 `upstream_key_id`；客户端不应再使用 POST body 传参。缺少必需参数、供应商无可用端点或上游密钥不匹配等情况应返回 Management JSON error envelope。
+    security:
+      - adminBearerAuth: []
+    parameters:
+      - name: provider_id
+        in: query
+        required: true
+        schema:
+          type: string
+        description: 供应商 ID。
+      - name: upstream_key_id
+        in: query
+        required: true
+        schema:
+          type: string
+        description: 用于调用上游 models API 的上游密钥 ID。
+    responses:
+      "200":
+        description: 成功
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: ../schemas/envelope.yaml#/ApiResponse
+                - type: object
+                  properties:
+                    data:
+                      type: object
+                      required:
+                        - models
+                      properties:
+                        models:
+                          type: array
+                          description: 上游返回的可用模型列表；上游协议没有 models API 时返回空数组。
+                          items:
+                            $ref: ../schemas/provider.yaml#/UpstreamProviderModel
+      "400":
+        description: 参数无效、供应商端点配置缺失或该协议不支持模型探测
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+      "401":
+        description: 未授权
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+      "403":
+        description: 无权限
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+      "404":
+        description: 供应商或上游密钥不存在
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+      "502":
+        description: 上游 models API 调用失败或响应无法解析
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
 /api/v1/admin/providers/endpoints/list:
   get:
     operationId: adminProviderEndpointList

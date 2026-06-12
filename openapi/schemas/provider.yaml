@@ -176,6 +176,20 @@ DeleteProviderEndpointRequest:
     id:
       type: string
 
+UpstreamProviderModel:
+  type: object
+  description: |
+    从上游供应商 models API 探测到的可用模型。该对象用于后台在指定 `provider_id` 和 `upstream_key_id` 后预览上游模型，不代表已写入本地模型目录。
+  required:
+    - id
+  properties:
+    id:
+      type: string
+      description: 上游模型标识，例如 `gpt-4o-mini`。
+    owned_by:
+      type: string
+      description: 上游返回的模型归属方；上游未提供时可省略。
+
 ToggleProviderEndpointRequest:
   type: object
   required:
