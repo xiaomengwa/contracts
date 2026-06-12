@@ -55,6 +55,11 @@ paths:
         - adminBearerAuth: []
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 成功
           content:
             application/json:
@@ -95,6 +100,11 @@ paths:
             type: string
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 成功
           content:
             application/json:
@@ -139,6 +149,11 @@ paths:
               $ref: "#/components/schemas/UpdateSystemConfigRequest"
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 更新成功
           content:
             application/json:
@@ -183,6 +198,11 @@ paths:
         - adminBearerAuth: []
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 重载成功
           content:
             application/json:
@@ -226,6 +246,11 @@ paths:
         - adminBearerAuth: []
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 成功
           content:
             application/json:
@@ -264,6 +289,11 @@ paths:
               $ref: "#/components/schemas/UpdateRoutingConfigRequest"
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 更新成功
           content:
             application/json:
@@ -302,6 +332,11 @@ paths:
         - adminBearerAuth: []
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 重载成功
           content:
             application/json:
@@ -345,6 +380,11 @@ paths:
         - adminBearerAuth: []
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 成功
           content:
             application/json:
@@ -399,6 +439,11 @@ paths:
             default: 20
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 成功
           content:
             application/json:
@@ -453,6 +498,11 @@ paths:
             type: string
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 成功
           content:
             application/json:
@@ -497,6 +547,11 @@ paths:
               $ref: "#/components/schemas/CreateModelRequest"
       responses:
         "201":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 创建成功
           content:
             application/json:
@@ -541,6 +596,11 @@ paths:
               $ref: "#/components/schemas/UpdateModelRequest"
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 更新成功
           content:
             application/json:
@@ -591,6 +651,11 @@ paths:
               $ref: "#/components/schemas/DeleteModelRequest"
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 删除成功
           content:
             application/json:
@@ -630,6 +695,11 @@ paths:
               $ref: "#/components/schemas/ToggleModelRequest"
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 切换成功
           content:
             application/json:
@@ -668,6 +738,11 @@ paths:
         - bearerAuth: []
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 成功
           content:
             application/json:
@@ -734,6 +809,11 @@ paths:
             default: 20
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 成功
           content:
             application/json:
@@ -788,6 +868,11 @@ paths:
             type: string
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 成功
           content:
             application/json:
@@ -832,6 +917,11 @@ paths:
               $ref: "#/components/schemas/CreatePlanRequest"
       responses:
         "201":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 创建成功
           content:
             application/json:
@@ -876,6 +966,11 @@ paths:
               $ref: "#/components/schemas/UpdatePlanRequest"
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 更新成功
           content:
             application/json:
@@ -926,6 +1021,11 @@ paths:
               $ref: "#/components/schemas/DeletePlanRequest"
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 删除成功
           content:
             application/json:
@@ -965,6 +1065,11 @@ paths:
               $ref: "#/components/schemas/TogglePlanRequest"
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 切换成功
           content:
             application/json:
@@ -1031,6 +1136,11 @@ paths:
             default: 20
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 成功
           content:
             application/json:
@@ -1085,6 +1195,11 @@ paths:
             type: string
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 成功
           content:
             application/json:
@@ -1129,6 +1244,11 @@ paths:
               $ref: "#/components/schemas/CreateProviderRequest"
       responses:
         "201":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 创建成功
           content:
             application/json:
@@ -1173,6 +1293,11 @@ paths:
               $ref: "#/components/schemas/UpdateProviderRequest"
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 更新成功
           content:
             application/json:
@@ -1223,6 +1348,11 @@ paths:
               $ref: "#/components/schemas/DeleteProviderRequest"
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 删除成功
           content:
             application/json:
@@ -1262,6 +1392,11 @@ paths:
               $ref: "#/components/schemas/ToggleProviderRequest"
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 切换成功
           content:
             application/json:
@@ -1317,6 +1452,11 @@ paths:
           description: 用于调用上游 models API 的上游密钥 ID。
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 成功
           content:
             application/json:
@@ -1394,6 +1534,11 @@ paths:
             default: 20
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 成功
           content:
             application/json:
@@ -1448,6 +1593,11 @@ paths:
               $ref: "#/components/schemas/CreateProviderEndpointRequest"
       responses:
         "201":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 创建成功
           content:
             application/json:
@@ -1492,6 +1642,11 @@ paths:
               $ref: "#/components/schemas/UpdateProviderEndpointRequest"
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 更新成功
           content:
             application/json:
@@ -1542,6 +1697,11 @@ paths:
               $ref: "#/components/schemas/DeleteProviderEndpointRequest"
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 删除成功
           content:
             application/json:
@@ -1581,6 +1741,11 @@ paths:
               $ref: "#/components/schemas/ToggleProviderEndpointRequest"
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 切换成功
           content:
             application/json:
@@ -1619,6 +1784,11 @@ paths:
         - adminBearerAuth: []
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 成功
           content:
             application/json:
@@ -1706,6 +1876,11 @@ paths:
             default: 20
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 成功
           content:
             application/json:
@@ -1760,6 +1935,11 @@ paths:
               $ref: "#/components/schemas/CreateRateRuleRequest"
       responses:
         "201":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 创建成功
           content:
             application/json:
@@ -1804,6 +1984,11 @@ paths:
               $ref: "#/components/schemas/ToggleRateRuleRequest"
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 切换成功
           content:
             application/json:
@@ -1848,6 +2033,11 @@ paths:
               $ref: "#/components/schemas/DeleteRateRuleRequest"
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 删除成功
           content:
             application/json:
@@ -1881,6 +2071,11 @@ paths:
         - bearerAuth: []
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 成功
           content:
             application/json:
@@ -1953,6 +2148,11 @@ paths:
             default: 20
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 成功
           content:
             application/json:
@@ -2007,6 +2207,11 @@ paths:
               $ref: "#/components/schemas/CreateRedeemCodeRequest"
       responses:
         "201":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 创建成功
           content:
             application/json:
@@ -2051,6 +2256,11 @@ paths:
               $ref: "#/components/schemas/ToggleRedeemCodeRequest"
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 切换成功
           content:
             application/json:
@@ -2095,6 +2305,11 @@ paths:
               $ref: "#/components/schemas/DeleteRedeemCodeRequest"
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 删除成功
           content:
             application/json:
@@ -2142,6 +2357,11 @@ paths:
             default: 20
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 成功
           content:
             application/json:
@@ -2190,6 +2410,11 @@ paths:
         - bearerAuth: []
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 成功
           content:
             application/json:
@@ -2290,6 +2515,11 @@ paths:
             default: 20
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 成功
           content:
             application/json:
@@ -2344,6 +2574,11 @@ paths:
             type: string
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 成功
           content:
             application/json:
@@ -2388,6 +2623,11 @@ paths:
             type: string
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 成功
           content:
             application/json:
@@ -2434,6 +2674,11 @@ paths:
             type: string
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 成功
           content:
             application/json:
@@ -2466,6 +2711,11 @@ paths:
         - bearerAuth: []
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 成功
           content:
             application/json:
@@ -2514,6 +2764,11 @@ paths:
         - bearerAuth: []
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 成功
           content:
             application/json:
@@ -2546,6 +2801,11 @@ paths:
         - bearerAuth: []
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 成功
           content:
             application/json:
@@ -2590,6 +2850,11 @@ paths:
         - bearerAuth: []
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 成功
           content:
             application/json:
@@ -2634,6 +2899,11 @@ paths:
         - bearerAuth: []
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 成功
           content:
             application/json:
@@ -2677,6 +2947,11 @@ paths:
         - bearerAuth: []
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 成功
           content:
             application/json:
@@ -2721,6 +2996,11 @@ paths:
         - bearerAuth: []
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 成功
           content:
             application/json:
@@ -2769,6 +3049,11 @@ paths:
         - bearerAuth: []
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 成功
           content:
             application/json:
@@ -2813,6 +3098,11 @@ paths:
         - bearerAuth: []
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 成功
           content:
             application/json:
@@ -2898,6 +3188,11 @@ paths:
             default: 20
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 成功
           content:
             application/json:
@@ -2952,6 +3247,11 @@ paths:
             type: string
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 成功
           content:
             application/json:
@@ -2996,6 +3296,11 @@ paths:
             type: string
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 成功
           content:
             application/json:
@@ -3040,6 +3345,11 @@ paths:
               $ref: "#/components/schemas/CreateUpstreamKeyRequest"
       responses:
         "201":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 创建成功
           content:
             application/json:
@@ -3084,6 +3394,11 @@ paths:
               $ref: "#/components/schemas/UpdateUpstreamKeyRequest"
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 更新成功
           content:
             application/json:
@@ -3134,6 +3449,11 @@ paths:
               $ref: "#/components/schemas/DeleteUpstreamKeyRequest"
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 删除成功
           content:
             application/json:
@@ -3173,6 +3493,11 @@ paths:
               $ref: "#/components/schemas/ToggleUpstreamKeyRequest"
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 切换成功
           content:
             application/json:
@@ -3237,6 +3562,11 @@ paths:
             default: 20
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 成功
           content:
             application/json:
@@ -3291,6 +3621,11 @@ paths:
               $ref: "#/components/schemas/CreateUpstreamModelMappingRequest"
       responses:
         "201":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 创建成功
           content:
             application/json:
@@ -3348,6 +3683,11 @@ paths:
               $ref: "#/components/schemas/BatchCreateUpstreamModelMappingsRequest"
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 批量处理完成
           content:
             application/json:
@@ -3411,6 +3751,11 @@ paths:
               $ref: "#/components/schemas/UpdateUpstreamModelMappingRequest"
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 更新成功
           content:
             application/json:
@@ -3461,6 +3806,11 @@ paths:
               $ref: "#/components/schemas/DeleteUpstreamModelMappingRequest"
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 删除成功
           content:
             application/json:
@@ -3500,6 +3850,11 @@ paths:
               $ref: "#/components/schemas/ToggleUpstreamModelMappingRequest"
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 切换成功
           content:
             application/json:
@@ -3538,6 +3893,11 @@ paths:
         - adminBearerAuth: []
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 成功
           content:
             application/json:
@@ -3599,6 +3959,11 @@ paths:
             description: 结束时间
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 成功
           content:
             application/json:
@@ -3674,6 +4039,11 @@ paths:
             default: 20
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 成功
           content:
             application/json:
@@ -3728,6 +4098,11 @@ paths:
             type: string
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 成功
           content:
             application/json:
@@ -3775,6 +4150,11 @@ paths:
               $ref: "#/components/schemas/UpdateUserRequest"
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 更新成功
           content:
             application/json:
@@ -3828,6 +4208,11 @@ paths:
               $ref: "#/components/schemas/ToggleUserRequest"
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 切换成功
           content:
             application/json:
@@ -3888,6 +4273,11 @@ paths:
             default: 20
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 成功
           content:
             application/json:
@@ -3966,6 +4356,11 @@ paths:
             default: 20
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 成功
           content:
             application/json:
@@ -4026,6 +4421,11 @@ paths:
               $ref: "#/components/schemas/SetCodingPlanRequest"
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 设置成功
           content:
             application/json:
@@ -4079,6 +4479,11 @@ paths:
               $ref: "#/components/schemas/SetTokenPlanRequest"
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 设置成功
           content:
             application/json:
@@ -4132,6 +4537,11 @@ paths:
               $ref: "#/components/schemas/SetImagePlanRequest"
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 设置成功
           content:
             application/json:
@@ -4185,6 +4595,11 @@ paths:
               $ref: "#/components/schemas/CreateAdminTokenRechargeRequest"
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 充值成功
           content:
             application/json:
@@ -4229,6 +4644,11 @@ paths:
         - adminBearerAuth: []
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 成功
           content:
             application/json:
@@ -4261,6 +4681,11 @@ paths:
         - bearerAuth: []
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 成功
           content:
             application/json:
@@ -4305,6 +4730,11 @@ paths:
         - bearerAuth: []
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 成功
           content:
             application/json:
@@ -4348,6 +4778,11 @@ paths:
         - bearerAuth: []
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 成功
           content:
             application/json:
@@ -4392,6 +4827,11 @@ paths:
         - bearerAuth: []
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 成功
           content:
             application/json:
@@ -4435,6 +4875,11 @@ paths:
         - bearerAuth: []
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 成功
           content:
             application/json:
@@ -4479,6 +4924,11 @@ paths:
         - bearerAuth: []
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 成功
           content:
             application/json:
@@ -4522,6 +4972,11 @@ paths:
         - bearerAuth: []
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 成功
           content:
             application/json:
@@ -4566,6 +5021,11 @@ paths:
         - bearerAuth: []
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 成功
           content:
             application/json:
@@ -4609,6 +5069,11 @@ paths:
         - bearerAuth: []
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 成功
           content:
             application/json:
@@ -4653,6 +5118,11 @@ paths:
         - bearerAuth: []
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 成功
           content:
             application/json:
@@ -4696,6 +5166,11 @@ paths:
         - bearerAuth: []
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 成功
           content:
             application/json:
@@ -4740,6 +5215,11 @@ paths:
         - bearerAuth: []
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 成功
           content:
             application/json:
@@ -4783,6 +5263,11 @@ paths:
         - adminBearerAuth: []
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 成功
           content:
             application/json:
@@ -4826,6 +5311,11 @@ paths:
         - adminBearerAuth: []
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 成功
           content:
             application/json:
@@ -4870,6 +5360,11 @@ paths:
         - adminBearerAuth: []
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 成功
           content:
             application/json:
@@ -4902,6 +5397,11 @@ paths:
         - adminBearerAuth: []
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 成功
           content:
             application/json:
@@ -4957,6 +5457,11 @@ paths:
             type: string
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 成功
           content:
             application/json:
@@ -5006,6 +5511,11 @@ paths:
             default: 20
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 成功
           content:
             application/json:
@@ -5038,6 +5548,11 @@ paths:
         - adminBearerAuth: []
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 成功
           content:
             application/json:
@@ -5210,6 +5725,11 @@ paths:
         - bearerAuth: []
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 登出成功
           content:
             application/json:
@@ -5267,6 +5787,11 @@ paths:
               $ref: "#/components/schemas/ChangePasswordRequest"
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 修改成功
           content:
             application/json:
@@ -5484,6 +6009,11 @@ paths:
         - bearerAuth: []
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 成功
           content:
             application/json:
@@ -5516,6 +6046,11 @@ paths:
         - bearerAuth: []
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 成功
           content:
             application/json:
@@ -5560,6 +6095,11 @@ paths:
         - bearerAuth: []
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 成功
           content:
             application/json:
@@ -5592,6 +6132,11 @@ paths:
         - bearerAuth: []
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 成功
           content:
             application/json:
@@ -5636,6 +6181,11 @@ paths:
         - bearerAuth: []
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 成功
           content:
             application/json:
@@ -5684,6 +6234,11 @@ paths:
         - bearerAuth: []
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 成功
           content:
             application/json:
@@ -5728,6 +6283,11 @@ paths:
         - bearerAuth: []
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 成功
           content:
             application/json:
@@ -5772,6 +6332,11 @@ paths:
         - bearerAuth: []
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 成功
           content:
             application/json:
@@ -5815,6 +6380,11 @@ paths:
         - bearerAuth: []
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 成功
           content:
             application/json:
@@ -5848,6 +6418,11 @@ paths:
         - bearerAuth: []
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 成功
           content:
             application/json:
@@ -5874,6 +6449,11 @@ paths:
         - bearerAuth: []
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 成功
           content:
             application/json:
@@ -5922,6 +6502,11 @@ paths:
               $ref: "#/components/schemas/CreateAPIKeyRequest"
       responses:
         "201":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 创建成功
           content:
             application/json:
@@ -5954,6 +6539,11 @@ paths:
               $ref: "#/components/schemas/UpdateAPIKeyRequest"
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 更新成功
           content:
             application/json:
@@ -5986,6 +6576,11 @@ paths:
               $ref: "#/components/schemas/DeleteAPIKeyRequest"
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 删除成功
           content:
             application/json:
@@ -6013,6 +6608,11 @@ paths:
               $ref: "#/components/schemas/ToggleAPIKeyRequest"
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 切换成功
           content:
             application/json:
@@ -6043,6 +6643,11 @@ paths:
         - bearerAuth: []
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 成功
           content:
             application/json:
@@ -6088,6 +6693,11 @@ paths:
             default: 20
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 成功
           content:
             application/json:
@@ -6137,6 +6747,11 @@ paths:
             $ref: "#/components/schemas/PlanTypeEnum"
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 成功
           content:
             application/json:
@@ -6185,6 +6800,11 @@ paths:
         - bearerAuth: []
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 成功
           content:
             application/json:
@@ -6250,6 +6870,11 @@ paths:
             default: 20
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 成功
           content:
             application/json:
@@ -6298,6 +6923,11 @@ paths:
             type: string
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 成功
           content:
             application/json:
@@ -6330,6 +6960,11 @@ paths:
               $ref: "#/components/schemas/UpdateBillingPreferenceRequest"
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 更新成功
           content:
             application/json:
@@ -6356,6 +6991,11 @@ paths:
         - bearerAuth: []
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 成功
           content:
             application/json:
@@ -6410,6 +7050,11 @@ paths:
               $ref: "#/components/schemas/RedeemCodeRequest"
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 兑换成功
           content:
             application/json:
@@ -6461,6 +7106,11 @@ paths:
             default: 20
       responses:
         "200":
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheControlNoStore"
+            Pragma:
+              $ref: "#/components/headers/PragmaNoCache"
           description: 成功
           content:
             application/json:
@@ -6494,6 +7144,19 @@ paths:
               schema:
                 $ref: "#/components/schemas/ApiErrorResponse"
 components:
+  headers:
+    CacheControlNoStore:
+      description: 防止认证敏感 JSON 响应被浏览器、中间代理或共享缓存持久化。
+      schema:
+        type: string
+        const: no-store
+      example: no-store
+    PragmaNoCache:
+      description: 兼容 HTTP/1.0 缓存的辅助禁用缓存响应头。
+      schema:
+        type: string
+        const: no-cache
+      example: no-cache
   securitySchemes:
     bearerAuth:
       type: http

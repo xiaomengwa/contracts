@@ -54,6 +54,10 @@ function rewriteRefs(obj) {
           result[key] = `#/components/schemas/${schemaMatch[1]}`;
         }
       }
+      // Preserve root component references outside schemas (e.g. shared response headers).
+      else if (value.startsWith('#/components/')) {
+        result[key] = value;
+      }
       // Convert local document refs like '#/SchemaName' to '#/components/schemas/SchemaName'
       else if (value.startsWith('#/') && !value.startsWith('#/components/')) {
         const schemaName = value.slice(2); // strip '#/'

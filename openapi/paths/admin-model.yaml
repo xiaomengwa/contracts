@@ -36,6 +36,11 @@
           default: 20
     responses:
       "200":
+        headers:
+          Cache-Control:
+            $ref: '#/components/headers/CacheControlNoStore'
+          Pragma:
+            $ref: '#/components/headers/PragmaNoCache'
         description: 成功
         content:
           application/json:
@@ -90,6 +95,11 @@
           type: string
     responses:
       "200":
+        headers:
+          Cache-Control:
+            $ref: '#/components/headers/CacheControlNoStore'
+          Pragma:
+            $ref: '#/components/headers/PragmaNoCache'
         description: 成功
         content:
           application/json:
@@ -134,6 +144,11 @@
             $ref: ../schemas/model.yaml#/CreateModelRequest
     responses:
       "201":
+        headers:
+          Cache-Control:
+            $ref: '#/components/headers/CacheControlNoStore'
+          Pragma:
+            $ref: '#/components/headers/PragmaNoCache'
         description: 创建成功
         content:
           application/json:
@@ -178,6 +193,11 @@
             $ref: ../schemas/model.yaml#/UpdateModelRequest
     responses:
       "200":
+        headers:
+          Cache-Control:
+            $ref: '#/components/headers/CacheControlNoStore'
+          Pragma:
+            $ref: '#/components/headers/PragmaNoCache'
         description: 更新成功
         content:
           application/json:
@@ -228,6 +248,11 @@
             $ref: ../schemas/model.yaml#/DeleteModelRequest
     responses:
       "200":
+        headers:
+          Cache-Control:
+            $ref: '#/components/headers/CacheControlNoStore'
+          Pragma:
+            $ref: '#/components/headers/PragmaNoCache'
         description: 删除成功
         content:
           application/json:
@@ -267,6 +292,11 @@
             $ref: ../schemas/model.yaml#/ToggleModelRequest
     responses:
       "200":
+        headers:
+          Cache-Control:
+            $ref: '#/components/headers/CacheControlNoStore'
+          Pragma:
+            $ref: '#/components/headers/PragmaNoCache'
         description: 切换成功
         content:
           application/json:
@@ -305,6 +335,11 @@
       - bearerAuth: []
     responses:
       "200":
+        headers:
+          Cache-Control:
+            $ref: '#/components/headers/CacheControlNoStore'
+          Pragma:
+            $ref: '#/components/headers/PragmaNoCache'
         description: 成功
         content:
           application/json:

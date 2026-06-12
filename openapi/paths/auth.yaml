@@ -148,6 +148,11 @@
       - bearerAuth: []
     responses:
       "200":
+        headers:
+          Cache-Control:
+            $ref: '#/components/headers/CacheControlNoStore'
+          Pragma:
+            $ref: '#/components/headers/PragmaNoCache'
         description: 登出成功
         content:
           application/json:
@@ -205,6 +210,11 @@
             $ref: ../schemas/user.yaml#/ChangePasswordRequest
     responses:
       "200":
+        headers:
+          Cache-Control:
+            $ref: '#/components/headers/CacheControlNoStore'
+          Pragma:
+            $ref: '#/components/headers/PragmaNoCache'
         description: 修改成功
         content:
           application/json:

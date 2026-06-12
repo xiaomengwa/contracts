@@ -49,6 +49,11 @@
           default: 20
     responses:
       "200":
+        headers:
+          Cache-Control:
+            $ref: '#/components/headers/CacheControlNoStore'
+          Pragma:
+            $ref: '#/components/headers/PragmaNoCache'
         description: 成功
         content:
           application/json:
@@ -103,6 +108,11 @@
           type: string
     responses:
       "200":
+        headers:
+          Cache-Control:
+            $ref: '#/components/headers/CacheControlNoStore'
+          Pragma:
+            $ref: '#/components/headers/PragmaNoCache'
         description: 成功
         content:
           application/json:
@@ -147,6 +157,11 @@
           type: string
     responses:
       "200":
+        headers:
+          Cache-Control:
+            $ref: '#/components/headers/CacheControlNoStore'
+          Pragma:
+            $ref: '#/components/headers/PragmaNoCache'
         description: 成功
         content:
           application/json:
@@ -191,6 +206,11 @@
             $ref: ../schemas/upstream-key.yaml#/CreateUpstreamKeyRequest
     responses:
       "201":
+        headers:
+          Cache-Control:
+            $ref: '#/components/headers/CacheControlNoStore'
+          Pragma:
+            $ref: '#/components/headers/PragmaNoCache'
         description: 创建成功
         content:
           application/json:
@@ -235,6 +255,11 @@
             $ref: ../schemas/upstream-key.yaml#/UpdateUpstreamKeyRequest
     responses:
       "200":
+        headers:
+          Cache-Control:
+            $ref: '#/components/headers/CacheControlNoStore'
+          Pragma:
+            $ref: '#/components/headers/PragmaNoCache'
         description: 更新成功
         content:
           application/json:
@@ -285,6 +310,11 @@
             $ref: ../schemas/upstream-key.yaml#/DeleteUpstreamKeyRequest
     responses:
       "200":
+        headers:
+          Cache-Control:
+            $ref: '#/components/headers/CacheControlNoStore'
+          Pragma:
+            $ref: '#/components/headers/PragmaNoCache'
         description: 删除成功
         content:
           application/json:
@@ -324,6 +354,11 @@
             $ref: ../schemas/upstream-key.yaml#/ToggleUpstreamKeyRequest
     responses:
       "200":
+        headers:
+          Cache-Control:
+            $ref: '#/components/headers/CacheControlNoStore'
+          Pragma:
+            $ref: '#/components/headers/PragmaNoCache'
         description: 切换成功
         content:
           application/json:
@@ -388,6 +423,11 @@
           default: 20
     responses:
       "200":
+        headers:
+          Cache-Control:
+            $ref: '#/components/headers/CacheControlNoStore'
+          Pragma:
+            $ref: '#/components/headers/PragmaNoCache'
         description: 成功
         content:
           application/json:
@@ -442,6 +482,11 @@
             $ref: ../schemas/upstream-key.yaml#/CreateUpstreamModelMappingRequest
     responses:
       "201":
+        headers:
+          Cache-Control:
+            $ref: '#/components/headers/CacheControlNoStore'
+          Pragma:
+            $ref: '#/components/headers/PragmaNoCache'
         description: 创建成功
         content:
           application/json:
@@ -499,6 +544,11 @@
             $ref: ../schemas/upstream-key.yaml#/BatchCreateUpstreamModelMappingsRequest
     responses:
       "200":
+        headers:
+          Cache-Control:
+            $ref: '#/components/headers/CacheControlNoStore'
+          Pragma:
+            $ref: '#/components/headers/PragmaNoCache'
         description: 批量处理完成
         content:
           application/json:
@@ -562,6 +612,11 @@
             $ref: ../schemas/upstream-key.yaml#/UpdateUpstreamModelMappingRequest
     responses:
       "200":
+        headers:
+          Cache-Control:
+            $ref: '#/components/headers/CacheControlNoStore'
+          Pragma:
+            $ref: '#/components/headers/PragmaNoCache'
         description: 更新成功
         content:
           application/json:
@@ -612,6 +667,11 @@
             $ref: ../schemas/upstream-key.yaml#/DeleteUpstreamModelMappingRequest
     responses:
       "200":
+        headers:
+          Cache-Control:
+            $ref: '#/components/headers/CacheControlNoStore'
+          Pragma:
+            $ref: '#/components/headers/PragmaNoCache'
         description: 删除成功
         content:
           application/json:
@@ -651,6 +711,11 @@
             $ref: ../schemas/upstream-key.yaml#/ToggleUpstreamModelMappingRequest
     responses:
       "200":
+        headers:
+          Cache-Control:
+            $ref: '#/components/headers/CacheControlNoStore'
+          Pragma:
+            $ref: '#/components/headers/PragmaNoCache'
         description: 切换成功
         content:
           application/json:
@@ -689,6 +754,11 @@
       - adminBearerAuth: []
     responses:
       "200":
+        headers:
+          Cache-Control:
+            $ref: '#/components/headers/CacheControlNoStore'
+          Pragma:
+            $ref: '#/components/headers/PragmaNoCache'
         description: 成功
         content:
           application/json:

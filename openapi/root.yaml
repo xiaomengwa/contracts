@@ -51,6 +51,19 @@ tags:
 paths: {}
 
 components:
+  headers:
+    CacheControlNoStore:
+      description: 防止认证敏感 JSON 响应被浏览器、中间代理或共享缓存持久化。
+      schema:
+        type: string
+        const: no-store
+      example: no-store
+    PragmaNoCache:
+      description: 兼容 HTTP/1.0 缓存的辅助禁用缓存响应头。
+      schema:
+        type: string
+        const: no-cache
+      example: no-cache
   securitySchemes:
     bearerAuth:
       type: http

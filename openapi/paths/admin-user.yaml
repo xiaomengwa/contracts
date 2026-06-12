@@ -51,6 +51,11 @@
           default: 20
     responses:
       "200":
+        headers:
+          Cache-Control:
+            $ref: '#/components/headers/CacheControlNoStore'
+          Pragma:
+            $ref: '#/components/headers/PragmaNoCache'
         description: 成功
         content:
           application/json:
@@ -105,6 +110,11 @@
           type: string
     responses:
       "200":
+        headers:
+          Cache-Control:
+            $ref: '#/components/headers/CacheControlNoStore'
+          Pragma:
+            $ref: '#/components/headers/PragmaNoCache'
         description: 成功
         content:
           application/json:
@@ -152,6 +162,11 @@
             $ref: ../schemas/sysconfig.yaml#/UpdateUserRequest
     responses:
       "200":
+        headers:
+          Cache-Control:
+            $ref: '#/components/headers/CacheControlNoStore'
+          Pragma:
+            $ref: '#/components/headers/PragmaNoCache'
         description: 更新成功
         content:
           application/json:
@@ -205,6 +220,11 @@
             $ref: ../schemas/sysconfig.yaml#/ToggleUserRequest
     responses:
       "200":
+        headers:
+          Cache-Control:
+            $ref: '#/components/headers/CacheControlNoStore'
+          Pragma:
+            $ref: '#/components/headers/PragmaNoCache'
         description: 切换成功
         content:
           application/json:
@@ -265,6 +285,11 @@
           default: 20
     responses:
       "200":
+        headers:
+          Cache-Control:
+            $ref: '#/components/headers/CacheControlNoStore'
+          Pragma:
+            $ref: '#/components/headers/PragmaNoCache'
         description: 成功
         content:
           application/json:
@@ -343,6 +368,11 @@
           default: 20
     responses:
       "200":
+        headers:
+          Cache-Control:
+            $ref: '#/components/headers/CacheControlNoStore'
+          Pragma:
+            $ref: '#/components/headers/PragmaNoCache'
         description: 成功
         content:
           application/json:
@@ -403,6 +433,11 @@
             $ref: ../schemas/plan.yaml#/SetCodingPlanRequest
     responses:
       "200":
+        headers:
+          Cache-Control:
+            $ref: '#/components/headers/CacheControlNoStore'
+          Pragma:
+            $ref: '#/components/headers/PragmaNoCache'
         description: 设置成功
         content:
           application/json:
@@ -456,6 +491,11 @@
             $ref: ../schemas/plan.yaml#/SetTokenPlanRequest
     responses:
       "200":
+        headers:
+          Cache-Control:
+            $ref: '#/components/headers/CacheControlNoStore'
+          Pragma:
+            $ref: '#/components/headers/PragmaNoCache'
         description: 设置成功
         content:
           application/json:
@@ -509,6 +549,11 @@
             $ref: ../schemas/plan.yaml#/SetImagePlanRequest
     responses:
       "200":
+        headers:
+          Cache-Control:
+            $ref: '#/components/headers/CacheControlNoStore'
+          Pragma:
+            $ref: '#/components/headers/PragmaNoCache'
         description: 设置成功
         content:
           application/json:
@@ -562,6 +607,11 @@
             $ref: ../schemas/usage.yaml#/CreateAdminTokenRechargeRequest
     responses:
       "200":
+        headers:
+          Cache-Control:
+            $ref: '#/components/headers/CacheControlNoStore'
+          Pragma:
+            $ref: '#/components/headers/PragmaNoCache'
         description: 充值成功
         content:
           application/json:

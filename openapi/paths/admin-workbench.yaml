@@ -8,6 +8,11 @@
       - adminBearerAuth: []
     responses:
       "200":
+        headers:
+          Cache-Control:
+            $ref: '#/components/headers/CacheControlNoStore'
+          Pragma:
+            $ref: '#/components/headers/PragmaNoCache'
         description: 成功
         content:
           application/json:
@@ -40,6 +45,11 @@
       - adminBearerAuth: []
     responses:
       "200":
+        headers:
+          Cache-Control:
+            $ref: '#/components/headers/CacheControlNoStore'
+          Pragma:
+            $ref: '#/components/headers/PragmaNoCache'
         description: 成功
         content:
           application/json:
@@ -95,6 +105,11 @@
           type: string
     responses:
       "200":
+        headers:
+          Cache-Control:
+            $ref: '#/components/headers/CacheControlNoStore'
+          Pragma:
+            $ref: '#/components/headers/PragmaNoCache'
         description: 成功
         content:
           application/json:
@@ -144,6 +159,11 @@
           default: 20
     responses:
       "200":
+        headers:
+          Cache-Control:
+            $ref: '#/components/headers/CacheControlNoStore'
+          Pragma:
+            $ref: '#/components/headers/PragmaNoCache'
         description: 成功
         content:
           application/json:
@@ -176,6 +196,11 @@
       - adminBearerAuth: []
     responses:
       "200":
+        headers:
+          Cache-Control:
+            $ref: '#/components/headers/CacheControlNoStore'
+          Pragma:
+            $ref: '#/components/headers/PragmaNoCache'
         description: 成功
         content:
           application/json:

@@ -23,6 +23,11 @@
           description: "结束时间"
     responses:
       '200':
+        headers:
+          Cache-Control:
+            $ref: '#/components/headers/CacheControlNoStore'
+          Pragma:
+            $ref: '#/components/headers/PragmaNoCache'
         description: 成功
         content:
           application/json:
