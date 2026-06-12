@@ -36,9 +36,15 @@ RedeemCode:
     status:
       $ref: ./common.yaml#/StatusEnum
     starts_at:
-      type: string
+      type:
+        - string
+        - "null"
+      description: 生效时间；未限制开始时间时为 null。
     expires_at:
-      type: string
+      type:
+        - string
+        - "null"
+      description: 过期时间；永不过期或未设置时为 null。
     override_mode:
       type: string
       enum:
@@ -52,6 +58,7 @@ RedeemCode:
       $ref: ./common.yaml#/Timestamp
 RedeemCodeRewards:
   type: object
+  description: 兑换码奖励展示对象；没有奖励时返回空对象。
   properties:
     coding_tier_id:
       type: string
@@ -158,9 +165,15 @@ CreateRedeemCodeRequest:
         - replace
         - upgrade_only
     starts_at:
-      type: string
+      type:
+        - string
+        - "null"
+      description: 生效时间；未限制开始时间时为 null。
     expires_at:
-      type: string
+      type:
+        - string
+        - "null"
+      description: 过期时间；永不过期或未设置时为 null。
 ToggleRedeemCodeRequest:
   type: object
   required:
@@ -182,8 +195,33 @@ RedeemCodeRequest:
   properties:
     code:
       type: string
+RedeemCodeWorkbenchItem:
+  allOf:
+    - $ref: "#/RedeemCode"
+    - type: object
+      properties:
+        code:
+          type:
+            - string
+            - "null"
+          description: 列表展示用兑换码。默认不返回明文；可返回脱敏值或 null，明文仅在创建响应 RedeemCodeCreateResponse.code 中返回。
+        display_status:
+          type: string
+          enum:
+            - active
+            - disabled
+            - expired
+            - exhausted
+          description: 前端列表展示状态；当 expires_at 已过期时展示 expired，当 redeemed_count >= max_redemptions 时展示 exhausted，否则使用 status。
+        conditions:
+          type: array
+          description: 展示用领取条件；无条件时返回空数组。
+          items:
+            type: object
+            additionalProperties: true
 RedeemCodeWorkbenchData:
   type: object
+  description: 兑换码工作台聚合数据；空态判断以 redemption_codes.items.length === 0 为准，total 仅用于分页展示。
   required:
     - redemption_codes
     - coding_plans
@@ -198,7 +236,25 @@ RedeemCodeWorkbenchData:
             items:
               type: array
               items:
-                $ref: "#/RedeemCode"
+                $ref: "#/RedeemCodeWorkbenchItem"
+              examples:
+                - - id: code_1
+                    name: Launch promo
+                    code: "LAUN****2026"
+                    token_amount: 1000
+                    max_redemptions: 100
+                    redeemed_count: 10
+                    status: active
+                    display_status: active
+                    override_mode: upgrade_only
+                    rewards:
+                      token_recharge: 1000
+                    conditions: []
+                    starts_at: null
+                    expires_at: "2026-12-31T23:59:59Z"
+                    created_at: "2026-06-12T00:00:00Z"
+                    updated_at: "2026-06-12T00:00:00Z"
+                - []
     coding_plans:
       allOf:
         - $ref: ./envelope.yaml#/PaginatedData

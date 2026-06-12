@@ -4838,8 +4838,31 @@ paths:
       tags:
         - admin
       summary: 获取用户工作台
+      description: 返回用户工作台聚合数据。支持按 query 搜索邮箱或用户 ID；列表字段始终返回 PaginatedData envelope，空态以 data.users.items.length === 0 判断。
       security:
         - adminBearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: query
+          in: query
+          required: false
+          description: 搜索关键词，匹配用户邮箱或用户 ID；无结果时返回 users.items 为空数组且保留分页 envelope。
+          schema:
+            type: string
       responses:
         "200":
           description: 成功
@@ -4870,8 +4893,25 @@ paths:
       tags:
         - admin
       summary: 获取兑换码工作台
+      description: 返回兑换码工作台聚合数据。兑换码列表默认不返回明文 code，可返回脱敏值或 null；列表字段始终返回 PaginatedData envelope，空态以 data.redemption_codes.items.length === 0 判断。
       security:
         - adminBearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
       responses:
         "200":
           description: 成功
@@ -7730,9 +7770,15 @@ components:
         status:
           $ref: "#/components/schemas/StatusEnum"
         starts_at:
-          type: string
+          type:
+            - string
+            - "null"
+          description: 生效时间；未限制开始时间时为 null。
         expires_at:
-          type: string
+          type:
+            - string
+            - "null"
+          description: 过期时间；永不过期或未设置时为 null。
         override_mode:
           type: string
           enum:
@@ -7746,6 +7792,7 @@ components:
           $ref: "#/components/schemas/Timestamp"
     RedeemCodeRewards:
       type: object
+      description: 兑换码奖励展示对象；没有奖励时返回空对象。
       properties:
         coding_tier_id:
           type: string
@@ -7852,9 +7899,15 @@ components:
             - replace
             - upgrade_only
         starts_at:
-          type: string
+          type:
+            - string
+            - "null"
+          description: 生效时间；未限制开始时间时为 null。
         expires_at:
-          type: string
+          type:
+            - string
+            - "null"
+          description: 过期时间；永不过期或未设置时为 null。
     ToggleRedeemCodeRequest:
       type: object
       required:
@@ -7876,8 +7929,33 @@ components:
       properties:
         code:
           type: string
+    RedeemCodeWorkbenchItem:
+      allOf:
+        - $ref: "#/components/schemas/RedeemCode"
+        - type: object
+          properties:
+            code:
+              type:
+                - string
+                - "null"
+              description: 列表展示用兑换码。默认不返回明文；可返回脱敏值或 null，明文仅在创建响应 RedeemCodeCreateResponse.code 中返回。
+            display_status:
+              type: string
+              enum:
+                - active
+                - disabled
+                - expired
+                - exhausted
+              description: 前端列表展示状态；当 expires_at 已过期时展示 expired，当 redeemed_count >= max_redemptions 时展示 exhausted，否则使用 status。
+            conditions:
+              type: array
+              description: 展示用领取条件；无条件时返回空数组。
+              items:
+                type: object
+                additionalProperties: true
     RedeemCodeWorkbenchData:
       type: object
+      description: 兑换码工作台聚合数据；空态判断以 redemption_codes.items.length === 0 为准，total 仅用于分页展示。
       required:
         - redemption_codes
         - coding_plans
@@ -7892,7 +7970,25 @@ components:
                 items:
                   type: array
                   items:
-                    $ref: "#/components/schemas/RedeemCode"
+                    $ref: "#/components/schemas/RedeemCodeWorkbenchItem"
+                  examples:
+                    - - id: code_1
+                        name: Launch promo
+                        code: LAUN****2026
+                        token_amount: 1000
+                        max_redemptions: 100
+                        redeemed_count: 10
+                        status: active
+                        display_status: active
+                        override_mode: upgrade_only
+                        rewards:
+                          token_recharge: 1000
+                        conditions: []
+                        starts_at: null
+                        expires_at: "2026-12-31T23:59:59Z"
+                        created_at: "2026-06-12T00:00:00Z"
+                        updated_at: "2026-06-12T00:00:00Z"
+                    - []
         coding_plans:
           allOf:
             - $ref: "#/components/schemas/PaginatedData"
@@ -9122,8 +9218,57 @@ components:
           type: string
         reason:
           type: string
+    UserWorkbenchQuota:
+      type: object
+      description: 用户工作台展示用额度快照；后端无法计算时可返回空对象，不能省略 users 分页 envelope。
+      properties:
+        token_remaining:
+          type: integer
+          format: int64
+          description: 剩余 token 额度；未知时可省略。
+        token_total:
+          type: integer
+          format: int64
+          description: token 总额度；未知时可省略。
+        coding_remaining:
+          type: integer
+          description: 剩余 coding 额度；未知时可省略。
+        image_remaining:
+          type: integer
+          description: 剩余 image 额度；未知时可省略。
+    UserWorkbenchItem:
+      allOf:
+        - $ref: "#/components/schemas/UserResponse"
+        - type: object
+          properties:
+            display_name:
+              type:
+                - string
+                - "null"
+              description: 用户展示名；为空时前端回退到 email 或 id。
+            is_admin:
+              type: boolean
+              description: role 的布尔派生字段；与 role 冲突时以 role 为准，role=admin 等价于 is_admin=true。
+            request_plan:
+              anyOf:
+                - $ref: "#/components/schemas/UserPlan"
+                - type: "null"
+              description: 当前请求/编码类套餐；无套餐时返回 null。
+            token_plan:
+              anyOf:
+                - $ref: "#/components/schemas/UserPlan"
+                - type: "null"
+              description: 当前 token 套餐；无套餐时返回 null。
+            image_plan:
+              anyOf:
+                - $ref: "#/components/schemas/UserPlan"
+                - type: "null"
+              description: 当前图片套餐；无套餐时返回 null。
+            quota:
+              $ref: "#/components/schemas/UserWorkbenchQuota"
     UserWorkbenchData:
       type: object
+      description: 用户工作台聚合数据；空态判断以 users.items.length === 0 为准，total 仅用于分页展示。
       required:
         - users
         - coding_plans
@@ -9138,7 +9283,24 @@ components:
                 items:
                   type: array
                   items:
-                    $ref: "#/components/schemas/UserResponse"
+                    $ref: "#/components/schemas/UserWorkbenchItem"
+                  examples:
+                    - - id: user_1
+                        email: admin@example.com
+                        role: admin
+                        status: active
+                        preferred_billing: token
+                        fallback_enabled: true
+                        display_name: 管理员
+                        is_admin: true
+                        request_plan: null
+                        token_plan: null
+                        quota:
+                          token_remaining: 100000
+                          token_total: 200000
+                        created_at: "2026-06-12T00:00:00Z"
+                        updated_at: "2026-06-12T00:00:00Z"
+                    - []
         coding_plans:
           allOf:
             - $ref: "#/components/schemas/PaginatedData"

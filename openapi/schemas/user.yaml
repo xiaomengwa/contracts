@@ -331,8 +331,57 @@ UserRiskResetResponse:
       type: string
     reason:
       type: string
+UserWorkbenchQuota:
+  type: object
+  description: 用户工作台展示用额度快照；后端无法计算时可返回空对象，不能省略 users 分页 envelope。
+  properties:
+    token_remaining:
+      type: integer
+      format: int64
+      description: 剩余 token 额度；未知时可省略。
+    token_total:
+      type: integer
+      format: int64
+      description: token 总额度；未知时可省略。
+    coding_remaining:
+      type: integer
+      description: 剩余 coding 额度；未知时可省略。
+    image_remaining:
+      type: integer
+      description: 剩余 image 额度；未知时可省略。
+UserWorkbenchItem:
+  allOf:
+    - $ref: "#/UserResponse"
+    - type: object
+      properties:
+        display_name:
+          type:
+            - string
+            - "null"
+          description: 用户展示名；为空时前端回退到 email 或 id。
+        is_admin:
+          type: boolean
+          description: role 的布尔派生字段；与 role 冲突时以 role 为准，role=admin 等价于 is_admin=true。
+        request_plan:
+          anyOf:
+            - $ref: ./plan.yaml#/UserPlan
+            - type: "null"
+          description: 当前请求/编码类套餐；无套餐时返回 null。
+        token_plan:
+          anyOf:
+            - $ref: ./plan.yaml#/UserPlan
+            - type: "null"
+          description: 当前 token 套餐；无套餐时返回 null。
+        image_plan:
+          anyOf:
+            - $ref: ./plan.yaml#/UserPlan
+            - type: "null"
+          description: 当前图片套餐；无套餐时返回 null。
+        quota:
+          $ref: "#/UserWorkbenchQuota"
 UserWorkbenchData:
   type: object
+  description: 用户工作台聚合数据；空态判断以 users.items.length === 0 为准，total 仅用于分页展示。
   required:
     - users
     - coding_plans
@@ -347,7 +396,24 @@ UserWorkbenchData:
             items:
               type: array
               items:
-                $ref: "#/UserResponse"
+                $ref: "#/UserWorkbenchItem"
+              examples:
+                - - id: user_1
+                    email: admin@example.com
+                    role: admin
+                    status: active
+                    preferred_billing: token
+                    fallback_enabled: true
+                    display_name: 管理员
+                    is_admin: true
+                    request_plan: null
+                    token_plan: null
+                    quota:
+                      token_remaining: 100000
+                      token_total: 200000
+                    created_at: "2026-06-12T00:00:00Z"
+                    updated_at: "2026-06-12T00:00:00Z"
+                - []
     coding_plans:
       allOf:
         - $ref: ./envelope.yaml#/PaginatedData
