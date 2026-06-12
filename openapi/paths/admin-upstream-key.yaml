@@ -358,7 +358,14 @@
     parameters:
       - name: upstream_key_id
         in: query
-        required: true
+        required: false
+        description: 上游密钥 ID；不传时不过滤上游密钥。
+        schema:
+          type: string
+      - name: model_id
+        in: query
+        required: false
+        description: 模型 ID；不传时不过滤模型。upstream_key_id 和 model_id 都不传时返回全部非 deleted 映射。
         schema:
           type: string
       - name: page
