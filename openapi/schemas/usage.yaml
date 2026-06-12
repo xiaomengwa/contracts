@@ -2,6 +2,8 @@
 
 UserQuota:
   type: object
+  description: |
+    用户当前可用权益。套餐权益与充值 Token 余额是独立权益来源：`plan_tokens` 来自 token 套餐，`recharged_tokens` 来自充值/兑换，`token_limit = plan_tokens + recharged_tokens`（扣除策略由实现层执行），`remaining_tokens` 是当前可用 token 余额。套餐名称为空但 `recharged_tokens` 或 `remaining_tokens` 大于 0 时，前端应展示充值 Token 余额而非“无可用权益”。
   required:
     - user_id
     - token_limit
@@ -36,12 +38,15 @@ UserQuota:
     token_limit:
       type: integer
       format: int64
+      description: Token 权益总上限，通常为套餐 Token 与充值 Token 的合计。
     plan_tokens:
       type: integer
       format: int64
+      description: 当前 token 套餐提供的 Token 额度；无 token 套餐时为 0。
     recharged_tokens:
       type: integer
       format: int64
+      description: 充值或兑换获得的 Token 额度；即使没有套餐，只要该值或 remaining_tokens 大于 0 也表示用户仍有可用权益。
     token_plan_name:
       type: string
     token_plan_expires_at:
@@ -54,6 +59,7 @@ UserQuota:
     remaining_tokens:
       type: integer
       format: int64
+      description: 当前可用 Token 余额，等于权益余额扣除已使用和预留后的结果；前端展示 Token 可用性时优先使用该字段。
     request_limit:
       type: integer
     used_requests:

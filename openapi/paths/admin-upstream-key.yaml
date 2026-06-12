@@ -4,6 +4,10 @@
     tags:
       - admin
     summary: 获取上游密钥列表
+    description: |
+      返回上游密钥分页列表。客户端搜索/筛选时应重新请求本接口并携带当前 `query`、过滤条件、`page`、`limit`；契约不限定 UI 触发方式（实时输入、回车或点击筛选均可），但列表展示和分页必须以服务端返回为准。
+
+      `total` 表示应用 `query`、`provider_id`、`status`、`quota_type`、`expiring` 后的总数；无匹配结果时返回 `items: []`、`total: 0`。
     security:
       - adminBearerAuth: []
     parameters:
@@ -11,7 +15,8 @@
         in: query
         schema:
           type: string
-          description: 搜索名称 / ID
+          description: |
+            搜索关键字。服务端至少应匹配 `id`、`name`、`provider_name`、`notes`。空字符串或省略表示不按关键字过滤。
       - name: provider_id
         in: query
         schema:

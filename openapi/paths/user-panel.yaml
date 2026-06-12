@@ -33,6 +33,10 @@
     tags:
       - user
     summary: 获取用户仪表盘数据
+    description: |
+      返回用户面板健康统计。`today_*` 字段统计当前业务日窗口（由服务端配置的业务时区决定）的已完成请求/用量；`total_*` 字段统计账号累计用量。
+
+      同屏趋势图不应从本接口伪造采样点；趋势数据应来自 `GET /api/v1/user/requests/list` 或后续专用趋势接口。若趋势窗口为空但 `today_requests > 0`，健康卡片仍展示 dashboard 统计，趋势图展示空态或 0 采样点。
     security:
       - bearerAuth: []
     responses:
@@ -224,6 +228,10 @@
     tags:
       - user
     summary: 获取用户配额
+    description: |
+      返回用户当前可用权益。套餐权益与充值 Token 余额是两个独立权益来源：`plan_tokens` 表示套餐提供的 token 额度，`recharged_tokens` 表示充值或兑换获得的 token 额度，`token_limit` 为两类 token 权益合计上限，`remaining_tokens` 为扣除已用和预留后的当前可用 token。
+
+      当套餐名称为空但 `recharged_tokens` 或 `remaining_tokens` 大于 0 时，前端不应展示为“无可用权益”，应展示充值 Token 余额；请求次数和图片额度同理按各自 remaining 字段判断可用性。
     security:
       - bearerAuth: []
     responses:
@@ -311,6 +319,8 @@
     tags:
       - user
     summary: 获取用户可用套餐列表
+    description: |
+      返回登录用户上下文下可购买/可见的套餐列表，必须提供 `Authorization: Bearer <token>`。该接口可在未来包含用户特定资格、价格或订阅状态；未登录客户端应使用 `/api/v1/public/plans/list`。
     security:
       - bearerAuth: []
     parameters:
@@ -348,6 +358,12 @@
                           type: integer
       "400":
         description: 错误
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+      "401":
+        description: 未授权；用户上下文套餐列表必须登录访问，匿名客户端请使用 /api/v1/public/plans/list
         content:
           application/json:
             schema:
@@ -400,6 +416,10 @@
     tags:
       - user
     summary: 获取用户请求日志列表
+    description: |
+      返回用户请求日志分页列表，可作为请求趋势图的数据来源。趋势图应按服务端返回的请求日志时间窗口聚合；当当前趋势窗口没有采样点时返回 `items: []`、`total: 0`，前端可展示空图或 0 采样点，但不应 fallback 到 `dashboard.today_requests` 生成虚假趋势点。
+
+      `total` 表示应用 `query` 过滤后的总数（分页前总数）。
     security:
       - bearerAuth: []
     parameters:

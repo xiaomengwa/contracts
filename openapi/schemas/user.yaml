@@ -41,6 +41,8 @@ UserResponse:
       $ref: ./common.yaml#/Timestamp
 UserDashboard:
   type: object
+  description: |
+    用户面板健康统计。`today_*` 字段统计当前业务日窗口（由服务端配置的业务时区决定）的已完成请求/用量；`total_*` 字段统计账号累计用量。趋势图应使用请求日志或专用趋势接口，不应由本对象伪造采样点。
   required:
     - user
     - api_key_count

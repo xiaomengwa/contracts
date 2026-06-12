@@ -4,7 +4,8 @@
     tags:
       - public
     summary: 获取公开套餐列表
-    description: 返回所有状态为 active 的套餐，无需认证
+    description: |
+      返回所有状态为 active 的公开套餐目录，无需认证。匿名客户端和登录页/注册页应使用本接口；需要用户特定 eligibility、订阅状态或个性化价格时使用 `GET /api/v1/user/plans/list` 并提供 Authorization。
     parameters:
       - name: plan_type
         in: query

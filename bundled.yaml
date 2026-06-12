@@ -5,8 +5,10 @@ info:
     name: Proprietary
     identifier: LicenseRef-Proprietary
   description: |
-    TokenMP AI 模型 API 网关的管理接口。所有 Management API 响应使用 envelope 包裹：
-    `{"code": 200, "data": {...}, "message": "ok", "error_code": ""}`
+    TokenMP AI 模型 API 网关的管理接口。所有 `/api/v1/*` Management API 响应使用 envelope 包裹：
+    `{"code": 200, "data": {...}, "message": "ok", "error_code": ""}`。`/api/v1/*` 的业务错误、认证错误以及 API route 级 404/405/OPTIONS 错误也应返回 JSON envelope：`{"code": 404, "message": "...", "error_code": "NOT_FOUND", "data": null}`，不应返回 HTML 或 `text/plain`。
+
+    OpenAI-compatible `/v1/*` 端点属于独立兼容边界，可保持 OpenAI 风格错误：`{"error": {"message": "...", "type": "invalid_request_error"}}`，不与 Management API envelope 混用。
 
     路径风格：`/api/v1/{scope}/{category}/{type}/{action}`（分类优先，非 RESTful）。
     能扩展出多个类型的资源使用 `分类/类型` 结构（如 `rules/rate`、`codes/redeem`、`keys/upstream`）。
@@ -365,6 +367,10 @@ paths:
       tags:
         - catalog
       summary: 获取模型列表
+      description: |
+        返回模型分页列表。客户端搜索/筛选时应重新请求本接口并携带当前 `query`、过滤条件、`page`、`limit`；契约不限定 UI 触发方式（实时输入、回车或点击筛选均可），但列表展示和分页必须以服务端返回为准。
+
+        `total` 表示应用 `query` 和过滤条件后的总数；无匹配结果时返回 `items: []`、`total: 0`。
       security:
         - adminBearerAuth: []
       parameters:
@@ -372,7 +378,8 @@ paths:
           in: query
           schema:
             type: string
-            description: 搜索名称 / ID
+            description: |
+              搜索关键字。服务端至少应匹配 `id`、`name`、`display_name`、`description`、`capabilities`。空字符串或省略表示不按关键字过滤。
         - name: status
           in: query
           schema:
@@ -992,6 +999,10 @@ paths:
       tags:
         - admin
       summary: 获取供应商列表
+      description: |
+        返回供应商分页列表。客户端搜索/筛选时应重新请求本接口并携带当前 `query`、过滤条件、`page`、`limit`；契约不限定 UI 触发方式（实时输入、回车或点击筛选均可），但列表展示和分页必须以服务端返回为准。
+
+        `total` 表示应用 `query` 和过滤条件后的总数；无匹配结果时返回 `items: []`、`total: 0`。
       security:
         - adminBearerAuth: []
       parameters:
@@ -999,7 +1010,8 @@ paths:
           in: query
           schema:
             type: string
-            description: 搜索名称 / ID
+            description: |
+              搜索关键字。服务端至少应匹配 `id`、`name`、`display_name`、`base_url`。空字符串或省略表示不按关键字过滤。
         - name: status
           in: query
           schema:
@@ -2766,6 +2778,10 @@ paths:
       tags:
         - admin
       summary: 获取上游密钥列表
+      description: |
+        返回上游密钥分页列表。客户端搜索/筛选时应重新请求本接口并携带当前 `query`、过滤条件、`page`、`limit`；契约不限定 UI 触发方式（实时输入、回车或点击筛选均可），但列表展示和分页必须以服务端返回为准。
+
+        `total` 表示应用 `query`、`provider_id`、`status`、`quota_type`、`expiring` 后的总数；无匹配结果时返回 `items: []`、`total: 0`。
       security:
         - adminBearerAuth: []
       parameters:
@@ -2773,7 +2789,8 @@ paths:
           in: query
           schema:
             type: string
-            description: 搜索名称 / ID
+            description: |
+              搜索关键字。服务端至少应匹配 `id`、`name`、`provider_name`、`notes`。空字符串或省略表示不按关键字过滤。
         - name: provider_id
           in: query
           schema:
@@ -5344,7 +5361,8 @@ paths:
       tags:
         - public
       summary: 获取公开套餐列表
-      description: 返回所有状态为 active 的套餐，无需认证
+      description: |
+        返回所有状态为 active 的公开套餐目录，无需认证。匿名客户端和登录页/注册页应使用本接口；需要用户特定 eligibility、订阅状态或个性化价格时使用 `GET /api/v1/user/plans/list` 并提供 Authorization。
       parameters:
         - name: plan_type
           in: query
@@ -5747,6 +5765,10 @@ paths:
       tags:
         - user
       summary: 获取用户仪表盘数据
+      description: |
+        返回用户面板健康统计。`today_*` 字段统计当前业务日窗口（由服务端配置的业务时区决定）的已完成请求/用量；`total_*` 字段统计账号累计用量。
+
+        同屏趋势图不应从本接口伪造采样点；趋势数据应来自 `GET /api/v1/user/requests/list` 或后续专用趋势接口。若趋势窗口为空但 `today_requests > 0`，健康卡片仍展示 dashboard 统计，趋势图展示空态或 0 采样点。
       security:
         - bearerAuth: []
       responses:
@@ -5938,6 +5960,10 @@ paths:
       tags:
         - user
       summary: 获取用户配额
+      description: |
+        返回用户当前可用权益。套餐权益与充值 Token 余额是两个独立权益来源：`plan_tokens` 表示套餐提供的 token 额度，`recharged_tokens` 表示充值或兑换获得的 token 额度，`token_limit` 为两类 token 权益合计上限，`remaining_tokens` 为扣除已用和预留后的当前可用 token。
+
+        当套餐名称为空但 `recharged_tokens` 或 `remaining_tokens` 大于 0 时，前端不应展示为“无可用权益”，应展示充值 Token 余额；请求次数和图片额度同理按各自 remaining 字段判断可用性。
       security:
         - bearerAuth: []
       responses:
@@ -6025,6 +6051,8 @@ paths:
       tags:
         - user
       summary: 获取用户可用套餐列表
+      description: |
+        返回登录用户上下文下可购买/可见的套餐列表，必须提供 `Authorization: Bearer <token>`。该接口可在未来包含用户特定资格、价格或订阅状态；未登录客户端应使用 `/api/v1/public/plans/list`。
       security:
         - bearerAuth: []
       parameters:
@@ -6062,6 +6090,12 @@ paths:
                             type: integer
         "400":
           description: 错误
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "401":
+          description: 未授权；用户上下文套餐列表必须登录访问，匿名客户端请使用 /api/v1/public/plans/list
           content:
             application/json:
               schema:
@@ -6114,6 +6148,10 @@ paths:
       tags:
         - user
       summary: 获取用户请求日志列表
+      description: |
+        返回用户请求日志分页列表，可作为请求趋势图的数据来源。趋势图应按服务端返回的请求日志时间窗口聚合；当当前趋势窗口没有采样点时返回 `items: []`、`total: 0`，前端可展示空图或 0 采样点，但不应 fallback 到 `dashboard.today_requests` 生成虚假趋势点。
+
+        `total` 表示应用 `query` 过滤后的总数（分页前总数）。
       security:
         - bearerAuth: []
       parameters:
@@ -6798,6 +6836,8 @@ components:
           description: 错误码（仅错误响应）
     ApiErrorResponse:
       type: object
+      description: |
+        `/api/v1/*` Management API 的统一错误 envelope。业务错误、认证/授权错误以及 API route 级 404、405、OPTIONS 预检失败都应使用 `application/json` 返回本结构；实现层不应让 API route 返回 HTML 或 `text/plain` 的框架默认错误。
       required:
         - code
         - message
@@ -6813,6 +6853,11 @@ components:
         error_code:
           type: string
           description: 错误码
+          examples:
+            - UNAUTHORIZED
+            - NOT_FOUND
+            - METHOD_NOT_ALLOWED
+            - OPTIONS_NOT_ALLOWED
     PaginatedData:
       type: object
       required:
@@ -8655,6 +8700,8 @@ components:
           type: string
     UserQuota:
       type: object
+      description: |
+        用户当前可用权益。套餐权益与充值 Token 余额是独立权益来源：`plan_tokens` 来自 token 套餐，`recharged_tokens` 来自充值/兑换，`token_limit = plan_tokens + recharged_tokens`（扣除策略由实现层执行），`remaining_tokens` 是当前可用 token 余额。套餐名称为空但 `recharged_tokens` 或 `remaining_tokens` 大于 0 时，前端应展示充值 Token 余额而非“无可用权益”。
       required:
         - user_id
         - token_limit
@@ -8689,12 +8736,15 @@ components:
         token_limit:
           type: integer
           format: int64
+          description: Token 权益总上限，通常为套餐 Token 与充值 Token 的合计。
         plan_tokens:
           type: integer
           format: int64
+          description: 当前 token 套餐提供的 Token 额度；无 token 套餐时为 0。
         recharged_tokens:
           type: integer
           format: int64
+          description: 充值或兑换获得的 Token 额度；即使没有套餐，只要该值或 remaining_tokens 大于 0 也表示用户仍有可用权益。
         token_plan_name:
           type: string
         token_plan_expires_at:
@@ -8707,6 +8757,7 @@ components:
         remaining_tokens:
           type: integer
           format: int64
+          description: 当前可用 Token 余额，等于权益余额扣除已使用和预留后的结果；前端展示 Token 可用性时优先使用该字段。
         request_limit:
           type: integer
         used_requests:
@@ -8928,6 +8979,8 @@ components:
           $ref: "#/components/schemas/Timestamp"
     UserDashboard:
       type: object
+      description: |
+        用户面板健康统计。`today_*` 字段统计当前业务日窗口（由服务端配置的业务时区决定）的已完成请求/用量；`total_*` 字段统计账号累计用量。趋势图应使用请求日志或专用趋势接口，不应由本对象伪造采样点。
       required:
         - user
         - api_key_count
