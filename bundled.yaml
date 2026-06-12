@@ -6747,6 +6747,12 @@ components:
           maximum: 100
           default: 20
           description: 每页条数
+    ModelBillingModeEnum:
+      type: string
+      enum:
+        - billable
+        - free_global
+      description: 模型计费模式。billable 表示正常计费，free_global 表示全局免费。
     CatalogModel:
       allOf:
         - $ref: "#/components/schemas/CatalogStats"
@@ -6766,6 +6772,11 @@ components:
               type: string
             description:
               type: string
+            billing_mode:
+              allOf:
+                - $ref: "#/components/schemas/ModelBillingModeEnum"
+              default: billable
+              description: 模型计费模式。缺省时按 billable 处理。
             status:
               $ref: "#/components/schemas/StatusEnum"
             created_at:
@@ -6783,6 +6794,11 @@ components:
           type: string
         description:
           type: string
+        billing_mode:
+          allOf:
+            - $ref: "#/components/schemas/ModelBillingModeEnum"
+          default: billable
+          description: 模型计费模式。未传时按 billable 创建。
     UpdateModelRequest:
       type: object
       required:
@@ -6796,6 +6812,9 @@ components:
           type: string
         description:
           type: string
+        billing_mode:
+          $ref: "#/components/schemas/ModelBillingModeEnum"
+          description: 模型计费模式。未传时不修改现有值。
     DeleteModelRequest:
       type: object
       required:

@@ -1,3 +1,9 @@
+ModelBillingModeEnum:
+  type: string
+  enum:
+    - billable
+    - free_global
+  description: 模型计费模式。billable 表示正常计费，free_global 表示全局免费。
 CatalogModel:
   allOf:
     - $ref: ./common.yaml#/CatalogStats
@@ -17,6 +23,11 @@ CatalogModel:
           type: string
         description:
           type: string
+        billing_mode:
+          allOf:
+            - $ref: "#/ModelBillingModeEnum"
+          default: billable
+          description: 模型计费模式。缺省时按 billable 处理。
         status:
           $ref: ./common.yaml#/StatusEnum
         created_at:
@@ -34,6 +45,11 @@ CreateModelRequest:
       type: string
     description:
       type: string
+    billing_mode:
+      allOf:
+        - $ref: "#/ModelBillingModeEnum"
+      default: billable
+      description: 模型计费模式。未传时按 billable 创建。
 UpdateModelRequest:
   type: object
   required:
@@ -47,6 +63,9 @@ UpdateModelRequest:
       type: string
     description:
       type: string
+    billing_mode:
+      $ref: "#/ModelBillingModeEnum"
+      description: 模型计费模式。未传时不修改现有值。
 DeleteModelRequest:
   type: object
   required:
