@@ -281,6 +281,54 @@
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+/api/v1/user/test-code:
+  get:
+    operationId: userTestCode
+    tags:
+    - auth
+    summary: 获取测试验证码（仅开发环境）
+    description: |
+      为指定邮箱生成并返回验证码。仅在未配置 Captcha（开发环境）时可用；
+      生产环境下返回 `403 FORBIDDEN`。
+    x-internal: true
+    security: []
+    parameters:
+    - name: email
+      in: query
+      required: true
+      schema:
+        type: string
+        format: email
+    responses:
+      '200':
+        description: 成功
+        content:
+          application/json:
+            schema:
+              allOf:
+              - $ref: ../schemas/envelope.yaml#/ApiResponse
+              - type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      email:
+                        type: string
+                        format: email
+                      sent:
+                        type: boolean
+      '400':
+        description: 参数无效
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+      '403':
+        description: 生产环境不可用
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
 /api/v1/user/captcha/config:
   get:
     operationId: userCaptchaConfig
