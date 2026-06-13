@@ -23,6 +23,9 @@ RequestLogResponse:
       type: string
     user_api_key_id:
       type: string
+    user_api_key_name:
+      type: string
+      description: 关联用户 API Key 的可读名称，用于请求日志展示；不包含明文 key、hash、prefix/suffix 等敏感材料。
     provider_name:
       type: string
     model_name:
@@ -84,6 +87,93 @@ RequestLogResponse:
     completed_at:
       $ref: './common.yaml#/Timestamp'
 
+RequestLogListItem:
+  type: object
+  description: 列表安全版请求日志；不包含 request_body、上游响应体或内部错误细节。需要审计明细时应使用受控详情/追踪接口。
+  required:
+    - id
+    - stream
+    - is_stream
+    - success
+    - is_success
+    - price_multiplier
+    - created_at
+  properties:
+    id:
+      type: string
+    request_id:
+      type: string
+    trace_id:
+      type: string
+    user_id:
+      type: string
+    user_name:
+      type: string
+    user_api_key_id:
+      type: string
+    user_api_key_name:
+      type: string
+      description: 关联用户 API Key 的可读名称，用于列表安全展示；不包含明文 key、hash、prefix/suffix 等敏感材料。
+    provider_name:
+      type: string
+    model_name:
+      type: string
+    protocol:
+      type: string
+    stream:
+      type: boolean
+    is_stream:
+      type: boolean
+    billing_plan:
+      type: string
+    final_status_code:
+      type: integer
+    success:
+      type: boolean
+    is_success:
+      type: boolean
+    input_tokens:
+      type: integer
+    output_tokens:
+      type: integer
+    total_tokens:
+      type: integer
+    latency_ms:
+      type: integer
+    final_latency_ms:
+      type: integer
+    total_duration_ms:
+      type: integer
+    ttft_ms:
+      type: integer
+    kind:
+      type: string
+    price_multiplier:
+      type: number
+      format: double
+    price_multiplier_rule_id:
+      type: string
+    effective_input_tokens:
+      type: integer
+    effective_output_tokens:
+      type: integer
+    effective_total_tokens:
+      type: integer
+    tokens_per_second:
+      type: number
+      format: double
+    error_code:
+      type: string
+    error_message:
+      type: string
+      description: 面向用户/列表展示的脱敏错误摘要；不得包含内部堆栈、请求体或上游密钥材料。
+    usage_status:
+      type: string
+    created_at:
+      $ref: './common.yaml#/Timestamp'
+    completed_at:
+      $ref: './common.yaml#/Timestamp'
+
 RequestAttemptResponse:
   type: object
   required:
@@ -121,12 +211,48 @@ RequestAttemptResponse:
     created_at:
       $ref: './common.yaml#/Timestamp'
 
+RequestTraceEventResponse:
+  type: object
+  description: |
+    请求追踪时间线事件。admin 端返回完整调试字段（含 metadata）；
+    user 端仅返回当前用户相关事件，隐藏上游 key/provider/url 及内部 metadata 等敏感字段。
+  required:
+    - id
+    - created_at
+  properties:
+    id:
+      type: string
+    request_log_id:
+      type: string
+    request_id:
+      type: string
+    trace_id:
+      type: string
+    stage:
+      type: string
+      description: 事件阶段标识，如 upstream_call、retry、billing、stream_chunk 等。
+    message:
+      type: string
+      description: 面向展示的事件摘要。
+    error_code:
+      type: string
+    error_message:
+      type: string
+      description: 面向用户展示的脱敏错误摘要；不含内部堆栈或上游密钥材料。
+    metadata:
+      type: object
+      additionalProperties: true
+      description: 仅 admin trace 返回的内部调试元数据；user trace 不返回此字段。
+    created_at:
+      $ref: './common.yaml#/Timestamp'
+
 RequestTraceResponse:
   type: object
   required:
     - query
     - logs
     - attempts
+    - events
   properties:
     query:
       type: string
@@ -138,3 +264,8 @@ RequestTraceResponse:
       type: array
       items:
         $ref: '#/RequestAttemptResponse'
+    events:
+      type: array
+      description: 请求时间线事件列表，按 created_at 升序排列。admin 端含完整调试字段；user 端脱敏后返回。
+      items:
+        $ref: '#/RequestTraceEventResponse'

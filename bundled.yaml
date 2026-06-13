@@ -5,8 +5,10 @@ info:
     name: Proprietary
     identifier: LicenseRef-Proprietary
   description: |
-    TokenMP AI 模型 API 网关的管理接口。所有 Management API 响应使用 envelope 包裹：
-    `{"code": 200, "data": {...}, "message": "ok", "error_code": ""}`
+    TokenMP AI 模型 API 网关的管理接口。所有 `/api/v1/*` Management API 响应使用 envelope 包裹：
+    `{"code": 200, "data": {...}, "message": "ok", "error_code": ""}`。`/api/v1/*` 的业务错误、认证错误以及 API route 级 404/405/OPTIONS 错误也应返回 JSON envelope：`{"code": 404, "message": "...", "error_code": "NOT_FOUND", "data": null}`，不应返回 HTML 或 `text/plain`。
+
+    OpenAI-compatible `/v1/*` 端点属于独立兼容边界，可保持 OpenAI 风格错误：`{"error": {"message": "...", "type": "invalid_request_error"}}`，不与 Management API envelope 混用。
 
     路径风格：`/api/v1/{scope}/{category}/{type}/{action}`（分类优先，非 RESTful）。
     能扩展出多个类型的资源使用 `分类/类型` 结构（如 `rules/rate`、`codes/redeem`、`keys/upstream`）。
@@ -36,6 +38,8 @@ tags:
     description: 兑换码管理
   - name: ratrule
     description: 倍率规则管理
+  - name: providererror
+    description: 供应商错误规则管理
   - name: config
     description: 系统配置与路由权重
   - name: requestlog
@@ -65,6 +69,9 @@ paths:
                         type: array
                         items:
                           $ref: "#/components/schemas/SystemConfig"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -103,6 +110,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/SystemConfig"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -147,6 +157,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/SystemConfig"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -202,6 +215,9 @@ paths:
                             type: boolean
                           executor_cache_version:
                             type: string
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -234,6 +250,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/RoutingPolicy"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -272,6 +291,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/RoutingPolicy"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -321,6 +343,9 @@ paths:
                             type: boolean
                           executor_cache_version:
                             type: string
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -353,6 +378,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/AdminDashboard"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 错误
           content:
@@ -365,6 +393,10 @@ paths:
       tags:
         - catalog
       summary: 获取模型列表
+      description: |
+        返回模型分页列表。客户端搜索/筛选时应重新请求本接口并携带当前 `query`、过滤条件、`page`、`limit`；契约不限定 UI 触发方式（实时输入、回车或点击筛选均可），但列表展示和分页必须以服务端返回为准。
+
+        `total` 表示应用 `query` 和过滤条件后的总数；无匹配结果时返回 `items: []`、`total: 0`。
       security:
         - adminBearerAuth: []
       parameters:
@@ -372,7 +404,8 @@ paths:
           in: query
           schema:
             type: string
-            description: 搜索名称 / ID
+            description: |
+              搜索关键字。服务端至少应匹配 `id`、`name`、`display_name`、`description`、`capabilities`。空字符串或省略表示不按关键字过滤。
         - name: status
           in: query
           schema:
@@ -418,6 +451,110 @@ paths:
                             type: integer
                           total:
                             type: integer
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
+        "401":
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "403":
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+  /api/v1/admin/models/batch/create:
+    post:
+      operationId: adminModelBatchCreate
+      tags:
+        - catalog
+      summary: 批量创建模型
+      description: |
+        批量创建模型（每批最多 100 个）。
+        新模型默认状态为 `disabled`、计费模式为 `billable`。
+        每条结果独立判断成功/失败，部分失败不影响其他条目。
+      security:
+        - adminBearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BatchCreateModelsRequest"
+      responses:
+        "200":
+          description: 成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/BatchCreateModelsResponse"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
+        "400":
+          description: 参数无效
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "401":
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "403":
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+  /api/v1/admin/models/batch/delete:
+    post:
+      operationId: adminModelBatchDelete
+      tags:
+        - catalog
+      summary: 批量删除模型
+      description: |
+        批量软删除模型（每批最多 100 个）。
+        每条结果独立判断成功/失败，部分失败不影响其他条目。
+      security:
+        - adminBearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BatchDeleteModelsRequest"
+      responses:
+        "200":
+          description: 成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/BatchDeleteModelsResponse"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
+        "400":
+          description: 参数无效
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
         "401":
           description: 未授权
           content:
@@ -456,6 +593,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/CatalogModel"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -500,6 +640,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/CatalogModel"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -544,6 +687,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/CatalogModel"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -589,6 +735,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ApiResponse"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -633,6 +782,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/CatalogModel"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -687,6 +839,9 @@ paths:
                             type: integer
                           total:
                             type: integer
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -753,6 +908,9 @@ paths:
                             type: integer
                           total:
                             type: integer
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -791,6 +949,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/Plan"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -835,6 +996,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/Plan"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -879,6 +1043,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/Plan"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -924,6 +1091,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ApiResponse"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -968,6 +1138,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/Plan"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -992,6 +1165,10 @@ paths:
       tags:
         - admin
       summary: 获取供应商列表
+      description: |
+        返回供应商分页列表。客户端搜索/筛选时应重新请求本接口并携带当前 `query`、过滤条件、`page`、`limit`；契约不限定 UI 触发方式（实时输入、回车或点击筛选均可），但列表展示和分页必须以服务端返回为准。
+
+        `total` 表示应用 `query` 和过滤条件后的总数；无匹配结果时返回 `items: []`、`total: 0`。
       security:
         - adminBearerAuth: []
       parameters:
@@ -999,7 +1176,8 @@ paths:
           in: query
           schema:
             type: string
-            description: 搜索名称 / ID
+            description: |
+              搜索关键字。服务端至少应匹配 `id`、`name`、`display_name`、`base_url`。空字符串或省略表示不按关键字过滤。
         - name: status
           in: query
           schema:
@@ -1045,6 +1223,9 @@ paths:
                             type: integer
                           total:
                             type: integer
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -1083,6 +1264,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/Provider"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -1127,6 +1311,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/Provider"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -1171,6 +1358,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/Provider"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -1216,6 +1406,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ApiResponse"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -1260,6 +1453,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/Provider"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -1274,6 +1470,84 @@ paths:
                 $ref: "#/components/schemas/ApiErrorResponse"
         "404":
           description: 供应商不存在
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+  /api/v1/admin/providers/models/list:
+    get:
+      operationId: adminProviderModelList
+      tags:
+        - catalog
+      summary: 获取上游供应商模型列表
+      description: |
+        使用指定供应商与上游密钥调用上游 models API，返回可导入/可选择的上游模型列表。该接口用于后台预览上游可用模型，不会创建或修改本地模型目录。
+
+        本接口必须使用 `GET`，并从 query 参数读取 `provider_id` 和 `upstream_key_id`；客户端不应再使用 POST body 传参。缺少必需参数、供应商无可用端点或上游密钥不匹配等情况应返回 Management JSON error envelope。
+      security:
+        - adminBearerAuth: []
+      parameters:
+        - name: provider_id
+          in: query
+          required: true
+          schema:
+            type: string
+          description: 供应商 ID。
+        - name: upstream_key_id
+          in: query
+          required: true
+          schema:
+            type: string
+          description: 用于调用上游 models API 的上游密钥 ID。
+      responses:
+        "200":
+          description: 成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        required:
+                          - models
+                        properties:
+                          models:
+                            type: array
+                            description: 上游返回的可用模型列表；上游协议没有 models API 时返回空数组。
+                            items:
+                              $ref: "#/components/schemas/UpstreamProviderModel"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
+        "400":
+          description: 参数无效、供应商端点配置缺失或该协议不支持模型探测
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "401":
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "403":
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "404":
+          description: 供应商或上游密钥不存在
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "502":
+          description: 上游 models API 调用失败或响应无法解析
           content:
             application/json:
               schema:
@@ -1326,13 +1600,16 @@ paths:
                           items:
                             type: array
                             items:
-                              $ref: "#/components/schemas/ProviderEndpoint"
+                              $ref: "#/components/schemas/ProviderEndpointListItem"
                           page:
                             type: integer
                           limit:
                             type: integer
                           total:
                             type: integer
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -1371,6 +1648,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/ProviderEndpoint"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -1415,6 +1695,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/ProviderEndpoint"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -1460,6 +1743,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ApiResponse"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -1504,6 +1790,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/ProviderEndpoint"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -1558,6 +1847,394 @@ paths:
                             type: integer
                           total:
                             type: integer
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
+        "401":
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "403":
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+  /api/v1/admin/rules/provider/error/list:
+    get:
+      operationId: adminProviderErrorRuleList
+      tags:
+        - providererror
+      summary: 获取供应商错误规则列表
+      security:
+        - adminBearerAuth: []
+      parameters:
+        - name: provider_name
+          in: query
+          schema:
+            type: string
+        - name: normalize_to
+          in: query
+          schema:
+            $ref: "#/components/schemas/ErrorCode"
+        - name: enabled
+          in: query
+          schema:
+            type: boolean
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        "200":
+          description: 成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        required:
+                          - items
+                          - page
+                          - limit
+                          - total
+                        properties:
+                          items:
+                            type: array
+                            items:
+                              $ref: "#/components/schemas/ProviderErrorRule"
+                          page:
+                            type: integer
+                          limit:
+                            type: integer
+                          total:
+                            type: integer
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
+        "400":
+          description: 参数无效
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "401":
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "403":
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+  /api/v1/admin/rules/provider/error/codes:
+    get:
+      operationId: adminProviderErrorCodes
+      tags:
+        - providererror
+      summary: 获取可选标准错误码列表
+      description: 返回所有可选的标准平台错误码及其元数据，供前端创建/编辑供应商错误规则时选择 normalize_to。
+      security:
+        - adminBearerAuth: []
+      responses:
+        "200":
+          description: 成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        required:
+                          - items
+                          - page
+                          - limit
+                          - total
+                        properties:
+                          items:
+                            type: array
+                            items:
+                              $ref: "#/components/schemas/ProviderErrorCode"
+                          page:
+                            type: integer
+                          limit:
+                            type: integer
+                          total:
+                            type: integer
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
+        "401":
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "403":
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+  /api/v1/admin/rules/provider/error/create:
+    post:
+      operationId: adminProviderErrorRuleCreate
+      tags:
+        - providererror
+      summary: 创建供应商错误规则
+      security:
+        - adminBearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateProviderErrorRuleRequest"
+      responses:
+        "201":
+          description: 创建成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/ProviderErrorRule"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
+        "400":
+          description: 参数无效
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "401":
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "403":
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+  /api/v1/admin/rules/provider/error/update:
+    post:
+      operationId: adminProviderErrorRuleUpdate
+      tags:
+        - providererror
+      summary: 更新供应商错误规则
+      security:
+        - adminBearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateProviderErrorRuleRequest"
+      responses:
+        "200":
+          description: 更新成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/ProviderErrorRule"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
+        "400":
+          description: 参数无效
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "401":
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "403":
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "404":
+          description: 规则不存在
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+  /api/v1/admin/rules/provider/error/toggle:
+    post:
+      operationId: adminProviderErrorRuleToggle
+      tags:
+        - providererror
+      summary: 切换供应商错误规则启用/禁用
+      security:
+        - adminBearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ToggleProviderErrorRuleRequest"
+      responses:
+        "200":
+          description: 切换成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/ProviderErrorRule"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
+        "400":
+          description: 参数无效
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "401":
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "403":
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "404":
+          description: 规则不存在
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+  /api/v1/admin/rules/provider/error/delete:
+    post:
+      operationId: adminProviderErrorRuleDelete
+      tags:
+        - providererror
+      summary: 删除供应商错误规则
+      security:
+        - adminBearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DeleteProviderErrorRuleRequest"
+      responses:
+        "200":
+          description: 删除成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
+        "400":
+          description: 参数无效
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "401":
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "403":
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "404":
+          description: 规则不存在
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+  /api/v1/admin/rules/provider/error/reload:
+    post:
+      operationId: adminProviderErrorRuleReload
+      tags:
+        - providererror
+      summary: 重新加载供应商错误规则
+      description: 递增系统配置中的 cache_version，触发执行器运行时配置热重载。
+      security:
+        - adminBearerAuth: []
+      responses:
+        "200":
+          description: 重载成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          provider_error_rules_reloaded:
+                            type: boolean
+                          cache_version:
+                            description: 更新后的 cache_version 值
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -1645,6 +2322,9 @@ paths:
                             type: integer
                           total:
                             type: integer
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -1683,6 +2363,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/PriceMultiplierRule"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -1727,6 +2410,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/PriceMultiplierRule"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -1766,6 +2452,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ApiResponse"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -1804,6 +2493,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/PriceMultiplierRule"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -1892,6 +2584,9 @@ paths:
                             type: integer
                           total:
                             type: integer
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -1930,6 +2625,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/RedeemCodeCreateResponse"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -1974,6 +2672,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/RedeemCode"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -2013,6 +2714,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ApiResponse"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -2081,6 +2785,9 @@ paths:
                             type: integer
                           total:
                             type: integer
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -2113,6 +2820,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/RedeemCode"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -2222,13 +2932,16 @@ paths:
                           items:
                             type: array
                             items:
-                              $ref: "#/components/schemas/RequestLogResponse"
+                              $ref: "#/components/schemas/RequestLogListItem"
                           page:
                             type: integer
                           limit:
                             type: integer
                           total:
                             type: integer
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -2267,6 +2980,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/RequestLogResponse"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -2313,6 +3029,9 @@ paths:
                         type: array
                         items:
                           $ref: "#/components/schemas/RequestAttemptResponse"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -2357,6 +3076,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/RequestTraceResponse"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -2405,6 +3127,9 @@ paths:
                             type: integer
                           total:
                             type: integer
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -2437,6 +3162,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/RouteGroup"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -2469,6 +3197,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/RouteGroup"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -2513,6 +3244,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/RouteGroup"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -2556,6 +3290,9 @@ paths:
                   - type: object
                     properties:
                       data: {}
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -2600,6 +3337,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/RouteGroup"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -2630,11 +3370,45 @@ paths:
       tags:
         - catalog
       summary: 获取模型路由分组绑定列表
+      description: |
+        返回 upstream model mapping 与 route group 的绑定分页列表。客户端可按 upstream mapping 或 route group 过滤；没有绑定或没有匹配项时必须返回 `items: []`、`total: 0`，不得以 500 表示空结果。
+
+        参数无效（例如分页参数越界、route group 标识格式非法）时返回结构化 `400` JSON error envelope；未授权/无权限分别返回 `401`/`403` JSON error envelope。服务端内部异常才使用 5xx。
       security:
         - bearerAuth: []
+      parameters:
+        - name: upstream_model_mapping_id
+          in: query
+          schema:
+            type: string
+          description: 按 upstream model mapping ID 过滤绑定。
+        - name: route_group_id
+          in: query
+          schema:
+            type: string
+          description: 按 route group ID 过滤绑定。
+        - name: route_group_name
+          in: query
+          schema:
+            type: string
+            pattern: ^[a-z0-9_-]+$
+          description: 按 route group 名称过滤；只允许 lowercase 字母、数字、下划线和连字符。
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
       responses:
         "200":
-          description: 成功
+          description: 成功；无绑定或无匹配项时返回空分页结果而非错误。
           content:
             application/json:
               schema:
@@ -2656,10 +3430,22 @@ paths:
                               $ref: "#/components/schemas/UpstreamRouteGroupMembership"
                           page:
                             type: integer
+                            minimum: 1
                           limit:
                             type: integer
+                            minimum: 1
                           total:
                             type: integer
+                            minimum: 0
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
+        "400":
+          description: 参数无效
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
         "401":
           description: 未授权
           content:
@@ -2692,6 +3478,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/UpstreamRouteGroupMembership"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -2736,6 +3525,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/UpstreamRouteGroupMembership"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -2766,6 +3558,10 @@ paths:
       tags:
         - admin
       summary: 获取上游密钥列表
+      description: |
+        返回上游密钥分页列表。客户端搜索/筛选时应重新请求本接口并携带当前 `query`、过滤条件、`page`、`limit`；契约不限定 UI 触发方式（实时输入、回车或点击筛选均可），但列表展示和分页必须以服务端返回为准。
+
+        `total` 表示应用 `query`、`provider_id`、`status`、`quota_type`、`expiring` 后的总数；无匹配结果时返回 `items: []`、`total: 0`。
       security:
         - adminBearerAuth: []
       parameters:
@@ -2773,7 +3569,8 @@ paths:
           in: query
           schema:
             type: string
-            description: 搜索名称 / ID
+            description: |
+              搜索关键字。服务端至少应匹配 `id`、`name`、`provider_name`、`notes`。空字符串或省略表示不按关键字过滤。
         - name: provider_id
           in: query
           schema:
@@ -2825,13 +3622,16 @@ paths:
                           items:
                             type: array
                             items:
-                              $ref: "#/components/schemas/UpstreamKey"
+                              $ref: "#/components/schemas/UpstreamKeyListItem"
                           page:
                             type: integer
                           limit:
                             type: integer
                           total:
                             type: integer
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -2870,6 +3670,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/UpstreamKey"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -2914,6 +3717,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/UpstreamKeyUsage"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -2958,6 +3764,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/UpstreamKey"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -3002,6 +3811,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/UpstreamKey"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -3047,6 +3859,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ApiResponse"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -3091,6 +3906,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/UpstreamKey"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -3120,7 +3938,14 @@ paths:
       parameters:
         - name: upstream_key_id
           in: query
-          required: true
+          required: false
+          description: 上游密钥 ID；不传时不过滤上游密钥。
+          schema:
+            type: string
+        - name: model_id
+          in: query
+          required: false
+          description: 模型 ID；不传时不过滤模型。upstream_key_id 和 model_id 都不传时返回全部非 deleted 映射。
           schema:
             type: string
         - name: page
@@ -3164,6 +3989,9 @@ paths:
                             type: integer
                           total:
                             type: integer
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -3202,6 +4030,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/UpstreamModelMapping"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -3222,6 +4053,72 @@ paths:
                 $ref: "#/components/schemas/ApiErrorResponse"
         "409":
           description: 映射已存在
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiErrorResponse"
+                  - type: object
+                    properties:
+                      error_code:
+                        type: string
+                        enum:
+                          - CONFLICT
+  /api/v1/admin/models/routes/batch/create:
+    post:
+      operationId: adminUpstreamKeyModelBatchCreate
+      tags:
+        - admin
+      summary: 批量创建上游密钥模型映射
+      security:
+        - adminBearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BatchCreateUpstreamModelMappingsRequest"
+      responses:
+        "200":
+          description: 批量处理完成
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/BatchCreateUpstreamModelMappingsResponse"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
+        "400":
+          description: 参数无效
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "401":
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "403":
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "404":
+          description: 模型、上游密钥或路由组不存在
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "409":
+          description: conflict_strategy 为 fail 且存在冲突
           content:
             application/json:
               schema:
@@ -3259,6 +4156,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/UpstreamModelMapping"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -3304,6 +4204,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ApiResponse"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -3348,6 +4251,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/UpstreamModelMapping"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -3395,13 +4301,16 @@ paths:
                           items:
                             type: array
                             items:
-                              $ref: "#/components/schemas/UpstreamKey"
+                              $ref: "#/components/schemas/UpstreamKeyListItem"
                           page:
                             type: integer
                           limit:
                             type: integer
                           total:
                             type: integer
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -3447,6 +4356,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/AdminUsageOverview"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -3538,6 +4450,9 @@ paths:
                             type: integer
                           total:
                             type: integer
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -3579,6 +4494,9 @@ paths:
                         properties:
                           user:
                             $ref: "#/components/schemas/UserResponse"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -3626,6 +4544,9 @@ paths:
                         properties:
                           user:
                             $ref: "#/components/schemas/UserResponse"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -3679,6 +4600,9 @@ paths:
                         properties:
                           user:
                             $ref: "#/components/schemas/UserResponse"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -3745,13 +4669,16 @@ paths:
                           items:
                             type: array
                             items:
-                              $ref: "#/components/schemas/UsageLedgerResponse"
+                              $ref: "#/components/schemas/UsageLedgerListItem"
                           page:
                             type: integer
                           limit:
                             type: integer
                           total:
                             type: integer
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -3823,13 +4750,16 @@ paths:
                           items:
                             type: array
                             items:
-                              $ref: "#/components/schemas/RequestLogResponse"
+                              $ref: "#/components/schemas/RequestLogListItem"
                           page:
                             type: integer
                           limit:
                             type: integer
                           total:
                             type: integer
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -3877,6 +4807,9 @@ paths:
                         properties:
                           user:
                             $ref: "#/components/schemas/UserResponse"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -3930,6 +4863,9 @@ paths:
                         properties:
                           user:
                             $ref: "#/components/schemas/UserResponse"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -3983,6 +4919,9 @@ paths:
                         properties:
                           user:
                             $ref: "#/components/schemas/UserResponse"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -4033,6 +4972,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/UsageLedgerResponse"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -4077,6 +5019,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/UserQuota"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -4109,6 +5054,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/UserPlan"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -4152,6 +5100,9 @@ paths:
                   - type: object
                     properties:
                       data: {}
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -4196,6 +5147,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/UserPlan"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -4239,6 +5193,9 @@ paths:
                   - type: object
                     properties:
                       data: {}
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -4283,6 +5240,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/UserPlan"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -4326,6 +5286,9 @@ paths:
                   - type: object
                     properties:
                       data: {}
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -4370,6 +5333,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/UserPlan"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -4413,6 +5379,9 @@ paths:
                   - type: object
                     properties:
                       data: {}
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -4457,6 +5426,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/UserPlan"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -4500,6 +5472,9 @@ paths:
                   - type: object
                     properties:
                       data: {}
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -4544,6 +5519,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/UserPlan"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -4587,6 +5565,9 @@ paths:
                   - type: object
                     properties:
                       data: {}
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -4630,6 +5611,9 @@ paths:
                   - type: object
                     properties:
                       data: {}
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -4674,6 +5658,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/UserRiskResetResponse"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -4718,6 +5705,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/RouteWorkbenchData"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -4750,6 +5740,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/PlanWorkbenchData"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -4768,8 +5761,31 @@ paths:
       tags:
         - admin
       summary: 获取用户工作台
+      description: 返回用户工作台聚合数据。支持按 query 搜索邮箱或用户 ID；列表字段始终返回 PaginatedData envelope，空态以 data.users.items.length === 0 判断。
       security:
         - adminBearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: query
+          in: query
+          required: false
+          description: 搜索关键词，匹配用户邮箱或用户 ID；无结果时返回 users.items 为空数组且保留分页 envelope。
+          schema:
+            type: string
       responses:
         "200":
           description: 成功
@@ -4782,6 +5798,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/UserWorkbenchData"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -4800,8 +5819,25 @@ paths:
       tags:
         - admin
       summary: 获取兑换码工作台
+      description: 返回兑换码工作台聚合数据。兑换码列表默认不返回明文 code，可返回脱敏值或 null；列表字段始终返回 PaginatedData envelope，空态以 data.redemption_codes.items.length === 0 判断。
       security:
         - adminBearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
       responses:
         "200":
           description: 成功
@@ -4814,6 +5850,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/RedeemCodeWorkbenchData"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -4846,6 +5885,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/RateRuleWorkbenchData"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -4882,6 +5924,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/AuthResponse"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -4985,6 +6030,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/AuthResponse"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 凭据无效
           content:
@@ -5013,6 +6061,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ApiResponse"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 错误
           content:
@@ -5043,6 +6094,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/AuthResponse"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: Refresh token 无效
           content:
@@ -5070,6 +6124,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ApiResponse"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 旧密码错误
           content:
@@ -5122,6 +6179,54 @@ paths:
                 $ref: "#/components/schemas/ApiResponse"
         "400":
           description: 错误
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+  /api/v1/user/test-code:
+    get:
+      operationId: userTestCode
+      tags:
+        - auth
+      summary: 获取测试验证码（仅开发环境）
+      description: |
+        为指定邮箱生成并返回验证码。仅在未配置 Captcha（开发环境）时可用；
+        生产环境下返回 `403 FORBIDDEN`。
+      x-internal: true
+      security: []
+      parameters:
+        - name: email
+          in: query
+          required: true
+          schema:
+            type: string
+            format: email
+      responses:
+        "200":
+          description: 成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          email:
+                            type: string
+                            format: email
+                          sent:
+                            type: boolean
+        "400":
+          description: 参数无效
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "403":
+          description: 生产环境不可用
           content:
             application/json:
               schema:
@@ -5234,7 +6339,8 @@ paths:
       tags:
         - public
       summary: 获取公开套餐列表
-      description: 返回所有状态为 active 的套餐，无需认证
+      description: |
+        返回所有状态为 active 的公开套餐目录，无需认证。匿名客户端和登录页/注册页应使用本接口；需要用户特定 eligibility、订阅状态或个性化价格时使用 `GET /api/v1/user/plans/list` 并提供 Authorization。
       parameters:
         - name: plan_type
           in: query
@@ -5291,6 +6397,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/UserAutoModelConfig"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -5323,6 +6432,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/UserAutoModelConfig"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -5367,6 +6479,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/BillingConfig"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -5398,7 +6513,10 @@ paths:
                   - type: object
                     properties:
                       data:
-                        $ref: "#/components/schemas/APIKeyResponse"
+                        $ref: "#/components/schemas/APIKeySecretResponse"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -5459,6 +6577,9 @@ paths:
                             type: integer
                           total:
                             type: integer
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -5490,7 +6611,10 @@ paths:
                   - type: object
                     properties:
                       data:
-                        $ref: "#/components/schemas/BotKeyResponse"
+                        $ref: "#/components/schemas/BotKeySecretResponse"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -5535,6 +6659,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/BotKeyResponse"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -5578,6 +6705,9 @@ paths:
                   - type: object
                     properties:
                       data: {}
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 参数无效
           content:
@@ -5625,6 +6755,9 @@ paths:
                         properties:
                           user:
                             $ref: "#/components/schemas/UserResponse"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 错误
           content:
@@ -5637,6 +6770,10 @@ paths:
       tags:
         - user
       summary: 获取用户仪表盘数据
+      description: |
+        返回用户面板健康统计。`today_*` 字段统计当前业务日窗口（由服务端配置的业务时区决定）的已完成请求/用量；`total_*` 字段统计账号累计用量。
+
+        同屏趋势图不应从本接口伪造采样点；趋势数据应来自 `GET /api/v1/user/requests/list` 或后续专用趋势接口。若趋势窗口为空但 `today_requests > 0`，健康卡片仍展示 dashboard 统计，趋势图展示空态或 0 采样点。
       security:
         - bearerAuth: []
       responses:
@@ -5651,6 +6788,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/UserDashboard"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 错误
           content:
@@ -5693,6 +6833,9 @@ paths:
                             type: integer
                           total:
                             type: integer
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 错误
           content:
@@ -5724,7 +6867,10 @@ paths:
                   - type: object
                     properties:
                       data:
-                        $ref: "#/components/schemas/APIKeyResponse"
+                        $ref: "#/components/schemas/APIKeySecretResponse"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 错误
           content:
@@ -5757,6 +6903,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/APIKeyResponse"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 错误
           content:
@@ -5784,6 +6933,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ApiResponse"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 错误
           content:
@@ -5816,6 +6968,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/APIKeyResponse"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 错误
           content:
@@ -5828,6 +6983,10 @@ paths:
       tags:
         - user
       summary: 获取用户配额
+      description: |
+        返回用户当前可用权益。套餐权益与充值 Token 余额是两个独立权益来源：`plan_tokens` 表示套餐提供的 token 额度，`recharged_tokens` 表示充值或兑换获得的 token 额度，`token_limit` 为两类 token 权益合计上限，`remaining_tokens` 为扣除已用和预留后的当前可用 token。
+
+        当套餐名称为空但 `recharged_tokens` 或 `remaining_tokens` 大于 0 时，前端不应展示为“无可用权益”，应展示充值 Token 余额；请求次数和图片额度同理按各自 remaining 字段判断可用性。
       security:
         - bearerAuth: []
       responses:
@@ -5842,6 +7001,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/UserQuota"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 错误
           content:
@@ -5896,13 +7058,16 @@ paths:
                           items:
                             type: array
                             items:
-                              $ref: "#/components/schemas/UsageLedgerResponse"
+                              $ref: "#/components/schemas/UsageLedgerListItem"
                           page:
                             type: integer
                           limit:
                             type: integer
                           total:
                             type: integer
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 错误
           content:
@@ -5915,6 +7080,8 @@ paths:
       tags:
         - user
       summary: 获取用户可用套餐列表
+      description: |
+        返回登录用户上下文下可购买/可见的套餐列表，必须提供 `Authorization: Bearer <token>`。该接口可在未来包含用户特定资格、价格或订阅状态；未登录客户端应使用 `/api/v1/public/plans/list`。
       security:
         - bearerAuth: []
       parameters:
@@ -5950,8 +7117,17 @@ paths:
                             type: integer
                           total:
                             type: integer
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 错误
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "401":
+          description: 未授权；用户上下文套餐列表必须登录访问，匿名客户端请使用 /api/v1/public/plans/list
           content:
             application/json:
               schema:
@@ -5992,6 +7168,9 @@ paths:
                             type: integer
                           total:
                             type: integer
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 错误
           content:
@@ -6004,6 +7183,10 @@ paths:
       tags:
         - user
       summary: 获取用户请求日志列表
+      description: |
+        返回用户请求日志分页列表，可作为请求趋势图的数据来源。趋势图应按服务端返回的请求日志时间窗口聚合；当当前趋势窗口没有采样点时返回 `items: []`、`total: 0`，前端可展示空图或 0 采样点，但不应 fallback 到 `dashboard.today_requests` 生成虚假趋势点。
+
+        `total` 表示应用 `query` 过滤后的总数（分页前总数）。
       security:
         - bearerAuth: []
       parameters:
@@ -6046,13 +7229,16 @@ paths:
                           items:
                             type: array
                             items:
-                              $ref: "#/components/schemas/RequestLogResponse"
+                              $ref: "#/components/schemas/RequestLogListItem"
                           page:
                             type: integer
                           limit:
                             type: integer
                           total:
                             type: integer
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 错误
           content:
@@ -6085,6 +7271,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/RequestTraceResponse"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 错误
           content:
@@ -6117,6 +7306,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/UserResponse"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 错误
           content:
@@ -6159,6 +7351,9 @@ paths:
                             type: integer
                           total:
                             type: integer
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "401":
           description: 未授权
           content:
@@ -6197,6 +7392,9 @@ paths:
                     properties:
                       data:
                         $ref: "#/components/schemas/RedeemCodeRedemptionResponse"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 兑换码无效
           content:
@@ -6264,6 +7462,9 @@ paths:
                             type: integer
                           total:
                             type: integer
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
         "400":
           description: 错误
           content:
@@ -6688,6 +7889,8 @@ components:
           description: 错误码（仅错误响应）
     ApiErrorResponse:
       type: object
+      description: |
+        `/api/v1/*` Management API 的统一错误 envelope。业务错误、认证/授权错误以及 API route 级 404、405、OPTIONS 预检失败都应使用 `application/json` 返回本结构；实现层不应让 API route 返回 HTML 或 `text/plain` 的框架默认错误。
       required:
         - code
         - message
@@ -6703,6 +7906,11 @@ components:
         error_code:
           type: string
           description: 错误码
+          examples:
+            - UNAUTHORIZED
+            - NOT_FOUND
+            - METHOD_NOT_ALLOWED
+            - OPTIONS_NOT_ALLOWED
     PaginatedData:
       type: object
       required:
@@ -6747,6 +7955,12 @@ components:
           maximum: 100
           default: 20
           description: 每页条数
+    ModelBillingModeEnum:
+      type: string
+      enum:
+        - billable
+        - free_global
+      description: 模型计费模式。billable 表示正常计费，free_global 表示全局免费。
     CatalogModel:
       allOf:
         - $ref: "#/components/schemas/CatalogStats"
@@ -6766,6 +7980,18 @@ components:
               type: string
             description:
               type: string
+            billing_mode:
+              allOf:
+                - $ref: "#/components/schemas/ModelBillingModeEnum"
+              default: billable
+              description: 模型计费模式。缺省时按 billable 处理。
+            mapping_count:
+              type: integer
+              minimum: 0
+              description: 当前模型关联的活跃 upstream mapping 数量；为 0 时模型即使 status 为 active 也不可调用。
+            available:
+              type: boolean
+              description: 模型当前是否可调用；仅当模型启用且至少存在一个活跃可用 upstream mapping 时为 true。
             status:
               $ref: "#/components/schemas/StatusEnum"
             created_at:
@@ -6783,6 +8009,11 @@ components:
           type: string
         description:
           type: string
+        billing_mode:
+          allOf:
+            - $ref: "#/components/schemas/ModelBillingModeEnum"
+          default: billable
+          description: 模型计费模式。未传时按 billable 创建。
     UpdateModelRequest:
       type: object
       required:
@@ -6796,6 +8027,9 @@ components:
           type: string
         description:
           type: string
+        billing_mode:
+          $ref: "#/components/schemas/ModelBillingModeEnum"
+          description: 模型计费模式。未传时不修改现有值。
     DeleteModelRequest:
       type: object
       required:
@@ -6810,6 +8044,95 @@ components:
       properties:
         id:
           type: string
+    BatchCreateModelsRequest:
+      type: object
+      required:
+        - models
+      properties:
+        models:
+          type: array
+          minItems: 1
+          maxItems: 100
+          items:
+            type: object
+            required:
+              - name
+            properties:
+              name:
+                type: string
+              display_name:
+                type: string
+              description:
+                type: string
+    BatchCreateModelsResult:
+      type: object
+      required:
+        - name
+        - success
+      properties:
+        name:
+          type: string
+        success:
+          type: boolean
+        model:
+          $ref: "#/components/schemas/CatalogModel"
+        error:
+          type: string
+          description: 失败原因（如 already_exists、name is required）。
+    BatchCreateModelsResponse:
+      type: object
+      required:
+        - created
+        - failed
+        - results
+      properties:
+        created:
+          type: integer
+        failed:
+          type: integer
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/BatchCreateModelsResult"
+    BatchDeleteModelsRequest:
+      type: object
+      required:
+        - ids
+      properties:
+        ids:
+          type: array
+          minItems: 1
+          maxItems: 100
+          items:
+            type: string
+    BatchDeleteModelsResult:
+      type: object
+      required:
+        - id
+        - success
+      properties:
+        id:
+          type: string
+        success:
+          type: boolean
+        error:
+          type: string
+          description: 失败原因（如 not_found、id is required）。
+    BatchDeleteModelsResponse:
+      type: object
+      required:
+        - deleted
+        - failed
+        - results
+      properties:
+        deleted:
+          type: integer
+        failed:
+          type: integer
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/BatchDeleteModelsResult"
     RouteGroup:
       type: object
       required:
@@ -6823,6 +8146,8 @@ components:
           type: string
         name:
           type: string
+          pattern: ^[a-z0-9_-]+$
+          description: Route Group 名称，只允许 lowercase 字母、数字、下划线和连字符；uppercase 或其他非法字符应返回结构化 400 validation error。
         display_name:
           type: string
         description:
@@ -6896,6 +8221,8 @@ components:
       properties:
         name:
           type: string
+          pattern: ^[a-z0-9_-]+$
+          description: Route Group 名称，只允许 lowercase 字母、数字、下划线和连字符；uppercase 或其他非法字符应返回结构化 400 validation error。
         display_name:
           type: string
         description:
@@ -6909,6 +8236,8 @@ components:
           type: string
         name:
           type: string
+          pattern: ^[a-z0-9_-]+$
+          description: Route Group 名称，只允许 lowercase 字母、数字、下划线和连字符；未传时不修改现有值。
         display_name:
           type: string
         description:
@@ -7061,6 +8390,13 @@ components:
         price:
           type: number
           format: double
+        duration_days:
+          type: integer
+          minimum: 1
+          description: Plan-level 默认有效期天数；创建/更新传入后，详情、列表和 workbench plans 应返回同一字段。
+        permanent:
+          type: boolean
+          description: 是否为永久套餐。为 true 时表示无 plan-level 过期策略；省略时使用服务端默认策略。
         status:
           $ref: "#/components/schemas/StatusEnum"
         created_at:
@@ -7117,6 +8453,13 @@ components:
         price:
           type: number
           format: double
+        duration_days:
+          type: integer
+          minimum: 1
+          description: 可选的 plan-level 默认有效期天数；省略时使用服务端默认策略。
+        permanent:
+          type: boolean
+          description: 可选；为 true 时创建永久套餐。
     UpdatePlanRequest:
       type: object
       required:
@@ -7138,6 +8481,13 @@ components:
         price:
           type: number
           format: double
+        duration_days:
+          type: integer
+          minimum: 1
+          description: 可选的 plan-level 默认有效期天数；未传时不修改现有值。
+        permanent:
+          type: boolean
+          description: 可选；为 true 时改为永久套餐，未传时不修改现有值。
     DeletePlanRequest:
       type: object
       required:
@@ -7166,6 +8516,7 @@ components:
           type: string
         duration_days:
           type: integer
+          minimum: 1
         permanent:
           type: boolean
     SetTokenPlanRequest:
@@ -7182,6 +8533,7 @@ components:
           type: string
         duration_days:
           type: integer
+          minimum: 1
         permanent:
           type: boolean
     SetImagePlanRequest:
@@ -7198,6 +8550,7 @@ components:
           type: string
         duration_days:
           type: integer
+          minimum: 1
         permanent:
           type: boolean
     RenewUserPlanRequest:
@@ -7214,6 +8567,7 @@ components:
           type: string
         duration_days:
           type: integer
+          minimum: 1
         permanent:
           type: boolean
     CancelUserPlanRequest:
@@ -7305,6 +8659,9 @@ components:
               type: string
             base_url:
               type: string
+              format: uri
+              pattern: ^https?://.+$
+              description: Provider base URL，必须是合法的 http 或 https URL；无效值应返回结构化 400 validation error。
             status:
               $ref: "#/components/schemas/StatusEnum"
             created_at:
@@ -7352,6 +8709,44 @@ components:
           $ref: "#/components/schemas/Timestamp"
         updated_at:
           $ref: "#/components/schemas/Timestamp"
+    ProviderEndpointListItem:
+      type: object
+      description: 列表安全版供应商端点；不返回原始 headers/auth 构造字段，仅提供是否配置自定义请求头的布尔标记。
+      required:
+        - id
+        - provider_id
+        - protocol
+        - path
+        - has_custom_headers
+        - status
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+        provider_id:
+          type: string
+        protocol:
+          $ref: "#/components/schemas/ProtocolEnum"
+        kind:
+          $ref: "#/components/schemas/KindEnum"
+        adapter:
+          type: string
+        path:
+          type: string
+        method:
+          type: string
+        has_custom_headers:
+          type: boolean
+          description: 是否配置了自定义请求头；列表响应不得返回原始 headers 内容。
+        request_mode:
+          $ref: "#/components/schemas/RequestModeEnum"
+        status:
+          $ref: "#/components/schemas/StatusEnum"
+        created_at:
+          $ref: "#/components/schemas/Timestamp"
+        updated_at:
+          $ref: "#/components/schemas/Timestamp"
     CreateProviderRequest:
       type: object
       required:
@@ -7364,6 +8759,9 @@ components:
           type: string
         base_url:
           type: string
+          format: uri
+          pattern: ^https?://.+$
+          description: Provider base URL，必须是合法的 http 或 https URL；无效值应返回结构化 400 validation error。
     UpdateProviderRequest:
       type: object
       required:
@@ -7377,6 +8775,9 @@ components:
           type: string
         base_url:
           type: string
+          format: uri
+          pattern: ^https?://.+$
+          description: Provider base URL，必须是合法的 http 或 https URL；未传时不修改现有值，无效值应返回结构化 400 validation error。
     DeleteProviderRequest:
       type: object
       required:
@@ -7450,7 +8851,189 @@ components:
       properties:
         id:
           type: string
+    UpstreamProviderModel:
+      type: object
+      description: |
+        从上游供应商 models API 探测到的可用模型。该对象用于后台在指定 `provider_id` 和 `upstream_key_id` 后预览上游模型，不代表已写入本地模型目录。
+      required:
+        - id
+      properties:
+        id:
+          type: string
+          description: 上游模型标识，例如 `gpt-4o-mini`。
+        owned_by:
+          type: string
+          description: 上游返回的模型归属方；上游未提供时可省略。
     ToggleProviderEndpointRequest:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: string
+    ProviderErrorRule:
+      type: object
+      description: 将供应商特定错误信号映射到标准平台错误码的规则。
+      required:
+        - id
+        - provider_name
+        - name
+        - priority
+        - enabled
+        - match_status_in
+        - normalize_to
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+        provider_name:
+          type: string
+          description: 供应商名称。
+        name:
+          type: string
+          description: 规则名称（同一供应商下唯一）。
+        priority:
+          type: integer
+          description: 优先级，数值越小优先级越高。
+        enabled:
+          type: boolean
+          description: 是否启用。
+        match_status:
+          type: integer
+          minimum: 100
+          maximum: 599
+          description: 匹配的 HTTP 状态码。为 0 时不参与匹配。
+        match_status_in:
+          type: array
+          description: 匹配的多个 HTTP 状态码（去重排序后）。
+          items:
+            type: integer
+            minimum: 100
+            maximum: 599
+        match_body_contains:
+          type: string
+          description: 响应体包含的子串（为空时不参与匹配）。
+        match_header_name:
+          type: string
+          description: 匹配的响应头名称。使用 header 系列匹配器时必填。
+        match_header_equals:
+          type: string
+          description: 响应头精确匹配值。
+        match_header_contains:
+          type: string
+          description: 响应头包含的子串。
+        match_header_exists:
+          type: boolean
+          description: 响应头是否存在。
+        normalize_to:
+          $ref: "#/components/schemas/ErrorCode"
+          description: 映射到的标准平台错误码。
+        created_at:
+          $ref: "#/components/schemas/Timestamp"
+        updated_at:
+          $ref: "#/components/schemas/Timestamp"
+    ProviderErrorCode:
+      type: object
+      description: 可选标准错误码元数据。
+      required:
+        - code
+        - message
+      properties:
+        code:
+          $ref: "#/components/schemas/ErrorCode"
+        message:
+          type: string
+          description: 面向用户的错误描述。
+        category:
+          $ref: "#/components/schemas/ErrorCategory"
+    CreateProviderErrorRuleRequest:
+      type: object
+      description: 创建供应商错误规则。至少需要一个 matcher 字段（match_status / match_status_in / match_body_contains / match_header_name）。
+      required:
+        - provider_name
+        - name
+        - normalize_to
+      properties:
+        provider_name:
+          type: string
+        name:
+          type: string
+        priority:
+          type: integer
+        enabled:
+          type: boolean
+        match_status:
+          type: integer
+          minimum: 100
+          maximum: 599
+        match_status_in:
+          type: array
+          items:
+            type: integer
+            minimum: 100
+            maximum: 599
+        match_body_contains:
+          type: string
+        match_header_name:
+          type: string
+        match_header_equals:
+          type: string
+        match_header_contains:
+          type: string
+        match_header_exists:
+          type: boolean
+        normalize_to:
+          $ref: "#/components/schemas/ErrorCode"
+    UpdateProviderErrorRuleRequest:
+      type: object
+      description: 更新供应商错误规则。id 必填，其余字段为可选更新项。
+      required:
+        - id
+      properties:
+        id:
+          type: string
+        provider_name:
+          type: string
+        name:
+          type: string
+        priority:
+          type: integer
+        enabled:
+          type: boolean
+        match_status:
+          type: integer
+          minimum: 100
+          maximum: 599
+        match_status_in:
+          type: array
+          items:
+            type: integer
+            minimum: 100
+            maximum: 599
+        match_body_contains:
+          type: string
+        match_header_name:
+          type: string
+        match_header_equals:
+          type: string
+        match_header_contains:
+          type: string
+        match_header_exists:
+          type: boolean
+        normalize_to:
+          $ref: "#/components/schemas/ErrorCode"
+    ToggleProviderErrorRuleRequest:
+      type: object
+      required:
+        - id
+        - enabled
+      properties:
+        id:
+          type: string
+        enabled:
+          type: boolean
+    DeleteProviderErrorRuleRequest:
       type: object
       required:
         - id
@@ -7484,8 +9067,13 @@ components:
           type: string
         protocol:
           type: string
+        global:
+          type: boolean
+          description: 创建全局规则时必须显式传 `true`，且不应同时传 provider_id/key_id/upstream_key_id/model_id/protocol 等 scope 字段；省略或为 false 时至少需要一个 scope 字段。
         timezone:
           type: string
+          pattern: ^[A-Za-z_]+(?:/[A-Za-z0-9_+.-]+)+$|^UTC$
+          description: IANA timezone 名称，例如 `UTC`、`Asia/Shanghai`。无效 timezone 应返回结构化 400 validation error。
         days_of_week:
           type: array
           items:
@@ -7528,8 +9116,13 @@ components:
           type: string
         protocol:
           type: string
+        global:
+          type: boolean
+          description: 创建全局规则时必须显式传 `true`，且不应同时传 provider_id/key_id/upstream_key_id/model_id/protocol 等 scope 字段；省略或为 false 时至少需要一个 scope 字段。
         timezone:
           type: string
+          pattern: ^[A-Za-z_]+(?:/[A-Za-z0-9_+.-]+)+$|^UTC$
+          description: IANA timezone 名称，例如 `UTC`、`Asia/Shanghai`。无效 timezone 应返回结构化 400 validation error。
         days_of_week:
           type: array
           items:
@@ -7641,9 +9234,15 @@ components:
         status:
           $ref: "#/components/schemas/StatusEnum"
         starts_at:
-          type: string
+          type:
+            - string
+            - "null"
+          description: 生效时间；未限制开始时间时为 null。
         expires_at:
-          type: string
+          type:
+            - string
+            - "null"
+          description: 过期时间；永不过期或未设置时为 null。
         override_mode:
           type: string
           enum:
@@ -7657,6 +9256,7 @@ components:
           $ref: "#/components/schemas/Timestamp"
     RedeemCodeRewards:
       type: object
+      description: 兑换码奖励展示对象；没有奖励时返回空对象。
       properties:
         coding_tier_id:
           type: string
@@ -7763,9 +9363,15 @@ components:
             - replace
             - upgrade_only
         starts_at:
-          type: string
+          type:
+            - string
+            - "null"
+          description: 生效时间；未限制开始时间时为 null。
         expires_at:
-          type: string
+          type:
+            - string
+            - "null"
+          description: 过期时间；永不过期或未设置时为 null。
     ToggleRedeemCodeRequest:
       type: object
       required:
@@ -7787,8 +9393,33 @@ components:
       properties:
         code:
           type: string
+    RedeemCodeWorkbenchItem:
+      allOf:
+        - $ref: "#/components/schemas/RedeemCode"
+        - type: object
+          properties:
+            code:
+              type:
+                - string
+                - "null"
+              description: 列表展示用兑换码。默认不返回明文；可返回脱敏值或 null，明文仅在创建响应 RedeemCodeCreateResponse.code 中返回。
+            display_status:
+              type: string
+              enum:
+                - active
+                - disabled
+                - expired
+                - exhausted
+              description: 前端列表展示状态；当 expires_at 已过期时展示 expired，当 redeemed_count >= max_redemptions 时展示 exhausted，否则使用 status。
+            conditions:
+              type: array
+              description: 展示用领取条件；无条件时返回空数组。
+              items:
+                type: object
+                additionalProperties: true
     RedeemCodeWorkbenchData:
       type: object
+      description: 兑换码工作台聚合数据；空态判断以 redemption_codes.items.length === 0 为准，total 仅用于分页展示。
       required:
         - redemption_codes
         - coding_plans
@@ -7803,7 +9434,25 @@ components:
                 items:
                   type: array
                   items:
-                    $ref: "#/components/schemas/RedeemCode"
+                    $ref: "#/components/schemas/RedeemCodeWorkbenchItem"
+                  examples:
+                    - - id: code_1
+                        name: Launch promo
+                        code: LAUN****2026
+                        token_amount: 1000
+                        max_redemptions: 100
+                        redeemed_count: 10
+                        status: active
+                        display_status: active
+                        override_mode: upgrade_only
+                        rewards:
+                          token_recharge: 1000
+                        conditions: []
+                        starts_at: null
+                        expires_at: "2026-12-31T23:59:59Z"
+                        created_at: "2026-06-12T00:00:00Z"
+                        updated_at: "2026-06-12T00:00:00Z"
+                    - []
         coding_plans:
           allOf:
             - $ref: "#/components/schemas/PaginatedData"
@@ -7854,6 +9503,9 @@ components:
           type: string
         user_api_key_id:
           type: string
+        user_api_key_name:
+          type: string
+          description: 关联用户 API Key 的可读名称，用于请求日志展示；不包含明文 key、hash、prefix/suffix 等敏感材料。
         provider_name:
           type: string
         model_name:
@@ -7914,6 +9566,92 @@ components:
           $ref: "#/components/schemas/Timestamp"
         completed_at:
           $ref: "#/components/schemas/Timestamp"
+    RequestLogListItem:
+      type: object
+      description: 列表安全版请求日志；不包含 request_body、上游响应体或内部错误细节。需要审计明细时应使用受控详情/追踪接口。
+      required:
+        - id
+        - stream
+        - is_stream
+        - success
+        - is_success
+        - price_multiplier
+        - created_at
+      properties:
+        id:
+          type: string
+        request_id:
+          type: string
+        trace_id:
+          type: string
+        user_id:
+          type: string
+        user_name:
+          type: string
+        user_api_key_id:
+          type: string
+        user_api_key_name:
+          type: string
+          description: 关联用户 API Key 的可读名称，用于列表安全展示；不包含明文 key、hash、prefix/suffix 等敏感材料。
+        provider_name:
+          type: string
+        model_name:
+          type: string
+        protocol:
+          type: string
+        stream:
+          type: boolean
+        is_stream:
+          type: boolean
+        billing_plan:
+          type: string
+        final_status_code:
+          type: integer
+        success:
+          type: boolean
+        is_success:
+          type: boolean
+        input_tokens:
+          type: integer
+        output_tokens:
+          type: integer
+        total_tokens:
+          type: integer
+        latency_ms:
+          type: integer
+        final_latency_ms:
+          type: integer
+        total_duration_ms:
+          type: integer
+        ttft_ms:
+          type: integer
+        kind:
+          type: string
+        price_multiplier:
+          type: number
+          format: double
+        price_multiplier_rule_id:
+          type: string
+        effective_input_tokens:
+          type: integer
+        effective_output_tokens:
+          type: integer
+        effective_total_tokens:
+          type: integer
+        tokens_per_second:
+          type: number
+          format: double
+        error_code:
+          type: string
+        error_message:
+          type: string
+          description: 面向用户/列表展示的脱敏错误摘要；不得包含内部堆栈、请求体或上游密钥材料。
+        usage_status:
+          type: string
+        created_at:
+          $ref: "#/components/schemas/Timestamp"
+        completed_at:
+          $ref: "#/components/schemas/Timestamp"
     RequestAttemptResponse:
       type: object
       required:
@@ -7950,12 +9688,47 @@ components:
           type: string
         created_at:
           $ref: "#/components/schemas/Timestamp"
+    RequestTraceEventResponse:
+      type: object
+      description: |
+        请求追踪时间线事件。admin 端返回完整调试字段（含 metadata）；
+        user 端仅返回当前用户相关事件，隐藏上游 key/provider/url 及内部 metadata 等敏感字段。
+      required:
+        - id
+        - created_at
+      properties:
+        id:
+          type: string
+        request_log_id:
+          type: string
+        request_id:
+          type: string
+        trace_id:
+          type: string
+        stage:
+          type: string
+          description: 事件阶段标识，如 upstream_call、retry、billing、stream_chunk 等。
+        message:
+          type: string
+          description: 面向展示的事件摘要。
+        error_code:
+          type: string
+        error_message:
+          type: string
+          description: 面向用户展示的脱敏错误摘要；不含内部堆栈或上游密钥材料。
+        metadata:
+          type: object
+          additionalProperties: true
+          description: 仅 admin trace 返回的内部调试元数据；user trace 不返回此字段。
+        created_at:
+          $ref: "#/components/schemas/Timestamp"
     RequestTraceResponse:
       type: object
       required:
         - query
         - logs
         - attempts
+        - events
       properties:
         query:
           type: string
@@ -7967,6 +9740,11 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/RequestAttemptResponse"
+        events:
+          type: array
+          description: 请求时间线事件列表，按 created_at 升序排列。admin 端含完整调试字段；user 端脱敏后返回。
+          items:
+            $ref: "#/components/schemas/RequestTraceEventResponse"
     SystemConfig:
       type: object
       required:
@@ -8135,7 +9913,6 @@ components:
             - id
             - provider_id
             - name
-            - encryption_version
             - max_concurrency
             - priority
             - quota_used
@@ -8155,6 +9932,7 @@ components:
               type: string
             encryption_version:
               type: integer
+              description: 密钥加密版本，仅用于兼容旧响应；新实现不应在列表/详情响应暴露加密元数据。
             max_concurrency:
               type: integer
             priority:
@@ -8164,12 +9942,74 @@ components:
             quota_total:
               type: integer
               format: int64
+              minimum: 0
+              description: 总配额，必须大于等于 0；不使用负数 sentinel 表示无限。
             quota_used:
               type: integer
               format: int64
             cost:
               type: number
               format: double
+              minimum: 0
+              description: 采购/成本金额，必须大于等于 0。
+            expires_at:
+              type: string
+            notes:
+              type: string
+            status:
+              $ref: "#/components/schemas/StatusEnum"
+            created_at:
+              $ref: "#/components/schemas/Timestamp"
+            updated_at:
+              $ref: "#/components/schemas/Timestamp"
+    UpstreamKeyListItem:
+      allOf:
+        - $ref: "#/components/schemas/CatalogStats"
+        - type: object
+          description: 列表安全版上游密钥；仅返回脱敏展示字段，不暴露 key_prefix、key_suffix 或 encryption_version。
+          required:
+            - id
+            - provider_id
+            - name
+            - display_key
+            - max_concurrency
+            - priority
+            - quota_used
+            - status
+            - created_at
+            - updated_at
+          properties:
+            id:
+              type: string
+            provider_id:
+              type: string
+            name:
+              type: string
+            display_key:
+              type: string
+              description: 脱敏展示密钥，例如 sk-****abcd。
+            masked_key:
+              type: string
+              description: 脱敏展示密钥；兼容需要 masked_key 命名的客户端。
+            max_concurrency:
+              type: integer
+            priority:
+              type: integer
+            quota_type:
+              $ref: "#/components/schemas/QuotaTypeEnum"
+            quota_total:
+              type: integer
+              format: int64
+              minimum: 0
+              description: 总配额，必须大于等于 0；不使用负数 sentinel 表示无限。
+            quota_used:
+              type: integer
+              format: int64
+            cost:
+              type: number
+              format: double
+              minimum: 0
+              description: 采购/成本金额，必须大于等于 0。
             expires_at:
               type: string
             notes:
@@ -8196,6 +10036,26 @@ components:
           type: string
         model_id:
           type: string
+        model_name:
+          type: string
+          description: 平台模型名称，用于管理端列表展示和搜索。
+        model_display_name:
+          type: string
+          description: 平台模型展示名称；前端可优先展示该字段，缺省时回退到 model_name 或 model_id。
+        upstream_key_name:
+          type: string
+          description: 上游 Key 名称，用于管理端列表展示。
+        provider_id:
+          type: string
+          description: 供应商 ID，用于筛选和排障。
+        provider_name:
+          type: string
+          description: 供应商名称，用于管理端列表展示。
+        route_groups:
+          type: array
+          description: 当前映射所属的活跃路由组，用于管理端列表稳定展示分组信息。
+          items:
+            $ref: "#/components/schemas/UpstreamRouteGroupMembership"
         provider_endpoint_id:
           type: string
         provider_protocol_id:
@@ -8261,9 +10121,13 @@ components:
         quota_total:
           type: integer
           format: int64
+          minimum: 0
+          description: 总配额，必须大于等于 0；负数应返回结构化 400 validation error。
         cost:
           type: number
           format: double
+          minimum: 0
+          description: 采购/成本金额，必须大于等于 0；负数应返回结构化 400 validation error。
         expires_at:
           type: string
         notes:
@@ -8289,9 +10153,13 @@ components:
         quota_total:
           type: integer
           format: int64
+          minimum: 0
+          description: 总配额，必须大于等于 0；负数应返回结构化 400 validation error。
         cost:
           type: number
           format: double
+          minimum: 0
+          description: 采购/成本金额，必须大于等于 0；负数应返回结构化 400 validation error。
         expires_at:
           type: string
         notes:
@@ -8332,6 +10200,91 @@ components:
           format: double
         max_tokens:
           type: integer
+    BatchCreateUpstreamModelMappingsRequest:
+      type: object
+      required:
+        - model_id
+        - upstream_key_ids
+      properties:
+        model_id:
+          type: string
+          description: 平台模型 ID，必须引用已有 CatalogModel；不要用模型名作为主身份。
+        upstream_key_ids:
+          type: array
+          minItems: 1
+          maxItems: 500
+          items:
+            type: string
+          description: 要批量绑定的上游 Key ID 列表。
+        provider_endpoint_id:
+          type: string
+          description: 可选；用于指定 provider endpoint/protocol。兼容现有单条创建接口字段。
+        upstream_model_name:
+          type: string
+          description: 上游真实模型 ID；为空时由后端按现有单条创建逻辑决定是否默认使用平台模型名。
+        input_price_per_token:
+          type: number
+          format: double
+        output_price_per_token:
+          type: number
+          format: double
+        max_tokens:
+          type: integer
+        route_group_ids:
+          type: array
+          items:
+            type: string
+          description: 创建成功后要加入的路由组 ID。建议 Web 默认传 default 组 ID。
+        conflict_strategy:
+          type: string
+          enum:
+            - skip
+            - fail
+          default: skip
+          description: 遇到已存在映射时跳过还是让整批失败。
+    BatchCreateUpstreamModelMappingResult:
+      type: object
+      required:
+        - upstream_key_id
+        - status
+      properties:
+        upstream_key_id:
+          type: string
+        status:
+          type: string
+          enum:
+            - created
+            - skipped
+            - failed
+        mapping_id:
+          type: string
+          description: 已存在或已创建的 mapping ID；失败时可为空。
+        error_code:
+          type: string
+        message:
+          type: string
+    BatchCreateUpstreamModelMappingsResponse:
+      type: object
+      required:
+        - created
+        - skipped
+        - failed
+        - total
+      properties:
+        total:
+          type: integer
+        created:
+          type: array
+          items:
+            $ref: "#/components/schemas/UpstreamModelMapping"
+        skipped:
+          type: array
+          items:
+            $ref: "#/components/schemas/BatchCreateUpstreamModelMappingResult"
+        failed:
+          type: array
+          items:
+            $ref: "#/components/schemas/BatchCreateUpstreamModelMappingResult"
     UpdateUpstreamModelMappingRequest:
       type: object
       required:
@@ -8365,6 +10318,8 @@ components:
           type: string
     UserQuota:
       type: object
+      description: |
+        用户当前可用权益。套餐权益与充值 Token 余额是独立权益来源：`plan_tokens` 来自 token 套餐，`recharged_tokens` 来自充值/兑换，`token_limit = plan_tokens + recharged_tokens`（扣除策略由实现层执行），`remaining_tokens` 是当前可用 token 余额。套餐名称为空但 `recharged_tokens` 或 `remaining_tokens` 大于 0 时，前端应展示充值 Token 余额而非“无可用权益”。
       required:
         - user_id
         - token_limit
@@ -8399,12 +10354,15 @@ components:
         token_limit:
           type: integer
           format: int64
+          description: Token 权益总上限，通常为套餐 Token 与充值 Token 的合计。
         plan_tokens:
           type: integer
           format: int64
+          description: 当前 token 套餐提供的 Token 额度；无 token 套餐时为 0。
         recharged_tokens:
           type: integer
           format: int64
+          description: 充值或兑换获得的 Token 额度；即使没有套餐，只要该值或 remaining_tokens 大于 0 也表示用户仍有可用权益。
         token_plan_name:
           type: string
         token_plan_expires_at:
@@ -8417,6 +10375,7 @@ components:
         remaining_tokens:
           type: integer
           format: int64
+          description: 当前可用 Token 余额，等于权益余额扣除已使用和预留后的结果；前端展示 Token 可用性时优先使用该字段。
         request_limit:
           type: integer
         used_requests:
@@ -8509,6 +10468,42 @@ components:
           type: string
         created_at:
           $ref: "#/components/schemas/Timestamp"
+    UsageLedgerListItem:
+      type: object
+      description: 列表安全版用量流水；使用 display_reason 展示脱敏原因，不返回可能包含兑换码 UUID 等内部标识的原始 reason。
+      required:
+        - id
+        - ledger_type
+        - billing_plan
+        - token_delta
+        - request_delta
+        - created_at
+      properties:
+        id:
+          type: string
+        user_id:
+          type: string
+        request_log_id:
+          type: string
+        request_id:
+          type: string
+        trace_id:
+          type: string
+        request_model:
+          type: string
+        ledger_type:
+          $ref: "#/components/schemas/LedgerTypeEnum"
+        billing_plan:
+          type: string
+        token_delta:
+          type: integer
+        request_delta:
+          type: integer
+        display_reason:
+          type: string
+          description: 面向用户/列表展示的脱敏原因文本。
+        created_at:
+          $ref: "#/components/schemas/Timestamp"
     AdminUsageDailyItem:
       type: object
       required:
@@ -8597,6 +10592,7 @@ components:
           type: integer
     UserResponse:
       type: object
+      description: 用户响应不包含 password_hash、PasswordHash 或其他密码材料。
       required:
         - id
         - email
@@ -8638,6 +10634,8 @@ components:
           $ref: "#/components/schemas/Timestamp"
     UserDashboard:
       type: object
+      description: |
+        用户面板健康统计。`today_*` 字段统计当前业务日窗口（由服务端配置的业务时区决定）的已完成请求/用量；`total_*` 字段统计账号累计用量。趋势图应使用请求日志或专用趋势接口，不应由本对象伪造采样点。
       required:
         - user
         - api_key_count
@@ -8666,6 +10664,7 @@ components:
           type: integer
     APIKeyResponse:
       type: object
+      description: API Key 通用脱敏响应；常规读取/更新/切换仅返回脱敏 display_key，不返回明文 key。
       required:
         - id
         - name
@@ -8678,9 +10677,6 @@ components:
           type: string
         name:
           type: string
-        key:
-          type: string
-          description: 明文密钥（仅创建时返回）
         display_key:
           type: string
           description: 脱敏显示密钥
@@ -8692,6 +10688,17 @@ components:
           type: string
         request_count:
           type: integer
+    APIKeySecretResponse:
+      allOf:
+        - $ref: "#/components/schemas/APIKeyResponse"
+        - type: object
+          description: API Key 创建/重置响应；仅这些一次性明文展示场景允许返回 key，客户端不得持久化明文。
+          required:
+            - key
+          properties:
+            key:
+              type: string
+              description: 明文密钥（仅创建或重置时返回一次）
     AuthResponse:
       type: object
       required:
@@ -8829,6 +10836,7 @@ components:
           type: string
     BotKeyResponse:
       type: object
+      description: Bot Key 通用脱敏响应；常规读取/更新/切换仅返回脱敏 display_key，不返回明文 key。
       required:
         - id
         - name
@@ -8842,14 +10850,23 @@ components:
           type: string
         display_key:
           type: string
-        key:
-          type: string
         status:
           $ref: "#/components/schemas/StatusEnum"
         created_at:
           $ref: "#/components/schemas/Timestamp"
         last_used_at:
           type: string
+    BotKeySecretResponse:
+      allOf:
+        - $ref: "#/components/schemas/BotKeyResponse"
+        - type: object
+          description: Bot Key 创建响应；仅一次性明文展示场景允许返回 key，客户端不得持久化明文。
+          required:
+            - key
+          properties:
+            key:
+              type: string
+              description: 明文 Bot Key（仅创建时返回一次）
     CreateBotKeyRequest:
       type: object
       required:
@@ -8928,8 +10945,57 @@ components:
           type: string
         reason:
           type: string
+    UserWorkbenchQuota:
+      type: object
+      description: 用户工作台展示用额度快照；后端无法计算时可返回空对象，不能省略 users 分页 envelope。
+      properties:
+        token_remaining:
+          type: integer
+          format: int64
+          description: 剩余 token 额度；未知时可省略。
+        token_total:
+          type: integer
+          format: int64
+          description: token 总额度；未知时可省略。
+        coding_remaining:
+          type: integer
+          description: 剩余 coding 额度；未知时可省略。
+        image_remaining:
+          type: integer
+          description: 剩余 image 额度；未知时可省略。
+    UserWorkbenchItem:
+      allOf:
+        - $ref: "#/components/schemas/UserResponse"
+        - type: object
+          properties:
+            display_name:
+              type:
+                - string
+                - "null"
+              description: 用户展示名；为空时前端回退到 email 或 id。
+            is_admin:
+              type: boolean
+              description: role 的布尔派生字段；与 role 冲突时以 role 为准，role=admin 等价于 is_admin=true。
+            request_plan:
+              anyOf:
+                - $ref: "#/components/schemas/UserPlan"
+                - type: "null"
+              description: 当前请求/编码类套餐；无套餐时返回 null。
+            token_plan:
+              anyOf:
+                - $ref: "#/components/schemas/UserPlan"
+                - type: "null"
+              description: 当前 token 套餐；无套餐时返回 null。
+            image_plan:
+              anyOf:
+                - $ref: "#/components/schemas/UserPlan"
+                - type: "null"
+              description: 当前图片套餐；无套餐时返回 null。
+            quota:
+              $ref: "#/components/schemas/UserWorkbenchQuota"
     UserWorkbenchData:
       type: object
+      description: 用户工作台聚合数据；空态判断以 users.items.length === 0 为准，total 仅用于分页展示。
       required:
         - users
         - coding_plans
@@ -8944,7 +11010,24 @@ components:
                 items:
                   type: array
                   items:
-                    $ref: "#/components/schemas/UserResponse"
+                    $ref: "#/components/schemas/UserWorkbenchItem"
+                  examples:
+                    - - id: user_1
+                        email: admin@example.com
+                        role: admin
+                        status: active
+                        preferred_billing: token
+                        fallback_enabled: true
+                        display_name: 管理员
+                        is_admin: true
+                        request_plan: null
+                        token_plan: null
+                        quota:
+                          token_remaining: 100000
+                          token_total: 200000
+                        created_at: "2026-06-12T00:00:00Z"
+                        updated_at: "2026-06-12T00:00:00Z"
+                    - []
         coding_plans:
           allOf:
             - $ref: "#/components/schemas/PaginatedData"
@@ -8972,3 +11055,11 @@ components:
                   type: array
                   items:
                     $ref: "#/components/schemas/Plan"
+  headers:
+    CacheNoStore:
+      description: Sensitive authenticated JSON responses must not be stored by shared or private caches.
+      schema:
+        type: string
+        enum:
+          - no-store
+      example: no-store
