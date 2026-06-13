@@ -277,11 +277,45 @@
     tags:
     - catalog
     summary: 获取模型路由分组绑定列表
+    description: |
+      返回 upstream model mapping 与 route group 的绑定分页列表。客户端可按 upstream mapping 或 route group 过滤；没有绑定或没有匹配项时必须返回 `items: []`、`total: 0`，不得以 500 表示空结果。
+
+      参数无效（例如分页参数越界、route group 标识格式非法）时返回结构化 `400` JSON error envelope；未授权/无权限分别返回 `401`/`403` JSON error envelope。服务端内部异常才使用 5xx。
     security:
     - bearerAuth: []
+    parameters:
+    - name: upstream_model_mapping_id
+      in: query
+      schema:
+        type: string
+      description: 按 upstream model mapping ID 过滤绑定。
+    - name: route_group_id
+      in: query
+      schema:
+        type: string
+      description: 按 route group ID 过滤绑定。
+    - name: route_group_name
+      in: query
+      schema:
+        type: string
+        pattern: '^[a-z0-9_-]+$'
+      description: 按 route group 名称过滤；只允许 lowercase 字母、数字、下划线和连字符。
+    - name: page
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+    - name: limit
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
     responses:
       '200':
-        description: 成功
+        description: 成功；无绑定或无匹配项时返回空分页结果而非错误。
         content:
           application/json:
             schema:
@@ -303,13 +337,22 @@
                           $ref: ../schemas/model.yaml#/UpstreamRouteGroupMembership
                       page:
                         type: integer
+                        minimum: 1
                       limit:
                         type: integer
+                        minimum: 1
                       total:
                         type: integer
+                        minimum: 0
         headers:
           Cache-Control:
             $ref: ../headers.yaml#/CacheNoStore
+      '400':
+        description: 参数无效
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
       '401':
         description: 未授权
         content:
