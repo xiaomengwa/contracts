@@ -23,6 +23,9 @@ RequestLogResponse:
       type: string
     user_api_key_id:
       type: string
+    user_api_key_name:
+      type: string
+      description: 关联用户 API Key 的可读名称，用于请求日志展示；不包含明文 key、hash、prefix/suffix 等敏感材料。
     provider_name:
       type: string
     model_name:
@@ -108,6 +111,9 @@ RequestLogListItem:
       type: string
     user_api_key_id:
       type: string
+    user_api_key_name:
+      type: string
+      description: 关联用户 API Key 的可读名称，用于列表安全展示；不包含明文 key、hash、prefix/suffix 等敏感材料。
     provider_name:
       type: string
     model_name:
