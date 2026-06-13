@@ -1,29 +1,24 @@
-/api/v1/admin/models/list:
+/api/v1/admin/rules/provider-error/list:
   get:
-    operationId: adminModelList
+    operationId: adminProviderErrorRuleList
     tags:
-    - catalog
-    summary: 获取模型列表
-    description: '返回模型分页列表。客户端搜索/筛选时应重新请求本接口并携带当前 `query`、过滤条件、`page`、`limit`；契约不限定 UI 触发方式（实时输入、回车或点击筛选均可），但列表展示和分页必须以服务端返回为准。
-
-
-      `total` 表示应用 `query` 和过滤条件后的总数；无匹配结果时返回 `items: []`、`total: 0`。
-
-      '
+    - provider-error
+    summary: 获取供应商错误规则列表
     security:
     - adminBearerAuth: []
     parameters:
-    - name: query
+    - name: provider_name
       in: query
       schema:
         type: string
-        description: '搜索关键字。服务端至少应匹配 `id`、`name`、`display_name`、`description`、`capabilities`。空字符串或省略表示不按关键字过滤。
-
-          '
-    - name: status
+    - name: normalize_to
       in: query
       schema:
-        $ref: ../schemas/common.yaml#/StatusEnum
+        $ref: ../schemas/common.yaml#/ErrorCode
+    - name: enabled
+      in: query
+      schema:
+        type: boolean
     - name: page
       in: query
       schema:
@@ -58,7 +53,7 @@
                       items:
                         type: array
                         items:
-                          $ref: ../schemas/model.yaml#/CatalogModel
+                          $ref: ../schemas/provider-error-rule.yaml#/ProviderErrorRule
                       page:
                         type: integer
                       limit:
@@ -68,51 +63,6 @@
         headers:
           Cache-Control:
             $ref: ../headers.yaml#/CacheNoStore
-      '401':
-        description: 未授权
-        content:
-          application/json:
-            schema:
-              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      '403':
-        description: 无权限
-        content:
-          application/json:
-            schema:
-              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-/api/v1/admin/models/batch/create:
-  post:
-    operationId: adminModelBatchCreate
-    tags:
-    - catalog
-    summary: 批量创建模型
-    description: |
-      批量创建模型（每批最多 100 个）。
-      新模型默认状态为 `disabled`、计费模式为 `billable`。
-      每条结果独立判断成功/失败，部分失败不影响其他条目。
-    security:
-    - adminBearerAuth: []
-    requestBody:
-      required: true
-      content:
-        application/json:
-          schema:
-            $ref: ../schemas/model.yaml#/BatchCreateModelsRequest
-    responses:
-      '200':
-        description: 成功
-        content:
-          application/json:
-            schema:
-              allOf:
-              - $ref: ../schemas/envelope.yaml#/ApiResponse
-              - type: object
-                properties:
-                  data:
-                    $ref: ../schemas/model.yaml#/BatchCreateModelsResponse
-        headers:
-          Cache-Control:
-            $ref: ../headers.yaml#/CacheNoStore
       '400':
         description: 参数无效
         content:
@@ -131,300 +81,15 @@
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-/api/v1/admin/models/batch/delete:
-  post:
-    operationId: adminModelBatchDelete
-    tags:
-    - catalog
-    summary: 批量删除模型
-    description: |
-      批量软删除模型（每批最多 100 个）。
-      每条结果独立判断成功/失败，部分失败不影响其他条目。
-    security:
-    - adminBearerAuth: []
-    requestBody:
-      required: true
-      content:
-        application/json:
-          schema:
-            $ref: ../schemas/model.yaml#/BatchDeleteModelsRequest
-    responses:
-      '200':
-        description: 成功
-        content:
-          application/json:
-            schema:
-              allOf:
-              - $ref: ../schemas/envelope.yaml#/ApiResponse
-              - type: object
-                properties:
-                  data:
-                    $ref: ../schemas/model.yaml#/BatchDeleteModelsResponse
-        headers:
-          Cache-Control:
-            $ref: ../headers.yaml#/CacheNoStore
-      '400':
-        description: 参数无效
-        content:
-          application/json:
-            schema:
-              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      '401':
-        description: 未授权
-        content:
-          application/json:
-            schema:
-              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      '403':
-        description: 无权限
-        content:
-          application/json:
-            schema:
-              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-/api/v1/admin/models/detail:
+/api/v1/admin/rules/provider-error/codes:
   get:
-    operationId: adminModelDetail
+    operationId: adminProviderErrorCodes
     tags:
-    - catalog
-    summary: 获取模型详情
+    - provider-error
+    summary: 获取可选标准错误码列表
+    description: 返回所有可选的标准平台错误码及其元数据，供前端创建/编辑供应商错误规则时选择 normalize_to。
     security:
     - adminBearerAuth: []
-    parameters:
-    - name: id
-      in: query
-      required: true
-      schema:
-        type: string
-    responses:
-      '200':
-        description: 成功
-        content:
-          application/json:
-            schema:
-              allOf:
-              - $ref: ../schemas/envelope.yaml#/ApiResponse
-              - type: object
-                properties:
-                  data:
-                    $ref: ../schemas/model.yaml#/CatalogModel
-        headers:
-          Cache-Control:
-            $ref: ../headers.yaml#/CacheNoStore
-      '401':
-        description: 未授权
-        content:
-          application/json:
-            schema:
-              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      '403':
-        description: 无权限
-        content:
-          application/json:
-            schema:
-              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      '404':
-        description: 模型不存在
-        content:
-          application/json:
-            schema:
-              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-/api/v1/admin/models/create:
-  post:
-    operationId: adminModelCreate
-    tags:
-    - catalog
-    summary: 创建模型
-    security:
-    - adminBearerAuth: []
-    requestBody:
-      required: true
-      content:
-        application/json:
-          schema:
-            $ref: ../schemas/model.yaml#/CreateModelRequest
-    responses:
-      '201':
-        description: 创建成功
-        content:
-          application/json:
-            schema:
-              allOf:
-              - $ref: ../schemas/envelope.yaml#/ApiResponse
-              - type: object
-                properties:
-                  data:
-                    $ref: ../schemas/model.yaml#/CatalogModel
-        headers:
-          Cache-Control:
-            $ref: ../headers.yaml#/CacheNoStore
-      '400':
-        description: 参数无效
-        content:
-          application/json:
-            schema:
-              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      '401':
-        description: 未授权
-        content:
-          application/json:
-            schema:
-              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      '403':
-        description: 无权限
-        content:
-          application/json:
-            schema:
-              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-/api/v1/admin/models/update:
-  post:
-    operationId: adminModelUpdate
-    tags:
-    - catalog
-    summary: 更新模型
-    security:
-    - adminBearerAuth: []
-    requestBody:
-      required: true
-      content:
-        application/json:
-          schema:
-            $ref: ../schemas/model.yaml#/UpdateModelRequest
-    responses:
-      '200':
-        description: 更新成功
-        content:
-          application/json:
-            schema:
-              allOf:
-              - $ref: ../schemas/envelope.yaml#/ApiResponse
-              - type: object
-                properties:
-                  data:
-                    $ref: ../schemas/model.yaml#/CatalogModel
-        headers:
-          Cache-Control:
-            $ref: ../headers.yaml#/CacheNoStore
-      '400':
-        description: 参数无效
-        content:
-          application/json:
-            schema:
-              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      '401':
-        description: 未授权
-        content:
-          application/json:
-            schema:
-              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      '403':
-        description: 无权限
-        content:
-          application/json:
-            schema:
-              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      '404':
-        description: 模型不存在
-        content:
-          application/json:
-            schema:
-              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-/api/v1/admin/models/delete:
-  post:
-    operationId: adminModelDelete
-    tags:
-    - catalog
-    summary: 删除模型
-    security:
-    - adminBearerAuth: []
-    requestBody:
-      required: true
-      content:
-        application/json:
-          schema:
-            $ref: ../schemas/model.yaml#/DeleteModelRequest
-    responses:
-      '200':
-        description: 删除成功
-        content:
-          application/json:
-            schema:
-              $ref: ../schemas/envelope.yaml#/ApiResponse
-        headers:
-          Cache-Control:
-            $ref: ../headers.yaml#/CacheNoStore
-      '401':
-        description: 未授权
-        content:
-          application/json:
-            schema:
-              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      '403':
-        description: 无权限
-        content:
-          application/json:
-            schema:
-              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      '404':
-        description: 模型不存在
-        content:
-          application/json:
-            schema:
-              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-/api/v1/admin/models/toggle:
-  post:
-    operationId: adminModelToggle
-    tags:
-    - catalog
-    summary: 切换模型启用/禁用
-    security:
-    - adminBearerAuth: []
-    requestBody:
-      required: true
-      content:
-        application/json:
-          schema:
-            $ref: ../schemas/model.yaml#/ToggleModelRequest
-    responses:
-      '200':
-        description: 切换成功
-        content:
-          application/json:
-            schema:
-              allOf:
-              - $ref: ../schemas/envelope.yaml#/ApiResponse
-              - type: object
-                properties:
-                  data:
-                    $ref: ../schemas/model.yaml#/CatalogModel
-        headers:
-          Cache-Control:
-            $ref: ../headers.yaml#/CacheNoStore
-      '401':
-        description: 未授权
-        content:
-          application/json:
-            schema:
-              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      '403':
-        description: 无权限
-        content:
-          application/json:
-            schema:
-              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-      '404':
-        description: 模型不存在
-        content:
-          application/json:
-            schema:
-              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-/api/v1/admin/models/options:
-  get:
-    operationId: adminModelOptions
-    tags:
-    - catalog
-    summary: 获取模型选项
-    security:
-    - bearerAuth: []
     responses:
       '200':
         description: 成功
@@ -446,13 +111,263 @@
                       items:
                         type: array
                         items:
-                          $ref: ../schemas/model.yaml#/CatalogModel
+                          $ref: ../schemas/provider-error-rule.yaml#/ProviderErrorCode
                       page:
                         type: integer
                       limit:
                         type: integer
                       total:
                         type: integer
+        headers:
+          Cache-Control:
+            $ref: ../headers.yaml#/CacheNoStore
+      '401':
+        description: 未授权
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+      '403':
+        description: 无权限
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+/api/v1/admin/rules/provider-error/create:
+  post:
+    operationId: adminProviderErrorRuleCreate
+    tags:
+    - provider-error
+    summary: 创建供应商错误规则
+    security:
+    - adminBearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../schemas/provider-error-rule.yaml#/CreateProviderErrorRuleRequest
+    responses:
+      '201':
+        description: 创建成功
+        content:
+          application/json:
+            schema:
+              allOf:
+              - $ref: ../schemas/envelope.yaml#/ApiResponse
+              - type: object
+                properties:
+                  data:
+                    $ref: ../schemas/provider-error-rule.yaml#/ProviderErrorRule
+        headers:
+          Cache-Control:
+            $ref: ../headers.yaml#/CacheNoStore
+      '400':
+        description: 参数无效
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+      '401':
+        description: 未授权
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+      '403':
+        description: 无权限
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+/api/v1/admin/rules/provider-error/update:
+  post:
+    operationId: adminProviderErrorRuleUpdate
+    tags:
+    - provider-error
+    summary: 更新供应商错误规则
+    security:
+    - adminBearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../schemas/provider-error-rule.yaml#/UpdateProviderErrorRuleRequest
+    responses:
+      '200':
+        description: 更新成功
+        content:
+          application/json:
+            schema:
+              allOf:
+              - $ref: ../schemas/envelope.yaml#/ApiResponse
+              - type: object
+                properties:
+                  data:
+                    $ref: ../schemas/provider-error-rule.yaml#/ProviderErrorRule
+        headers:
+          Cache-Control:
+            $ref: ../headers.yaml#/CacheNoStore
+      '400':
+        description: 参数无效
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+      '401':
+        description: 未授权
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+      '403':
+        description: 无权限
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+      '404':
+        description: 规则不存在
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+/api/v1/admin/rules/provider-error/toggle:
+  post:
+    operationId: adminProviderErrorRuleToggle
+    tags:
+    - provider-error
+    summary: 切换供应商错误规则启用/禁用
+    security:
+    - adminBearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../schemas/provider-error-rule.yaml#/ToggleProviderErrorRuleRequest
+    responses:
+      '200':
+        description: 切换成功
+        content:
+          application/json:
+            schema:
+              allOf:
+              - $ref: ../schemas/envelope.yaml#/ApiResponse
+              - type: object
+                properties:
+                  data:
+                    $ref: ../schemas/provider-error-rule.yaml#/ProviderErrorRule
+        headers:
+          Cache-Control:
+            $ref: ../headers.yaml#/CacheNoStore
+      '400':
+        description: 参数无效
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+      '401':
+        description: 未授权
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+      '403':
+        description: 无权限
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+      '404':
+        description: 规则不存在
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+/api/v1/admin/rules/provider-error/delete:
+  post:
+    operationId: adminProviderErrorRuleDelete
+    tags:
+    - provider-error
+    summary: 删除供应商错误规则
+    security:
+    - adminBearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../schemas/provider-error-rule.yaml#/DeleteProviderErrorRuleRequest
+    responses:
+      '200':
+        description: 删除成功
+        content:
+          application/json:
+            schema:
+              allOf:
+              - $ref: ../schemas/envelope.yaml#/ApiResponse
+              - type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+        headers:
+          Cache-Control:
+            $ref: ../headers.yaml#/CacheNoStore
+      '400':
+        description: 参数无效
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+      '401':
+        description: 未授权
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+      '403':
+        description: 无权限
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+      '404':
+        description: 规则不存在
+        content:
+          application/json:
+            schema:
+              $ref: ../schemas/envelope.yaml#/ApiErrorResponse
+/api/v1/admin/rules/provider-error/reload:
+  post:
+    operationId: adminProviderErrorRuleReload
+    tags:
+    - provider-error
+    summary: 重新加载供应商错误规则
+    description: 递增系统配置中的 cache_version，触发执行器运行时配置热重载。
+    security:
+    - adminBearerAuth: []
+    responses:
+      '200':
+        description: 重载成功
+        content:
+          application/json:
+            schema:
+              allOf:
+              - $ref: ../schemas/envelope.yaml#/ApiResponse
+              - type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      provider_error_rules_reloaded:
+                        type: boolean
+                      cache_version:
+                        description: 更新后的 cache_version 值
         headers:
           Cache-Control:
             $ref: ../headers.yaml#/CacheNoStore

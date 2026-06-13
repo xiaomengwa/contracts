@@ -59,7 +59,7 @@ function rewriteRefs(obj) {
         }
       }
       // Convert './common.yaml#/EnumName' within schemas dir
-      else if (value.match(/^\.{0,2}\/(?:common|envelope|user|provider|model|upstream-key|plan|redeem|ratrule|requestlog|usage|sysconfig)\.yaml#\/(.+)$/)) {
+      else if (value.match(/^\.{0,2}\/(?:common|envelope|user|provider|model|upstream-key|plan|redeem|ratrule|requestlog|usage|sysconfig|provider-error-rule)\.yaml#\/(.+)$/)) {
         const schemaMatch = value.match(/#\/(.+)$/);
         if (schemaMatch) {
           result[key] = `#/components/schemas/${schemaMatch[1]}`;

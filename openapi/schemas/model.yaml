@@ -87,6 +87,95 @@ ToggleModelRequest:
   properties:
     id:
       type: string
+BatchCreateModelsRequest:
+  type: object
+  required:
+    - models
+  properties:
+    models:
+      type: array
+      minItems: 1
+      maxItems: 100
+      items:
+        type: object
+        required:
+          - name
+        properties:
+          name:
+            type: string
+          display_name:
+            type: string
+          description:
+            type: string
+BatchCreateModelsResult:
+  type: object
+  required:
+    - name
+    - success
+  properties:
+    name:
+      type: string
+    success:
+      type: boolean
+    model:
+      $ref: "#/CatalogModel"
+    error:
+      type: string
+      description: 失败原因（如 already_exists、name is required）。
+BatchCreateModelsResponse:
+  type: object
+  required:
+    - created
+    - failed
+    - results
+  properties:
+    created:
+      type: integer
+    failed:
+      type: integer
+    results:
+      type: array
+      items:
+        $ref: "#/BatchCreateModelsResult"
+BatchDeleteModelsRequest:
+  type: object
+  required:
+    - ids
+  properties:
+    ids:
+      type: array
+      minItems: 1
+      maxItems: 100
+      items:
+        type: string
+BatchDeleteModelsResult:
+  type: object
+  required:
+    - id
+    - success
+  properties:
+    id:
+      type: string
+    success:
+      type: boolean
+    error:
+      type: string
+      description: 失败原因（如 not_found、id is required）。
+BatchDeleteModelsResponse:
+  type: object
+  required:
+    - deleted
+    - failed
+    - results
+  properties:
+    deleted:
+      type: integer
+    failed:
+      type: integer
+    results:
+      type: array
+      items:
+        $ref: "#/BatchDeleteModelsResult"
 RouteGroup:
   type: object
   required:

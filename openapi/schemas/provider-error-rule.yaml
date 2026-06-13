@@ -1,0 +1,174 @@
+ProviderErrorRule:
+  type: object
+  description: 将供应商特定错误信号映射到标准平台错误码的规则。
+  required:
+    - id
+    - provider_name
+    - name
+    - priority
+    - enabled
+    - match_status_in
+    - normalize_to
+    - created_at
+    - updated_at
+  properties:
+    id:
+      type: string
+    provider_name:
+      type: string
+      description: 供应商名称。
+    name:
+      type: string
+      description: 规则名称（同一供应商下唯一）。
+    priority:
+      type: integer
+      description: 优先级，数值越小优先级越高。
+    enabled:
+      type: boolean
+      description: 是否启用。
+    match_status:
+      type: integer
+      minimum: 100
+      maximum: 599
+      description: 匹配的 HTTP 状态码。为 0 时不参与匹配。
+    match_status_in:
+      type: array
+      description: 匹配的多个 HTTP 状态码（去重排序后）。
+      items:
+        type: integer
+        minimum: 100
+        maximum: 599
+    match_body_contains:
+      type: string
+      description: 响应体包含的子串（为空时不参与匹配）。
+    match_header_name:
+      type: string
+      description: 匹配的响应头名称。使用 header 系列匹配器时必填。
+    match_header_equals:
+      type: string
+      description: 响应头精确匹配值。
+    match_header_contains:
+      type: string
+      description: 响应头包含的子串。
+    match_header_exists:
+      type: boolean
+      description: 响应头是否存在。
+    normalize_to:
+      $ref: ./common.yaml#/ErrorCode
+      description: 映射到的标准平台错误码。
+    created_at:
+      $ref: ./common.yaml#/Timestamp
+    updated_at:
+      $ref: ./common.yaml#/Timestamp
+
+ProviderErrorCode:
+  type: object
+  description: 可选标准错误码元数据。
+  required:
+    - code
+    - message
+  properties:
+    code:
+      $ref: ./common.yaml#/ErrorCode
+    message:
+      type: string
+      description: 面向用户的错误描述。
+    category:
+      $ref: ./common.yaml#/ErrorCategory
+
+CreateProviderErrorRuleRequest:
+  type: object
+  description: 创建供应商错误规则。至少需要一个 matcher 字段（match_status / match_status_in / match_body_contains / match_header_name）。
+  required:
+    - provider_name
+    - name
+    - normalize_to
+  properties:
+    provider_name:
+      type: string
+    name:
+      type: string
+    priority:
+      type: integer
+    enabled:
+      type: boolean
+    match_status:
+      type: integer
+      minimum: 100
+      maximum: 599
+    match_status_in:
+      type: array
+      items:
+        type: integer
+        minimum: 100
+        maximum: 599
+    match_body_contains:
+      type: string
+    match_header_name:
+      type: string
+    match_header_equals:
+      type: string
+    match_header_contains:
+      type: string
+    match_header_exists:
+      type: boolean
+    normalize_to:
+      $ref: ./common.yaml#/ErrorCode
+
+UpdateProviderErrorRuleRequest:
+  type: object
+  description: 更新供应商错误规则。id 必填，其余字段为可选更新项。
+  required:
+    - id
+  properties:
+    id:
+      type: string
+    provider_name:
+      type: string
+    name:
+      type: string
+    priority:
+      type: integer
+    enabled:
+      type: boolean
+    match_status:
+      type: integer
+      minimum: 100
+      maximum: 599
+    match_status_in:
+      type: array
+      items:
+        type: integer
+        minimum: 100
+        maximum: 599
+    match_body_contains:
+      type: string
+    match_header_name:
+      type: string
+    match_header_equals:
+      type: string
+    match_header_contains:
+      type: string
+    match_header_exists:
+      type: boolean
+    normalize_to:
+      $ref: ./common.yaml#/ErrorCode
+
+ToggleProviderErrorRuleRequest:
+  type: object
+  required:
+    - id
+    - enabled
+  properties:
+    id:
+      type: string
+    enabled:
+      type: boolean
+
+DeleteProviderErrorRuleRequest:
+  type: object
+  required:
+    - id
+  properties:
+    id:
+      type: string
