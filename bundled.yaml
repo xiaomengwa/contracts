@@ -38,7 +38,7 @@ tags:
     description: 兑换码管理
   - name: ratrule
     description: 倍率规则管理
-  - name: provider-error
+  - name: providererror
     description: 供应商错误规则管理
   - name: config
     description: 系统配置与路由权重
@@ -1159,391 +1159,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ApiErrorResponse"
-  /api/v1/admin/rules/provider-error/list:
-    get:
-      operationId: adminProviderErrorRuleList
-      tags:
-        - provider-error
-      summary: 获取供应商错误规则列表
-      security:
-        - adminBearerAuth: []
-      parameters:
-        - name: provider_name
-          in: query
-          schema:
-            type: string
-        - name: normalize_to
-          in: query
-          schema:
-            $ref: "#/components/schemas/ErrorCode"
-        - name: enabled
-          in: query
-          schema:
-            type: boolean
-        - name: page
-          in: query
-          schema:
-            type: integer
-            minimum: 1
-            default: 1
-        - name: limit
-          in: query
-          schema:
-            type: integer
-            minimum: 1
-            maximum: 100
-            default: 20
-      responses:
-        "200":
-          description: 成功
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: "#/components/schemas/ApiResponse"
-                  - type: object
-                    properties:
-                      data:
-                        type: object
-                        required:
-                          - items
-                          - page
-                          - limit
-                          - total
-                        properties:
-                          items:
-                            type: array
-                            items:
-                              $ref: "#/components/schemas/ProviderErrorRule"
-                          page:
-                            type: integer
-                          limit:
-                            type: integer
-                          total:
-                            type: integer
-          headers:
-            Cache-Control:
-              $ref: "#/components/headers/CacheNoStore"
-        "400":
-          description: 参数无效
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ApiErrorResponse"
-        "401":
-          description: 未授权
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ApiErrorResponse"
-        "403":
-          description: 无权限
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ApiErrorResponse"
-  /api/v1/admin/rules/provider-error/codes:
-    get:
-      operationId: adminProviderErrorCodes
-      tags:
-        - provider-error
-      summary: 获取可选标准错误码列表
-      description: 返回所有可选的标准平台错误码及其元数据，供前端创建/编辑供应商错误规则时选择 normalize_to。
-      security:
-        - adminBearerAuth: []
-      responses:
-        "200":
-          description: 成功
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: "#/components/schemas/ApiResponse"
-                  - type: object
-                    properties:
-                      data:
-                        type: object
-                        required:
-                          - items
-                          - page
-                          - limit
-                          - total
-                        properties:
-                          items:
-                            type: array
-                            items:
-                              $ref: "#/components/schemas/ProviderErrorCode"
-                          page:
-                            type: integer
-                          limit:
-                            type: integer
-                          total:
-                            type: integer
-          headers:
-            Cache-Control:
-              $ref: "#/components/headers/CacheNoStore"
-        "401":
-          description: 未授权
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ApiErrorResponse"
-        "403":
-          description: 无权限
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ApiErrorResponse"
-  /api/v1/admin/rules/provider-error/create:
-    post:
-      operationId: adminProviderErrorRuleCreate
-      tags:
-        - provider-error
-      summary: 创建供应商错误规则
-      security:
-        - adminBearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/CreateProviderErrorRuleRequest"
-      responses:
-        "201":
-          description: 创建成功
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: "#/components/schemas/ApiResponse"
-                  - type: object
-                    properties:
-                      data:
-                        $ref: "#/components/schemas/ProviderErrorRule"
-          headers:
-            Cache-Control:
-              $ref: "#/components/headers/CacheNoStore"
-        "400":
-          description: 参数无效
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ApiErrorResponse"
-        "401":
-          description: 未授权
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ApiErrorResponse"
-        "403":
-          description: 无权限
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ApiErrorResponse"
-  /api/v1/admin/rules/provider-error/update:
-    post:
-      operationId: adminProviderErrorRuleUpdate
-      tags:
-        - provider-error
-      summary: 更新供应商错误规则
-      security:
-        - adminBearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/UpdateProviderErrorRuleRequest"
-      responses:
-        "200":
-          description: 更新成功
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: "#/components/schemas/ApiResponse"
-                  - type: object
-                    properties:
-                      data:
-                        $ref: "#/components/schemas/ProviderErrorRule"
-          headers:
-            Cache-Control:
-              $ref: "#/components/headers/CacheNoStore"
-        "400":
-          description: 参数无效
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ApiErrorResponse"
-        "401":
-          description: 未授权
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ApiErrorResponse"
-        "403":
-          description: 无权限
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ApiErrorResponse"
-        "404":
-          description: 规则不存在
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ApiErrorResponse"
-  /api/v1/admin/rules/provider-error/toggle:
-    post:
-      operationId: adminProviderErrorRuleToggle
-      tags:
-        - provider-error
-      summary: 切换供应商错误规则启用/禁用
-      security:
-        - adminBearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/ToggleProviderErrorRuleRequest"
-      responses:
-        "200":
-          description: 切换成功
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: "#/components/schemas/ApiResponse"
-                  - type: object
-                    properties:
-                      data:
-                        $ref: "#/components/schemas/ProviderErrorRule"
-          headers:
-            Cache-Control:
-              $ref: "#/components/headers/CacheNoStore"
-        "400":
-          description: 参数无效
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ApiErrorResponse"
-        "401":
-          description: 未授权
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ApiErrorResponse"
-        "403":
-          description: 无权限
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ApiErrorResponse"
-        "404":
-          description: 规则不存在
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ApiErrorResponse"
-  /api/v1/admin/rules/provider-error/delete:
-    post:
-      operationId: adminProviderErrorRuleDelete
-      tags:
-        - provider-error
-      summary: 删除供应商错误规则
-      security:
-        - adminBearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/DeleteProviderErrorRuleRequest"
-      responses:
-        "200":
-          description: 删除成功
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: "#/components/schemas/ApiResponse"
-                  - type: object
-                    properties:
-                      data:
-                        type: object
-                        properties:
-                          id:
-                            type: string
-          headers:
-            Cache-Control:
-              $ref: "#/components/headers/CacheNoStore"
-        "400":
-          description: 参数无效
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ApiErrorResponse"
-        "401":
-          description: 未授权
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ApiErrorResponse"
-        "403":
-          description: 无权限
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ApiErrorResponse"
-        "404":
-          description: 规则不存在
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ApiErrorResponse"
-  /api/v1/admin/rules/provider-error/reload:
-    post:
-      operationId: adminProviderErrorRuleReload
-      tags:
-        - provider-error
-      summary: 重新加载供应商错误规则
-      description: 递增系统配置中的 cache_version，触发执行器运行时配置热重载。
-      security:
-        - adminBearerAuth: []
-      responses:
-        "200":
-          description: 重载成功
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: "#/components/schemas/ApiResponse"
-                  - type: object
-                    properties:
-                      data:
-                        type: object
-                        properties:
-                          provider_error_rules_reloaded:
-                            type: boolean
-                          cache_version:
-                            description: 更新后的 cache_version 值
-          headers:
-            Cache-Control:
-              $ref: "#/components/headers/CacheNoStore"
-        "401":
-          description: 未授权
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ApiErrorResponse"
-        "403":
-          description: 无权限
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ApiErrorResponse"
   /api/v1/admin/providers/list:
     get:
       operationId: adminProviderList
@@ -2232,6 +1847,391 @@ paths:
                             type: integer
                           total:
                             type: integer
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
+        "401":
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "403":
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+  /api/v1/admin/rules/providererror/list:
+    get:
+      operationId: adminProviderErrorRuleList
+      tags:
+        - providererror
+      summary: 获取供应商错误规则列表
+      security:
+        - adminBearerAuth: []
+      parameters:
+        - name: provider_name
+          in: query
+          schema:
+            type: string
+        - name: normalize_to
+          in: query
+          schema:
+            $ref: "#/components/schemas/ErrorCode"
+        - name: enabled
+          in: query
+          schema:
+            type: boolean
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        "200":
+          description: 成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        required:
+                          - items
+                          - page
+                          - limit
+                          - total
+                        properties:
+                          items:
+                            type: array
+                            items:
+                              $ref: "#/components/schemas/ProviderErrorRule"
+                          page:
+                            type: integer
+                          limit:
+                            type: integer
+                          total:
+                            type: integer
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
+        "400":
+          description: 参数无效
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "401":
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "403":
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+  /api/v1/admin/rules/providererror/codes:
+    get:
+      operationId: adminProviderErrorCodes
+      tags:
+        - providererror
+      summary: 获取可选标准错误码列表
+      description: 返回所有可选的标准平台错误码及其元数据，供前端创建/编辑供应商错误规则时选择 normalize_to。
+      security:
+        - adminBearerAuth: []
+      responses:
+        "200":
+          description: 成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        required:
+                          - items
+                          - page
+                          - limit
+                          - total
+                        properties:
+                          items:
+                            type: array
+                            items:
+                              $ref: "#/components/schemas/ProviderErrorCode"
+                          page:
+                            type: integer
+                          limit:
+                            type: integer
+                          total:
+                            type: integer
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
+        "401":
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "403":
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+  /api/v1/admin/rules/providererror/create:
+    post:
+      operationId: adminProviderErrorRuleCreate
+      tags:
+        - providererror
+      summary: 创建供应商错误规则
+      security:
+        - adminBearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateProviderErrorRuleRequest"
+      responses:
+        "201":
+          description: 创建成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/ProviderErrorRule"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
+        "400":
+          description: 参数无效
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "401":
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "403":
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+  /api/v1/admin/rules/providererror/update:
+    post:
+      operationId: adminProviderErrorRuleUpdate
+      tags:
+        - providererror
+      summary: 更新供应商错误规则
+      security:
+        - adminBearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateProviderErrorRuleRequest"
+      responses:
+        "200":
+          description: 更新成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/ProviderErrorRule"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
+        "400":
+          description: 参数无效
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "401":
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "403":
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "404":
+          description: 规则不存在
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+  /api/v1/admin/rules/providererror/toggle:
+    post:
+      operationId: adminProviderErrorRuleToggle
+      tags:
+        - providererror
+      summary: 切换供应商错误规则启用/禁用
+      security:
+        - adminBearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ToggleProviderErrorRuleRequest"
+      responses:
+        "200":
+          description: 切换成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/ProviderErrorRule"
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
+        "400":
+          description: 参数无效
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "401":
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "403":
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "404":
+          description: 规则不存在
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+  /api/v1/admin/rules/providererror/delete:
+    post:
+      operationId: adminProviderErrorRuleDelete
+      tags:
+        - providererror
+      summary: 删除供应商错误规则
+      security:
+        - adminBearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DeleteProviderErrorRuleRequest"
+      responses:
+        "200":
+          description: 删除成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/CacheNoStore"
+        "400":
+          description: 参数无效
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "401":
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "403":
+          description: 无权限
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+        "404":
+          description: 规则不存在
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiErrorResponse"
+  /api/v1/admin/rules/providererror/reload:
+    post:
+      operationId: adminProviderErrorRuleReload
+      tags:
+        - providererror
+      summary: 重新加载供应商错误规则
+      description: 递增系统配置中的 cache_version，触发执行器运行时配置热重载。
+      security:
+        - adminBearerAuth: []
+      responses:
+        "200":
+          description: 重载成功
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ApiResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          provider_error_rules_reloaded:
+                            type: boolean
+                          cache_version:
+                            description: 更新后的 cache_version 值
           headers:
             Cache-Control:
               $ref: "#/components/headers/CacheNoStore"
@@ -8639,175 +8639,6 @@ components:
                   type: array
                   items:
                     $ref: "#/components/schemas/Plan"
-    ProviderErrorRule:
-      type: object
-      description: 将供应商特定错误信号映射到标准平台错误码的规则。
-      required:
-        - id
-        - provider_name
-        - name
-        - priority
-        - enabled
-        - match_status_in
-        - normalize_to
-        - created_at
-        - updated_at
-      properties:
-        id:
-          type: string
-        provider_name:
-          type: string
-          description: 供应商名称。
-        name:
-          type: string
-          description: 规则名称（同一供应商下唯一）。
-        priority:
-          type: integer
-          description: 优先级，数值越小优先级越高。
-        enabled:
-          type: boolean
-          description: 是否启用。
-        match_status:
-          type: integer
-          minimum: 100
-          maximum: 599
-          description: 匹配的 HTTP 状态码。为 0 时不参与匹配。
-        match_status_in:
-          type: array
-          description: 匹配的多个 HTTP 状态码（去重排序后）。
-          items:
-            type: integer
-            minimum: 100
-            maximum: 599
-        match_body_contains:
-          type: string
-          description: 响应体包含的子串（为空时不参与匹配）。
-        match_header_name:
-          type: string
-          description: 匹配的响应头名称。使用 header 系列匹配器时必填。
-        match_header_equals:
-          type: string
-          description: 响应头精确匹配值。
-        match_header_contains:
-          type: string
-          description: 响应头包含的子串。
-        match_header_exists:
-          type: boolean
-          description: 响应头是否存在。
-        normalize_to:
-          $ref: "#/components/schemas/ErrorCode"
-          description: 映射到的标准平台错误码。
-        created_at:
-          $ref: "#/components/schemas/Timestamp"
-        updated_at:
-          $ref: "#/components/schemas/Timestamp"
-    ProviderErrorCode:
-      type: object
-      description: 可选标准错误码元数据。
-      required:
-        - code
-        - message
-      properties:
-        code:
-          $ref: "#/components/schemas/ErrorCode"
-        message:
-          type: string
-          description: 面向用户的错误描述。
-        category:
-          $ref: "#/components/schemas/ErrorCategory"
-    CreateProviderErrorRuleRequest:
-      type: object
-      description: 创建供应商错误规则。至少需要一个 matcher 字段（match_status / match_status_in / match_body_contains / match_header_name）。
-      required:
-        - provider_name
-        - name
-        - normalize_to
-      properties:
-        provider_name:
-          type: string
-        name:
-          type: string
-        priority:
-          type: integer
-        enabled:
-          type: boolean
-        match_status:
-          type: integer
-          minimum: 100
-          maximum: 599
-        match_status_in:
-          type: array
-          items:
-            type: integer
-            minimum: 100
-            maximum: 599
-        match_body_contains:
-          type: string
-        match_header_name:
-          type: string
-        match_header_equals:
-          type: string
-        match_header_contains:
-          type: string
-        match_header_exists:
-          type: boolean
-        normalize_to:
-          $ref: "#/components/schemas/ErrorCode"
-    UpdateProviderErrorRuleRequest:
-      type: object
-      description: 更新供应商错误规则。id 必填，其余字段为可选更新项。
-      required:
-        - id
-      properties:
-        id:
-          type: string
-        provider_name:
-          type: string
-        name:
-          type: string
-        priority:
-          type: integer
-        enabled:
-          type: boolean
-        match_status:
-          type: integer
-          minimum: 100
-          maximum: 599
-        match_status_in:
-          type: array
-          items:
-            type: integer
-            minimum: 100
-            maximum: 599
-        match_body_contains:
-          type: string
-        match_header_name:
-          type: string
-        match_header_equals:
-          type: string
-        match_header_contains:
-          type: string
-        match_header_exists:
-          type: boolean
-        normalize_to:
-          $ref: "#/components/schemas/ErrorCode"
-    ToggleProviderErrorRuleRequest:
-      type: object
-      required:
-        - id
-        - enabled
-      properties:
-        id:
-          type: string
-        enabled:
-          type: boolean
-    DeleteProviderErrorRuleRequest:
-      type: object
-      required:
-        - id
-      properties:
-        id:
-          type: string
     Provider:
       allOf:
         - $ref: "#/components/schemas/CatalogStats"
@@ -9034,6 +8865,175 @@ components:
           type: string
           description: 上游返回的模型归属方；上游未提供时可省略。
     ToggleProviderEndpointRequest:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: string
+    ProviderErrorRule:
+      type: object
+      description: 将供应商特定错误信号映射到标准平台错误码的规则。
+      required:
+        - id
+        - provider_name
+        - name
+        - priority
+        - enabled
+        - match_status_in
+        - normalize_to
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+        provider_name:
+          type: string
+          description: 供应商名称。
+        name:
+          type: string
+          description: 规则名称（同一供应商下唯一）。
+        priority:
+          type: integer
+          description: 优先级，数值越小优先级越高。
+        enabled:
+          type: boolean
+          description: 是否启用。
+        match_status:
+          type: integer
+          minimum: 100
+          maximum: 599
+          description: 匹配的 HTTP 状态码。为 0 时不参与匹配。
+        match_status_in:
+          type: array
+          description: 匹配的多个 HTTP 状态码（去重排序后）。
+          items:
+            type: integer
+            minimum: 100
+            maximum: 599
+        match_body_contains:
+          type: string
+          description: 响应体包含的子串（为空时不参与匹配）。
+        match_header_name:
+          type: string
+          description: 匹配的响应头名称。使用 header 系列匹配器时必填。
+        match_header_equals:
+          type: string
+          description: 响应头精确匹配值。
+        match_header_contains:
+          type: string
+          description: 响应头包含的子串。
+        match_header_exists:
+          type: boolean
+          description: 响应头是否存在。
+        normalize_to:
+          $ref: "#/components/schemas/ErrorCode"
+          description: 映射到的标准平台错误码。
+        created_at:
+          $ref: "#/components/schemas/Timestamp"
+        updated_at:
+          $ref: "#/components/schemas/Timestamp"
+    ProviderErrorCode:
+      type: object
+      description: 可选标准错误码元数据。
+      required:
+        - code
+        - message
+      properties:
+        code:
+          $ref: "#/components/schemas/ErrorCode"
+        message:
+          type: string
+          description: 面向用户的错误描述。
+        category:
+          $ref: "#/components/schemas/ErrorCategory"
+    CreateProviderErrorRuleRequest:
+      type: object
+      description: 创建供应商错误规则。至少需要一个 matcher 字段（match_status / match_status_in / match_body_contains / match_header_name）。
+      required:
+        - provider_name
+        - name
+        - normalize_to
+      properties:
+        provider_name:
+          type: string
+        name:
+          type: string
+        priority:
+          type: integer
+        enabled:
+          type: boolean
+        match_status:
+          type: integer
+          minimum: 100
+          maximum: 599
+        match_status_in:
+          type: array
+          items:
+            type: integer
+            minimum: 100
+            maximum: 599
+        match_body_contains:
+          type: string
+        match_header_name:
+          type: string
+        match_header_equals:
+          type: string
+        match_header_contains:
+          type: string
+        match_header_exists:
+          type: boolean
+        normalize_to:
+          $ref: "#/components/schemas/ErrorCode"
+    UpdateProviderErrorRuleRequest:
+      type: object
+      description: 更新供应商错误规则。id 必填，其余字段为可选更新项。
+      required:
+        - id
+      properties:
+        id:
+          type: string
+        provider_name:
+          type: string
+        name:
+          type: string
+        priority:
+          type: integer
+        enabled:
+          type: boolean
+        match_status:
+          type: integer
+          minimum: 100
+          maximum: 599
+        match_status_in:
+          type: array
+          items:
+            type: integer
+            minimum: 100
+            maximum: 599
+        match_body_contains:
+          type: string
+        match_header_name:
+          type: string
+        match_header_equals:
+          type: string
+        match_header_contains:
+          type: string
+        match_header_exists:
+          type: boolean
+        normalize_to:
+          $ref: "#/components/schemas/ErrorCode"
+    ToggleProviderErrorRuleRequest:
+      type: object
+      required:
+        - id
+        - enabled
+      properties:
+        id:
+          type: string
+        enabled:
+          type: boolean
+    DeleteProviderErrorRuleRequest:
       type: object
       required:
         - id

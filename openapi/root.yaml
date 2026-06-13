@@ -41,7 +41,7 @@ tags:
     description: 兑换码管理
   - name: ratrule
     description: 倍率规则管理
-  - name: provider-error
+  - name: providererror
     description: 供应商错误规则管理
   - name: config
     description: 系统配置与路由权重

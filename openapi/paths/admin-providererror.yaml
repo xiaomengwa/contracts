@@ -1,8 +1,8 @@
-/api/v1/admin/rules/provider-error/list:
+/api/v1/admin/rules/providererror/list:
   get:
     operationId: adminProviderErrorRuleList
     tags:
-    - provider-error
+    - providererror
     summary: 获取供应商错误规则列表
     security:
     - adminBearerAuth: []
@@ -53,7 +53,7 @@
                       items:
                         type: array
                         items:
-                          $ref: ../schemas/provider-error-rule.yaml#/ProviderErrorRule
+                          $ref: ../schemas/providererror.yaml#/ProviderErrorRule
                       page:
                         type: integer
                       limit:
@@ -81,11 +81,11 @@
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-/api/v1/admin/rules/provider-error/codes:
+/api/v1/admin/rules/providererror/codes:
   get:
     operationId: adminProviderErrorCodes
     tags:
-    - provider-error
+    - providererror
     summary: 获取可选标准错误码列表
     description: 返回所有可选的标准平台错误码及其元数据，供前端创建/编辑供应商错误规则时选择 normalize_to。
     security:
@@ -111,7 +111,7 @@
                       items:
                         type: array
                         items:
-                          $ref: ../schemas/provider-error-rule.yaml#/ProviderErrorCode
+                          $ref: ../schemas/providererror.yaml#/ProviderErrorCode
                       page:
                         type: integer
                       limit:
@@ -133,11 +133,11 @@
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-/api/v1/admin/rules/provider-error/create:
+/api/v1/admin/rules/providererror/create:
   post:
     operationId: adminProviderErrorRuleCreate
     tags:
-    - provider-error
+    - providererror
     summary: 创建供应商错误规则
     security:
     - adminBearerAuth: []
@@ -146,7 +146,7 @@
       content:
         application/json:
           schema:
-            $ref: ../schemas/provider-error-rule.yaml#/CreateProviderErrorRuleRequest
+            $ref: ../schemas/providererror.yaml#/CreateProviderErrorRuleRequest
     responses:
       '201':
         description: 创建成功
@@ -158,7 +158,7 @@
               - type: object
                 properties:
                   data:
-                    $ref: ../schemas/provider-error-rule.yaml#/ProviderErrorRule
+                    $ref: ../schemas/providererror.yaml#/ProviderErrorRule
         headers:
           Cache-Control:
             $ref: ../headers.yaml#/CacheNoStore
@@ -180,11 +180,11 @@
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-/api/v1/admin/rules/provider-error/update:
+/api/v1/admin/rules/providererror/update:
   post:
     operationId: adminProviderErrorRuleUpdate
     tags:
-    - provider-error
+    - providererror
     summary: 更新供应商错误规则
     security:
     - adminBearerAuth: []
@@ -193,7 +193,7 @@
       content:
         application/json:
           schema:
-            $ref: ../schemas/provider-error-rule.yaml#/UpdateProviderErrorRuleRequest
+            $ref: ../schemas/providererror.yaml#/UpdateProviderErrorRuleRequest
     responses:
       '200':
         description: 更新成功
@@ -205,7 +205,7 @@
               - type: object
                 properties:
                   data:
-                    $ref: ../schemas/provider-error-rule.yaml#/ProviderErrorRule
+                    $ref: ../schemas/providererror.yaml#/ProviderErrorRule
         headers:
           Cache-Control:
             $ref: ../headers.yaml#/CacheNoStore
@@ -233,11 +233,11 @@
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-/api/v1/admin/rules/provider-error/toggle:
+/api/v1/admin/rules/providererror/toggle:
   post:
     operationId: adminProviderErrorRuleToggle
     tags:
-    - provider-error
+    - providererror
     summary: 切换供应商错误规则启用/禁用
     security:
     - adminBearerAuth: []
@@ -246,7 +246,7 @@
       content:
         application/json:
           schema:
-            $ref: ../schemas/provider-error-rule.yaml#/ToggleProviderErrorRuleRequest
+            $ref: ../schemas/providererror.yaml#/ToggleProviderErrorRuleRequest
     responses:
       '200':
         description: 切换成功
@@ -258,7 +258,7 @@
               - type: object
                 properties:
                   data:
-                    $ref: ../schemas/provider-error-rule.yaml#/ProviderErrorRule
+                    $ref: ../schemas/providererror.yaml#/ProviderErrorRule
         headers:
           Cache-Control:
             $ref: ../headers.yaml#/CacheNoStore
@@ -286,11 +286,11 @@
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-/api/v1/admin/rules/provider-error/delete:
+/api/v1/admin/rules/providererror/delete:
   post:
     operationId: adminProviderErrorRuleDelete
     tags:
-    - provider-error
+    - providererror
     summary: 删除供应商错误规则
     security:
     - adminBearerAuth: []
@@ -299,7 +299,7 @@
       content:
         application/json:
           schema:
-            $ref: ../schemas/provider-error-rule.yaml#/DeleteProviderErrorRuleRequest
+            $ref: ../schemas/providererror.yaml#/DeleteProviderErrorRuleRequest
     responses:
       '200':
         description: 删除成功
@@ -342,11 +342,11 @@
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-/api/v1/admin/rules/provider-error/reload:
+/api/v1/admin/rules/providererror/reload:
   post:
     operationId: adminProviderErrorRuleReload
     tags:
-    - provider-error
+    - providererror
     summary: 重新加载供应商错误规则
     description: 递增系统配置中的 cache_version，触发执行器运行时配置热重载。
     security:
