@@ -1862,7 +1862,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ApiErrorResponse"
-  /api/v1/admin/rules/providererror/list:
+  /api/v1/admin/rules/provider/error/list:
     get:
       operationId: adminProviderErrorRuleList
       tags:
@@ -1945,7 +1945,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ApiErrorResponse"
-  /api/v1/admin/rules/providererror/codes:
+  /api/v1/admin/rules/provider/error/codes:
     get:
       operationId: adminProviderErrorCodes
       tags:
@@ -1997,7 +1997,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ApiErrorResponse"
-  /api/v1/admin/rules/providererror/create:
+  /api/v1/admin/rules/provider/error/create:
     post:
       operationId: adminProviderErrorRuleCreate
       tags:
@@ -2044,7 +2044,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ApiErrorResponse"
-  /api/v1/admin/rules/providererror/update:
+  /api/v1/admin/rules/provider/error/update:
     post:
       operationId: adminProviderErrorRuleUpdate
       tags:
@@ -2097,7 +2097,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ApiErrorResponse"
-  /api/v1/admin/rules/providererror/toggle:
+  /api/v1/admin/rules/provider/error/toggle:
     post:
       operationId: adminProviderErrorRuleToggle
       tags:
@@ -2150,7 +2150,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ApiErrorResponse"
-  /api/v1/admin/rules/providererror/delete:
+  /api/v1/admin/rules/provider/error/delete:
     post:
       operationId: adminProviderErrorRuleDelete
       tags:
@@ -2206,7 +2206,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ApiErrorResponse"
-  /api/v1/admin/rules/providererror/reload:
+  /api/v1/admin/rules/provider/error/reload:
     post:
       operationId: adminProviderErrorRuleReload
       tags:

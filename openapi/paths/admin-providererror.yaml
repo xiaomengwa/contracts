@@ -1,4 +1,4 @@
-/api/v1/admin/rules/providererror/list:
+/api/v1/admin/rules/provider/error/list:
   get:
     operationId: adminProviderErrorRuleList
     tags:
@@ -81,7 +81,7 @@
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-/api/v1/admin/rules/providererror/codes:
+/api/v1/admin/rules/provider/error/codes:
   get:
     operationId: adminProviderErrorCodes
     tags:
@@ -133,7 +133,7 @@
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-/api/v1/admin/rules/providererror/create:
+/api/v1/admin/rules/provider/error/create:
   post:
     operationId: adminProviderErrorRuleCreate
     tags:
@@ -180,7 +180,7 @@
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-/api/v1/admin/rules/providererror/update:
+/api/v1/admin/rules/provider/error/update:
   post:
     operationId: adminProviderErrorRuleUpdate
     tags:
@@ -233,7 +233,7 @@
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-/api/v1/admin/rules/providererror/toggle:
+/api/v1/admin/rules/provider/error/toggle:
   post:
     operationId: adminProviderErrorRuleToggle
     tags:
@@ -286,7 +286,7 @@
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-/api/v1/admin/rules/providererror/delete:
+/api/v1/admin/rules/provider/error/delete:
   post:
     operationId: adminProviderErrorRuleDelete
     tags:
@@ -342,7 +342,7 @@
           application/json:
             schema:
               $ref: ../schemas/envelope.yaml#/ApiErrorResponse
-/api/v1/admin/rules/providererror/reload:
+/api/v1/admin/rules/provider/error/reload:
   post:
     operationId: adminProviderErrorRuleReload
     tags:
